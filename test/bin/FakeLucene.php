@@ -31,33 +31,8 @@ class FakeLucene extends sfLucene
     return array('lucene' => array (
       'models' =>
       array (
-        'Forum' =>
-        array (
-          'fields' =>
-          array (
-            'id' =>
-            array (
-              'type' => 'unindexed',
-              'boost' => 1,
-            ),
-            'title' =>
-            array (
-              'type' => 'text',
-              'boost' => 2,
-            ),
-            'description' =>
-            array (
-              'type' => 'text',
-              'boost' => 1,
-            ),
-          ),
-          'title' => 'title',
-          'description' => 'description',
-          'categories' => 'Forum',
-          'route' => 'forum/showForum?id=%id%',
-          'partial' => NULL,
-          'indexer' => NULL,
-        ),
+        'FakeForum' =>
+        self::_getForumArray()
       ),
       'index' =>
       array (
@@ -76,7 +51,11 @@ class FakeLucene extends sfLucene
         'analyzer' => 'utf8num',
         'case_sensitive' => false,
         'mb_string' => true,
+        'param' =>
+          array()
       ),
+      'factories' =>
+      array(),
       'interface' =>
       array (
         'categories' => true,
@@ -94,16 +73,19 @@ class FakeLucene extends sfLucene
           array (
             'type' => 'unindexed',
             'boost' => 1,
+            'transform' => null
           ),
           'title' =>
           array (
             'type' => 'text',
             'boost' => 2,
+            'transform' => null
           ),
           'description' =>
           array (
             'type' => 'text',
             'boost' => 1,
+            'transform' => null
           ),
         ),
         'title' => 'title',
@@ -111,7 +93,8 @@ class FakeLucene extends sfLucene
         'categories' => 'Forum',
         'route' => 'forum/showForum?id=%id%',
         'partial' => NULL,
-        'indexer' => NULL
+        'indexer' => NULL,
+        'validator' => 'isIndexable'
       );
   }
 }

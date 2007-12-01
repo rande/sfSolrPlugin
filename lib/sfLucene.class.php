@@ -135,7 +135,7 @@ class sfLucene
 
     if (sfConfig::get('sf_logging_enabled'))
     {
-      sfLogger::getInstance()->info(sprintf('{sfLucene} constructed new instance of index "%s" and culture "%s"', $this->name, $culture));
+      sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(sprintf('constructed new instance of index "%s" and culture "%s"', $this->name, $culture))));
     }
   }
 
@@ -386,7 +386,7 @@ class sfLucene
   {
     if ($model)
     {
-      sfContext::getInstance()->getLogger()->info(sprintf('{sfLucene} calling ->dumpModels() with a model argument is deprecated; please use ->dumpModel() instead'));
+      sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(sprintf('calling ->dumpModels() with a model argument is deprecated; please use ->dumpModel() instead'))));
 
       return $this->dumpModel($model);
     }
@@ -434,10 +434,10 @@ class sfLucene
         {
           if ($this->rebuild && file_exists($this->getIndexLoc()))
           {
-            sfContext::getInstance()->getLogger()->info(sprintf('{sfLucene} erased index "%s"', $this->getIndexLoc()));
+            sfContext::getInstance()->getLogger()->info(sprintf('erased index "%s"', $this->getIndexLoc()));
           }
 
-          sfContext::getInstance()->getLogger()->info(sprintf('{sfLucene} created index "%s"', $this->getIndexLoc()));
+          sfContext::getInstance()->getLogger()->info(sprintf('created index "%s"', $this->getIndexLoc()));
         }
 
         $this->rebuild = false;
@@ -481,7 +481,7 @@ class sfLucene
 
     if (!$mode)
     {
-      $mode = function_exists('pake_echo_action') ? 'batch' : 'interactive';
+      $mode = sfContext::getInstance()->getController()->inCLI() ? 'batch' : 'interactive';
     }
 
     if ($mode == 'batch')

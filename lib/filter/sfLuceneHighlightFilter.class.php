@@ -60,7 +60,7 @@ class sfLuceneHighlightFilter extends sfFilter
     }
     catch (sfLuceneHighlighterException $e)
     {
-      sfLogger::getInstance()->err('{sfLuceneHighlightFilter} silently ignoring exception: ' . $e->getMessage());
+      sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array('{sfLuceneHighlightFilter} silently ignoring exception: ' . $e->getMessage())));
 
       if ($this->testMode)
       {
@@ -166,7 +166,7 @@ class sfLuceneHighlightFilter extends sfFilter
 
     $term_string = implode($terms, ', ');
 
-    $route = $route = sfRouting::getInstance()->getCurrentInternalUri();
+    $route = $route = $this->getContext()->getRouting()->getCurrentInternalUri();
     $route = preg_replace('/(\?|&)' . $this->getHighlightQs() . '=.*?(&|$)/', '$1', $route);
     $route = $this->getContext()->getController()->genUrl($route);
 
@@ -188,7 +188,7 @@ class sfLuceneHighlightFilter extends sfFilter
 
   protected function translate($text, $args)
   {
-    if ($this->getContext()->getI18N())
+    if (sfConfig::get('sf_i18n', false) && $this->getContext()->getI18N())
     {
       return $this->getContext()->getI18N()->__($text, $args, 'messages');
     }

@@ -25,6 +25,6 @@
  * @copyright  Copyright (c) 2005-2007 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Exception extends Exception
+class Zend_Exception extends sfLuceneException
 {}
 

@@ -16,6 +16,7 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 require dirname(__FILE__) . '/../../bin/FakeLucene.php';
+require dirname(__FILE__) . '/../../bin/AllFakeModels.php';
 
 class Foo { }
 class Bar extends BaseObject { }
@@ -25,7 +26,7 @@ $t = new lime_test(10, new lime_output_color());
 $lucene = FakeLucene::getInstance('lucene', 'en');
 $indexer = $lucene->getIndexer();
 
-$model = new Forum;
+$model = new FakeForum;
 
 $t->diag('testing factory');
 $t->isa_ok($indexer, 'sfLuceneIndexerFactory', '->getIndexer() returns the factory');
@@ -46,6 +47,7 @@ try {
   $t->pass('->insert() inserts a valid model without exception');
 } catch (Exception $e) {
   $t->fail('->insert() inserts a valid model without exception');
+  echo $e->printStackTrace();
 }
 
 $lucene->commit();

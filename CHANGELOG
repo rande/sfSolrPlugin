@@ -1,6 +1,10 @@
 Trunk
   * Fixed wrong html options in publicControls component (closes #2589).
   * Fixed type-o in documentation (closes #2591) + more
+  * Primitive support for symfony1.1
+  * Upgraded task system to use sfTask
+  * Upgraded loggers to use sfEventDispatcher
+  * Fixed unit tests for symfony1.1
 
 Version 0.1.1 Beta
   * Fixed i18n category "All" value

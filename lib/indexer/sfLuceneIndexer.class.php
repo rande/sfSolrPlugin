@@ -66,6 +66,11 @@ abstract class sfLuceneIndexer
     return $this->getSearch()->getCulture();
   }
 
+  protected function getContext()
+  {
+    return sfContext::getInstance();
+  }
+
   /**
   * Action to retrieve the GUID for the input
   */
@@ -198,31 +203,5 @@ abstract class sfLuceneIndexer
   protected function commit()
   {
     return $this->getSearch()->commit();
-  }
-
-  /**
-  * Determines if the indexer should spit something out.
-  */
-  protected function shouldLog()
-  {
-    static $answer;
-
-    if (!$answer)
-    {
-      $answer = function_exists('pake_echo_action');
-    }
-
-    return $answer;
-  }
-
-  /**
-  * Echos a log using pake
-  */
-  protected function echoLog($message, $namespace = 'indexer')
-  {
-    if ($this->shouldLog())
-    {
-      pake_echo_action($namespace, $message);
-    }
   }
 }

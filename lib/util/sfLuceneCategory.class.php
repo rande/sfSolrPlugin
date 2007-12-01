@@ -242,6 +242,6 @@ class sfLuceneCategory
    */
   static protected function getLocation()
   {
-    return dirname(sfConfig::get('sf_base_cache_dir')) . '/sfLucene_search_categories.php';
+    return sfConfig::get('sf_cache_dir') . DIRECTORY_SEPARATOR . 'sfLucene_search_categories.php';
   }
 }

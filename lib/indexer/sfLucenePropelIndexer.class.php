@@ -136,10 +136,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     // add document
     $this->addDocument($doc, $this->getModelGuid());
 
-    if ($this->shouldLog())
-    {
-      $this->echoLog(sprintf('Inserted model "%s" with PK = %s', $this->getModelName(), $this->getModel()->getPrimaryKey()));
-    }
+    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'command.log', array(sprintf('Inserted model "%s" with PK = %s', $this->getModelName(), $this->getModel()->getPrimaryKey()))));
 
     // restore culture in symfony i18n detection
     if ($old_culture)
@@ -158,10 +155,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
   {
     if ($this->deleteGuid( $this->getModelGuid() ))
     {
-      if ($this->shouldLog())
-      {
-        $this->echoLog(sprintf('Deleted model "%s" with PK = %s', $this->getModelName(), $this->getModel()->getPrimaryKey() ));
-      }
+      $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'command.log', array(sprintf('Deleted model "%s" with PK = %s', $this->getModelName(), $this->getModel()->getPrimaryKey()))));
 
       $categories = $this->getModelCategories();
 
@@ -194,12 +188,9 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
   {
     $retval = array();
 
-    $error = error_reporting(0);
-    $i18n = sfContext::getInstance()->getI18N();
-    error_reporting($error);
-
-    if ($i18n)
+    if (sfConfig::get('sf_i18n'))
     {
+      $i18n = sfContext::getInstance()->getI18N();
       $i18n->setMessageSourceDir(null, $this->getCulture());
     }
 
@@ -239,7 +230,14 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
       }
       else
       {
-        $retval[] = $i18n ? $i18n->__($category) : $category;
+        if (sfConfig::get('sf_i18n'))
+        {
+          $retval[] = $i18n->__($category);
+        }
+        else
+        {
+          $retvak[] = $category;
+        }
       }
     }
 

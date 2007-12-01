@@ -71,16 +71,16 @@ $t->is_deeply($lucene->getCultures(), array('en', 'fr'), '::getEnabledCultures()
 
 $a = $lucene->dumpModels();
 
-if (isset($a['Forum']))
+if (isset($a['FakeForum']))
 {
-  $t->is_deeply($a['Forum'], FakeLucene::_getForumArray(), '::dumpModels() returns all models with no argument');
+  $t->is_deeply($a['FakeForum'], FakeLucene::_getForumArray(), '::dumpModels() returns all models with no argument');
 }
 else
 {
   $t->fail('::dumpModels() returns all models with no argument');
 }
 
-$t->is_deeply($lucene->dumpModels('Forum'), FakeLucene::_getForumArray(), '::dumpModels() returns valid properties array for registered model.');
+$t->is_deeply($lucene->dumpModels('FakeForum'), FakeLucene::_getForumArray(), '::dumpModels() returns valid properties array for registered model.');
 $t->is($lucene->dumpModels('BadModel'), null, '::dumpModels() returns null with unregistered model');
 
 $t->diag('testing ->*Find()');

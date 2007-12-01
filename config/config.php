@@ -21,7 +21,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__) . DIREC
 // setup default routes
 if (sfConfig::get('app_lucene_routes', true) && in_array('sfLucene', sfConfig::get('sf_enabled_modules', array())))
 {
-  $r = sfRouting::getInstance();
+  $r = sfContext::getInstance()->getRouting();
 
   $r->prependRoute('sf_lucene_search', '/search', array('module' => 'sfLucene', 'action' => 'search'));
   $r->prependRoute('sf_lucene_search_results', '/search/results/:query/:page', array('module' => 'sfLucene', 'action' => 'search', 'page' => 1), array('page' => '\d+'));

@@ -118,7 +118,7 @@ class sfLucenePropelBehavior
   {
     if (sfConfig::get('sf_logging_enabled'))
     {
-      sfLogger::getInstance()->info(sprintf('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), $node->getPrimaryKey()));
+     sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(sprintf('deleting model "%s" with PK = "%s"', get_class($node), $node->getPrimaryKey()))));
     }
 
     foreach ($this->getSearchInstances($node) as $instance)
@@ -134,7 +134,7 @@ class sfLucenePropelBehavior
   {
     if (sfConfig::get('sf_logging_enabled'))
     {
-      sfLogger::getInstance()->info(sprintf('{sfLucene} saving model "%s" with PK = "%s"', get_class($node), $node->getPrimaryKey()));
+      sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(sprintf('saving model "%s" with PK = "%s"', get_class($node), $node->getPrimaryKey()))));
     }
 
     foreach ($this->getSearchInstances($node) as $instance)
@@ -168,6 +168,11 @@ class sfLucenePropelBehavior
           }
         }
       }
+    }
+
+    if (!isset($instances[$class]) || count($instances[$class]) == 0)
+    {
+      throw new sfLuceneException('No sfLucene instances could be found for "' . $class . '"');
     }
 
     return $instances[$class];

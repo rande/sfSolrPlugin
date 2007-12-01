@@ -15,6 +15,8 @@
   */
 
 require dirname(__FILE__) . '/../bootstrap/unit.php';
+require dirname(__FILE__) . '/../bin/FakeLucene.php';
+require dirname(__FILE__) . '/../bin/AllFakeModels.php';
 
 $t = new lime_test(2, new lime_output_color());
 
@@ -30,7 +32,7 @@ function zend_loaded()
   return count($files) == 0;
 }
 
-$forum = new Forum;
+$forum = new FakeForum;
 $t->ok(zend_loaded(), 'Zend libraries were not loaded when just reading from a model');
 
 $forum->setTitle('test');

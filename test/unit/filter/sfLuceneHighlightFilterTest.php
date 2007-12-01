@@ -25,8 +25,11 @@ $context = sfContext::getInstance();
 $response = $context->getResponse();
 $request = $context->getRequest();
 
-$context->getI18N()->initialize($context);
-$context->getI18N()->setMessageSourceDir(dirname(__FILE__), 'en');
+if (sfConfig::get('sf_i18n'))
+{
+  $context->getI18N()->initialize($context);
+  $context->getI18N()->setMessageSourceDir(dirname(__FILE__), 'en');
+}
 
 $highlight = new FakeHighlighter();
 $highlight->initialize(sfContext::getInstance());
