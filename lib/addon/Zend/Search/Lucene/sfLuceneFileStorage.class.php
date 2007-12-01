@@ -11,6 +11,7 @@
  * symfony adapter for Zend_Search_Lucene_Storage_File_Filesystem
  * @package sfLucenePlugin
  * @subpackage Addon
+ * @version SVN: $Id$
  */
 class sfLuceneFileStorage extends Zend_Search_Lucene_Storage_File_Filesystem
 {

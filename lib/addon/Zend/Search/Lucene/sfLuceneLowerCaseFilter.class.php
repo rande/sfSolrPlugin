@@ -11,6 +11,7 @@
  * Same as Zend LowerCase filter, but has an optional ability to use mb_* functions.
  * @package sfLucenePlugin
  * @subpackage Addon
+ * @version SVN: $Id$
  */
 class sfLuceneLowerCaseFilter extends Zend_Search_Lucene_Analysis_TokenFilter_LowerCase
 {

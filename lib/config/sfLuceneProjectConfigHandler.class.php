@@ -11,6 +11,7 @@
  * @package    sfLucenePlugin
  * @subpackage Config
  * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
 {

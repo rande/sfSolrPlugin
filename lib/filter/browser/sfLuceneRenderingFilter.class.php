@@ -11,6 +11,7 @@
  * @package sfLucenePlugin
  * @subpackage Filter
  * @author Carl Vondrick
+ * @version SVN: $Id$
  */
 class sfLuceneRenderingFilter extends sfRenderingFilter
 {

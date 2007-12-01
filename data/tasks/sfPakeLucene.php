@@ -11,6 +11,7 @@
  * @package    sfLucenePlugin
  * @subpackage Tasks
  * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 
 pake_desc('rebuilds the search index');

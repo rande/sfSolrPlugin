@@ -15,6 +15,7 @@
  * @package    sfLucenePlugin
  * @subpackage Utilities
  * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 
 class sfLuceneHighlighter

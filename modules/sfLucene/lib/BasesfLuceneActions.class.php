@@ -13,6 +13,7 @@
  * @package    sfLucenePlugin
  * @subpackage Module
  * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 abstract class BasesfLuceneActions extends sfActions
 {

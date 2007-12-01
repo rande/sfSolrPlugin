@@ -13,6 +13,7 @@
  * @subpackage Indexer
  * @author Carl Vondrick
  * @todo Implementation
+ * @version SVN: $Id$
  */
 abstract class sfLuceneMediaIndexer extends sfLuceneIndexer
 {

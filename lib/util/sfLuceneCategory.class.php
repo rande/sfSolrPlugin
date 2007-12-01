@@ -12,6 +12,7 @@
  * @package    sfLucenePlugin
  * @subpackage Category
  * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 
 class sfLuceneCategory

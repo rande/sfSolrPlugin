@@ -12,6 +12,7 @@
  * @package    sfLucenePlugin
  * @subpackage Results
  * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 class sfLuceneModelResult extends sfLuceneResult
 {

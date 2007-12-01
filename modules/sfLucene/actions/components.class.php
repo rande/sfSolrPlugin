@@ -14,6 +14,7 @@ require_once(dirname(dirname(__FILE__)).'/lib/BasesfLuceneComponents.class.php')
  * @package    sfLucenePlugin
  * @subpackage Module
  * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 class sfLuceneComponents extends BasesfLuceneComponents
 {

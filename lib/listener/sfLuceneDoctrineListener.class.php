@@ -12,6 +12,7 @@
  * @subpackage Listener
  * @author     Carl Vondrick <carlv@carlsoft.net>
  * @todo Implementation
+ * @version SVN: $Id$
  */
 class sfLuceneDoctrineListener extends Doctrine_Record_Listener
 {

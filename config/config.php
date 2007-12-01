@@ -11,6 +11,7 @@
   * @package sfLucenePlugin
   * @subpackage Configuration
   * @author Carl Vondrick
+  * @version SVN: $Id$
   */
 
 

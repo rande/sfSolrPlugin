@@ -14,6 +14,7 @@
  * @subpackage Indexer
  * @author Carl Vondrick
  * @todo Implementation
+ * @version SVN: $Id$
  */
 class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
 {

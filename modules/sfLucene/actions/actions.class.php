@@ -14,6 +14,7 @@ require_once(dirname(dirname(__FILE__)).'/lib/BasesfLuceneActions.class.php');
  * @package    sfLucenePlugin
  * @subpackage Module
  * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 class sfLuceneActions extends BasesfLuceneActions
 {

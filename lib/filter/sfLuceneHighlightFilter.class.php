@@ -16,6 +16,7 @@
  * @package sfLucenePlugin
  * @subpackage Filter
  * @author Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 class sfLuceneHighlightFilter extends sfFilter
 {

@@ -16,6 +16,7 @@
  * @package    sfLucenePlugin
  * @subpackage Results
  * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 class sfLuceneResults implements Iterator, Countable, ArrayAccess
 {

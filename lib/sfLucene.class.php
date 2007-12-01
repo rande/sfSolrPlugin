@@ -17,6 +17,7 @@
 *
 * @author Carl Vondrick <carlv@carlsoft.net>
 * @package sfLucenePlugin
+* @version SVN: $Id$
 */
 class sfLucene
 {

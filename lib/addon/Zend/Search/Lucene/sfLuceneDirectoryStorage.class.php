@@ -12,6 +12,7 @@
  * permissions sanes.
  * @package sfLucenePlugin
  * @subpackage Addon
+ * @version SVN: $Id$
  */
 class sfLuceneDirectoryStorage extends Zend_Search_Lucene_Storage_Directory_Filesystem
 {

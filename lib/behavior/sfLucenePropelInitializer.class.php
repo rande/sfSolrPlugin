@@ -12,6 +12,7 @@
  * @package    sfLucenePlugin
  * @subpackage Behavior
  * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 class sfLucenePropelInitializer
 {

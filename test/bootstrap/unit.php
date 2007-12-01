@@ -11,6 +11,7 @@
   * @package sfLucenePlugin
   * @subpackage Test
   * @author Carl Vondrick
+  * @version SVN: $Id$
   */
 
 $app = isset($app) ? $app : 'frontend';

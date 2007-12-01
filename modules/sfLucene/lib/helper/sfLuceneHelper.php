@@ -11,6 +11,7 @@
  * @package    sfLucenePlugin
  * @subpackage Helper
  * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 
 function include_search_result($result, $query = null)

@@ -12,6 +12,7 @@
  * @package sfLucenePlugin
  * @subpackage Indexer
  * @author Carl Vondrick
+ * @version SVN: $Id$
  */
 abstract class sfLuceneIndexer
 {

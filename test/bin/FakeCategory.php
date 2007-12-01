@@ -11,6 +11,7 @@
   * @package sfLucenePlugin
   * @subpackage Test
   * @author Carl Vondrick
+  * @version SVN: $Id$
   */
 
 class FakeCategory extends sfLuceneCategory

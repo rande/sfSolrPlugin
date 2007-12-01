@@ -10,6 +10,7 @@
  * @package sfLucenePlugin
  * @subpackage Exception
  * @author Carl Vondrick <carlv@carlsoft.net>
+ * @version SVN: $Id$
  */
 class sfLuceneResultsException extends sfLuceneException
 {

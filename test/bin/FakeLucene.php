@@ -11,6 +11,7 @@
   * @package sfLucenePlugin
   * @subpackage Test
   * @author Carl Vondrick
+  * @version SVN: $Id$
   */
 
 define('SF_LUCENE_UNIT_TEST', true);
