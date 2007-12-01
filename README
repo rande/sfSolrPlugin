@@ -516,7 +516,7 @@ models:
     indexer: sfSimpleCMSIndexer
 }}}
 
-The system will automatically use that indexer for that point forward.
+The system will automatically use that indexer for that point forward.  Make sure to rebuild the index after you change the indexer.
 
 == Indexing Other Mediums ==
 sfLucene is extensible and supports indexing other types of mediums, such as PDFs or images. You can hook your custom indexers into sfLucene by defining them in the factories declaration in the search.yml file.
