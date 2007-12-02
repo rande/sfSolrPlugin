@@ -110,7 +110,7 @@ class sfLuceneBrowser
   */
   protected function initialize()
   {
-    $this->getContext()->getRequest()->initialize($this->getContext());
+    $this->getContext()->getRequest()->initialize($this->getContext()->getEventDispatcher());
 
     for ($x = 0, $stop = $this->getContext()->getActionStack()->getSize(); $x < $stop; $x++)
     {

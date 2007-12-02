@@ -17,6 +17,7 @@
 abstract class sfLuceneIndexer
 {
   private $search = null;
+  private $context = null;
 
   protected $encoding = 'UTF-8';
 
@@ -29,6 +30,7 @@ abstract class sfLuceneIndexer
 
     $this->search = $search;
     $this->encoding = $this->getSearch()->getEncoding();
+    $this->context = sfContext::getInstance();
 
     $this->getSearch()->configure();
   }
@@ -68,7 +70,7 @@ abstract class sfLuceneIndexer
 
   protected function getContext()
   {
-    return sfContext::getInstance();
+    return $this->context;
   }
 
   /**

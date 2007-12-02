@@ -52,10 +52,13 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
 
     if ( $this->deleteGuid( $this->getGuid($params) ) && $this->shouldLog())
     {
-      if ($this->shouldLog())
-      {
-        $this->echoLog(sprintf('Deleted action "%s" of module "%s"', $action, $module));
-      }
+      $formatter = new sfAnsiColorFormatter();
+
+      $this->getContext()->getEventDispatcher()->notify(
+        new sfEvent($this, 'command.log', array(
+          $formatter->formatSection('indexer', sprintf('Deleted action "%s" of module "%s"', $action, $module))
+        ))
+      );
 
       $categories = $this->getModelCategories();
 
@@ -110,10 +113,13 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
 
     $this->addDocument($doc, $guid, 'action');
 
-    if ($this->shouldLog())
-    {
-      $this->echoLog(sprintf('Inserted action "%s" of module "%s"', $this->getAction(), $this->getModule()));
-    }
+    $formatter = new sfAnsiColorFormatter();
+
+    $this->getContext()->getEventDispatcher()->notify(
+      new sfEvent($this, 'command.log', array(
+        $formatter->formatSection('indexer', sprintf('Inserted action "%s" of module "%s"', $this->getAction(), $this->getModule()))
+      ))
+    );
 
     return $this;
   }

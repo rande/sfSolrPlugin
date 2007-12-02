@@ -136,7 +136,13 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     // add document
     $this->addDocument($doc, $this->getModelGuid());
 
-    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'command.log', array(sprintf('Inserted model "%s" with PK = %s', $this->getModelName(), $this->getModel()->getPrimaryKey()))));
+    $formatter = new sfAnsiColorFormatter();
+
+    $this->getContext()->getEventDispatcher()->notify(
+      new sfEvent($this, 'command.log', array(
+        $formatter->formatSection('indexer', sprintf('Inserted model "%s" with PK = %s', $this->getModelName(), $this->getModel()->getPrimaryKey()))
+      ))
+    );
 
     // restore culture in symfony i18n detection
     if ($old_culture)
@@ -155,7 +161,13 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
   {
     if ($this->deleteGuid( $this->getModelGuid() ))
     {
-      $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'command.log', array(sprintf('Deleted model "%s" with PK = %s', $this->getModelName(), $this->getModel()->getPrimaryKey()))));
+      $formatter = new sfAnsiColorFormatter();
+
+      $this->getContext()->getEventDispatcher()->notify(
+        new sfEvent($this, 'command.log', array(
+          $formatter->formatSection('indexer', sprintf('Deleted model "%s" with PK = %s', $this->getModelName(), $this->getModel()->getPrimaryKey()))
+        ))
+      );
 
       $categories = $this->getModelCategories();
 

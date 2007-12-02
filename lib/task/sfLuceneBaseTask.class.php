@@ -21,5 +21,14 @@ abstract class sfLuceneBaseTask extends sfBaseTask
   protected function standardBootstrap($app)
   {
     $this->bootstrapSymfony($app, 'search', true);
+
+    sfAutoload::getInstance()->autoload('Propel'); // see ticket #2613
+
+    sfContext::getInstance()->getEventDispatcher()->connect('command.log', array($this, 'passOffEvents'));
+  }
+
+  public function passOffEvents($event)
+  {
+    $this->dispatcher->notify($event);
   }
 }
