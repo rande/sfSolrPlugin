@@ -60,7 +60,7 @@ class sfLuceneHighlightFilter extends sfFilter
     }
     catch (sfLuceneHighlighterException $e)
     {
-      sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array('{sfLuceneHighlightFilter} silently ignoring exception: ' . $e->getMessage())));
+      $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array('{sfLuceneHighlightFilter} silently ignoring exception: ' . $e->getMessage())));
 
       if ($this->testMode)
       {
