@@ -5,6 +5,7 @@ Trunk
   * Upgraded task system to use sfTask
   * Upgraded loggers to use sfEventDispatcher
   * Fixed unit tests for symfony1.1
+  * Added lucene:cleanup task.
 
 Version 0.1.1 Beta
   * Fixed i18n category "All" value

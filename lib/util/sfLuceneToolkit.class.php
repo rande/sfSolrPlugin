@@ -39,4 +39,43 @@ class sfLuceneToolkit
 
     return sfLucene::getInstance($name, $culture);
   }
+
+  /**
+   * Returns an array of the index paths to be removed by the garbage cleanup routine.
+   */
+  static public function getDirtyIndexRemains()
+  {
+    $location = sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR . 'index';
+    $length = strlen($location) + 1;
+
+    $config = sfLucene::getConfig();
+
+    $remove = array();
+    $namesRemoved = array();
+
+    foreach (sfFinder::type('dir')->mindepth(0)->maxdepth(0)->in($location) as $directory)
+    {
+      $name = substr($directory, $length);
+
+      if (!isset($config[$name]))
+      {
+        $namesRemoved[] = $name;
+        $remove[] = $directory;
+      }
+    }
+
+    foreach (sfFinder::type('dir')->mindepth(1)->maxdepth(1)->in($location) as $directory)
+    {
+      $interested = substr($directory, $length);
+
+      list($name, $culture) = explode('/', $interested);
+
+      if (!in_array($name, $namesRemoved) && !in_array($culture, $config[$name]['index']['cultures']))
+      {
+        $remove[] = $directory;
+      }
+    }
+
+    return $remove;
+  }
 }
