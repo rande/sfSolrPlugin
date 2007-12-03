@@ -2,7 +2,7 @@
 sfLucenePlugin integrates symfony and Zend Search Lucene to instantly add a search engine to your application.  The plugin will auto-detect your ORM layer, but currently only supports Propel.
 
 = Requirements =
-  * symfony 1.0.x
+  * symfony SVN trunk checkout (latest revision only!)
   * Propel
 
 = Main Features =
@@ -14,23 +14,19 @@ sfLucenePlugin integrates symfony and Zend Search Lucene to instantly add a sear
   * Index optimization
   * Custom indexers
   * Multiple indexes
-
-[[Image(sfLucenePlugin-search-results.jpg, 120)]]
-[[Image(sfLucenePlugin-highlighting.jpg, 120)]]
-[[Image(sfLucenePlugin-advanced-search.jpg, 120)]]
-[[Image(sfLucenePlugin-cli.jpg, 120)]]
+  * Extensible
 
 = Development Status =
-This plugin is in active development and is constantly evolving.  If you use it, you can expect some problems (some bigger than others) and many breaking-compatibility changes.  You have been warned.
+The trunk of sfLucene is highly unstable.  You are welcome to try it out and see how it works, however it has not been as extensively tested as sfLucene for symfony 1.0.
 
 = Installation =
-  * Install the plugin:
+  * Install the plugin (from project directory):
 {{{
-symfony plugin-install http://plugins.symfony-project.com/sfLucenePlugin
+svn co http://svn.symfony-project.com/plugins/sfLucenePlugin/trunk plugins/sfLucenePlugin
 }}}
   * Initialize configuration files (ignore this if you are upgrading):
 {{{
-symfony lucene-init myapp
+symfony lucene:initialize myapp
 }}}
   * Clear the cache
 {{{
@@ -205,7 +201,7 @@ As you can see, it is possible to define request parameters, manipulate authenti
 After you have defined the indexing parameters, you must build the initial index.  You do this on the command line:
 
 {{{
-$ symfony lucene-rebuild myapp
+$ symfony lucene:rebuild myapp
 }}}
 
 replacing myapp with the name of your application you want to rebuild.  This will build the index for all cultures.
@@ -243,7 +239,7 @@ As every application is different, it is easy to customize the search interface 
 To get started, simply run the following on the command line:
 
 {{{
-$ symfony lucene-init-module myapp
+$ symfony lucene:init-module myapp
 }}}
 
 If you look in myapp's module folder. you will see a new sfLucene module.  Use this to customize your interface.
@@ -374,7 +370,7 @@ highlight:
 If you need to configure it more, it is possible to extend the highlighting class.  Refer to the API documentation for this.
 
 = Categories =
-Starting with 0.0.5 Alpha, each document in the index can be tied to one or more categories.  It is then possible to limit your search results to that category in the provided interface.  To enable this, you must define a "categories" key to your models or actions.  For instance, an example model:
+Each document in the index can be tied to one or more categories.  It is then possible to limit your search results to that category in the provided interface.  To enable this, you must define a "categories" key to your models or actions.  For instance, an example model:
 
 {{{
 models:
@@ -554,11 +550,10 @@ The best way to write your own handlers and indexers is to examine the sfLucene 
 = Command Line Reference =
 The plugin ships with a handful of command line utilities for managing your index.  They are listed below:
 
-  * {{{ $ symfony lucene-about [application] }}} provides information about the plugin and the index.  [application] is optitonal.
-  * {{{ $ symfony lucene-init application }}} initializes the search configuration files.
-  * {{{ $ symfony lucene-init-module application }}} initializes a base module for you to customize.
-  * {{{ $ symfony lucene-optimize application }}} optimizes the index for all cultures.
-  * {{{ $ symfony lucene-rebuild application }}} rebuilds the index for all cultures.
+  * {{{ $ symfony lucene:about [application] }}} provides information about the plugin and the index.  [application] is optitonal.
+  * {{{ $ symfony lucene:clean application }}} removes stray files from the index.
+  * {{{ $ symfony lucene:initialize application }}} initializes the search configuration files.
+  * {{{ $ symfony lucene:init-module application }}} initializes a base module for you to customize.
+  * {{{ $ symfony lucene:optimize application }}} optimizes the index for all cultures.
+  * {{{ $ symfony lucene:rebuild application }}} rebuilds the index for all cultures.
 
-= Contribute =
-All contributions and suggestions are welcome.  The project lives in symfony's SVN repository in plugins/sfLucenePlugin.  Feel free to commit your suggestions anytime.
