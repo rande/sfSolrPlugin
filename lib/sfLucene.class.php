@@ -562,7 +562,7 @@ class sfLucene
 
     $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.optimize.pre'));
     $this->getLucene()->optimize();
-    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.optimize.pre'));
+    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.optimize.post'));
 
     $timer->addTime();
   }
@@ -594,7 +594,7 @@ class sfLucene
 
     $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.commit.pre'));
     $this->getLucene()->commit();
-    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.commit.pre'));
+    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.commit.post'));
 
     $timer->addTime();
   }
