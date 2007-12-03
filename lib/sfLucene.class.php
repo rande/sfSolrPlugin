@@ -321,7 +321,7 @@ class sfLucene
   {
     self::setupLucene();
 
-    sfMixer::callMixins('configure:pre');
+    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.configure.pre'));
 
     Zend_Search_Lucene_Search_QueryParser::setDefaultEncoding($this->encoding);
 
@@ -362,7 +362,7 @@ class sfLucene
 
     Zend_Search_Lucene_Analysis_Analyzer::setDefault($analyzer);
 
-    sfMixer::callMixins('configure:post');
+    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.configure.post'));
   }
 
   /**
@@ -452,6 +452,15 @@ class sfLucene
   }
 
   /**
+  * Gets the context.  Right now, this exists for forward-compatability.
+  * TODO: Remove singleton
+  */
+  public function getContext()
+  {
+    return sfContext::getInstance();
+  }
+
+  /**
   * Rebuilds the entire index.  This will be quite slow, so only run from the command line.
   */
   public function rebuildIndex()
@@ -460,14 +469,14 @@ class sfLucene
 
     sfLuceneCategory::clearAll($this);
 
-    sfMixer::callMixins('rebuild:pre');
+    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.rebuild.pre'));
 
     foreach ($this->getIndexer()->getHandlers() as $handler)
     {
       $handler->rebuild();
     }
 
-    sfMixer::callMixins('rebuild:post');
+    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.rebuild.post'));
 
     return $this;
   }
@@ -551,9 +560,9 @@ class sfLucene
   {
     $timer = sfTimerManager::getTimer('Zend Search Lucene Optimize');
 
-    sfMixer::callMixins('optimize:pre');
+    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.optimize.pre'));
     $this->getLucene()->optimize();
-    sfMixer::callMixins('optimize:post');
+    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.optimize.pre'));
 
     $timer->addTime();
   }
@@ -583,9 +592,9 @@ class sfLucene
 
     $timer = sfTimerManager::getTimer('Zend Search Lucene Commit');
 
-    sfMixer::callMixins('commit:pre');
+    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.commit.pre'));
     $this->getLucene()->commit();
-    sfMixer::callMixins('commit:post');
+    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.commit.pre'));
 
     $timer->addTime();
   }
@@ -680,8 +689,14 @@ class sfLucene
   /**
    * Hook for sfMixer
    */
-  public function __call($a, $b)
+  public function __call($method, $arguments)
   {
-    return sfMixer::callMixins();
+    $event = $this->getContext()->getEventDispatcher()->notifyUntil(new sfEvent($this, 'lucene.lucene.method_not_found', array('method' => $method, 'arguments' => $arguments)));
+    if (!$event->isProcessed())
+    {
+      throw new sfException(sprintf('Call to undefined method %s::%s.', __CLASS__, $method));
+    }
+
+    return $event->getReturnValue();
   }
 }

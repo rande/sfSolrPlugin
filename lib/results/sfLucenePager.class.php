@@ -50,9 +50,15 @@ class sfLucenePager
   /**
    * Hook for sfMixer
    */
-  public function __call($a, $b)
+  public function __call($method, $arguments)
   {
-    return sfMixer::callMixins();
+    $event = $this->getSearch()->getContext()->getEventDispatcher()->notifyUntil(new sfEvent($this, 'lucene.pager.method_not_found', array('method' => $method, 'arguments' => $arguments)));
+    if (!$event->isProcessed())
+    {
+      throw new sfException(sprintf('Call to undefined method %s::%s.', __CLASS__, $method));
+    }
+
+    return $event->getReturnValue();
   }
 
   public function getSearch()
