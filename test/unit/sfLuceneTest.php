@@ -22,7 +22,7 @@ $t = new lime_test(19, new lime_output_color());
 $t->diag('testing ::getInstance()');
 
 try {
-  $lucene = FakeLucene::getInstance('lucene','en');
+  $lucene = FakeLucene::getInstance('testLucene','en');
   $t->pass('::getInstance() allows valid cultures');
 } catch (Exception $e) {
   $t->fail('::getInstance() allows valid cultures');
@@ -31,11 +31,12 @@ try {
 }
 
 try {
-  $lucene = FakeLucene::getInstance('lucene', 'piglatin');
+  $lucene = FakeLucene::getInstance('testLucene', 'piglatin');
   $t->fail('::getInstance() rejects invalid cultures');
   $this->skip('the previous test must pass to continue');
   die();
-} catch (Exception $e) {
+}
+ catch (Exception $e) {
   $t->pass('::getInstance() rejects invalid cultures');
 }
 
@@ -49,14 +50,14 @@ try {
 }
 
 try {
-  FakeLucene::getInstance('lucene', 'en', true);
+  FakeLucene::getInstance('testLucene', 'en', true);
   $t->fail('::getInstance() fails to rebuild index if index is already open');
 } catch (Exception $e) {
   $t->pass('::getInstance() fails to rebuild index if index is already open');
 }
 
 try {
-  $new = FakeLucene::getInstance('lucene', 'fr', true);
+  $new = FakeLucene::getInstance('testLucene', 'fr', true);
   $t->pass('::getInstance() allows to rebuild index if closed');
   $t->ok($new->isNew(), '->isNew() returns new status on new index');
   $t->is($new->numDocs(), 0, '->numDocs() indicates index is empty');

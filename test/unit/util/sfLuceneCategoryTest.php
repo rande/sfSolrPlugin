@@ -24,8 +24,8 @@ FakeCategory::_setup();
 
 $t->diag('testing constructor');
 
-$lucene = FakeLucene::getInstance('lucene', 'en');
-$lucene2 = FakeLucene::getInstance('lucene', 'fr');
+$lucene = FakeLucene::getInstance('testLucene', 'en');
+$lucene2 = FakeLucene::getInstance('testLucene', 'fr');
 
 try {
   $php = FakeCategory::newInstance('PHP', $lucene);
@@ -64,9 +64,9 @@ if ($t->ok(file_exists(FakeCategory::_getLocation()), '->save() writes data to d
   $categories = array();
   include(FakeCategory::_getLocation());
 
-  if (isset($categories['lucene']['en']['PHP']))
+  if (isset($categories['testLucene']['en']['PHP']))
   {
-    $t->is($categories['lucene']['en']['PHP'], 2, '->save() writes accurate information');
+    $t->is($categories['testLucene']['en']['PHP'], 2, '->save() writes accurate information');
   }
   else
   {

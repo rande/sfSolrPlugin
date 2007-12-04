@@ -28,7 +28,7 @@ class FakeLucene extends sfLucene
 
   static public function getTestConfig()
   {
-    return array('lucene' => array (
+    return array('testLucene' => array (
       'models' =>
       array (
         'FakeForum' =>

@@ -23,7 +23,7 @@ class Bar extends BaseObject { }
 
 $t = new lime_test(10, new lime_output_color());
 
-$lucene = FakeLucene::getInstance('lucene', 'en');
+$lucene = FakeLucene::getInstance('testLucene', 'en');
 $indexer = $lucene->getIndexer();
 
 $model = new FakeForum;
