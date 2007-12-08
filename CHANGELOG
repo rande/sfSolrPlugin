@@ -8,6 +8,7 @@ Trunk
   * Added lucene:cleanup task.
   * Remove dependency on sfMixer and replacing with events
   * Fixed sfLucene conflict with external Zend Framework bundle (closes #2404).
+  * Added storage containers to aid unit testing
 
 Version 0.1.1 Beta
   * Fixed i18n category "All" value

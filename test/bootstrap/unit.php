@@ -29,3 +29,5 @@ error_reporting(E_ALL);
 
 include(SF_ROOT_DIR.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'config.php');
 require_once($sf_symfony_lib_dir.'/vendor/lime/lime.php');
+
+define('SANDBOX_DIR', dirname(dirname(__FILE__)) . '/sandbox');
