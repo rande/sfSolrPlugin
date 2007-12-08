@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+sfLuceneToolkit::loadZend();
+
 /**
  * Same as Zend LowerCase filter, but has an optional ability to use mb_* functions.
  * @package sfLucenePlugin

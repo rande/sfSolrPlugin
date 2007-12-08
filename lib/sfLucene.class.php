@@ -97,11 +97,6 @@ class sfLucene
   protected $parameters = array();
 
   /**
-  * Whether the index has been setup yet
-  */
-  static protected $setup = false;
-
-  /**
   * Holder for the instances
   */
   static protected $instances = array();
@@ -319,7 +314,7 @@ class sfLucene
    */
   public function configure()
   {
-    self::setupLucene();
+    sfLuceneToolkit::loadZend();
 
     $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.configure.pre'));
 
@@ -366,20 +361,6 @@ class sfLucene
   }
 
   /**
-  * Configures and loads the Zend libraries. This method *must* be called before
-  * you use a Zend library, otherwise the autoloader will not be able to find it!
-  */
-  static public function setupLucene()
-  {
-    if (!self::$setup)
-    {
-      require_once dirname(__FILE__)  . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
-
-      self::$setup = true;
-    }
-  }
-
-  /**
   * Returns all the models
   */
   public function dumpModels($model = null)
@@ -421,7 +402,7 @@ class sfLucene
   {
     if ($this->lucene == null)
     {
-      self::setupLucene();
+      sfLuceneToolkit::loadZend();
 
       if (file_exists($this->getIndexLoc()) && !$this->rebuild)
       {

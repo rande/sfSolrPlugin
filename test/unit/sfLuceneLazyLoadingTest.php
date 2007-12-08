@@ -22,7 +22,7 @@ $t = new lime_test(2, new lime_output_color());
 
 function filter_callback($input)
 {
-  return preg_match('#/plugins/sfLucenePlugin/lib/vendor/Zend/Search/Lucene/#', $input);
+  return preg_match('#/Zend/Search/Lucene/#', $input);
 }
 function zend_loaded()
 {

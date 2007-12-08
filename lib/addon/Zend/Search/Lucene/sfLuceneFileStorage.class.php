@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+sfLuceneToolkit::loadZend();
+
 /**
  * symfony adapter for Zend_Search_Lucene_Storage_File_Filesystem
  * @package sfLucenePlugin

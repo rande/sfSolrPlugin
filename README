@@ -547,6 +547,16 @@ MyIndex:
 
 The best way to write your own handlers and indexers is to examine the sfLucene source.
 
+= Using Your Own Zend Framework =
+For whatever reason, if you require sfLucene to load a different version of the Zend framework that it shipped with, you can change the directory where the plugin will search for Zend_Search_Lucene.  Open the application's app.yml and configure it like so:
+{{{
+all:
+  lucene:
+    zend_location: %SF_ROOT_DIR%/lib/vendor
+}}}
+
+In the above example, sfLucene will now expect that %SF_ROOT_DIR%/lib/vendor/Zend/Search/Lucene/* exists.
+
 = Command Line Reference =
 The plugin ships with a handful of command line utilities for managing your index.  They are listed below:
 

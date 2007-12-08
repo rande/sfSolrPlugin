@@ -32,7 +32,7 @@ class sfLuceneCriteria
 
   public function __construct()
   {
-    sfLucene::setupLucene();
+    sfLuceneToolkit::loadZend();
 
     $this->query = new Zend_Search_Lucene_Search_Query_Boolean();
   }

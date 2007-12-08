@@ -14,10 +14,6 @@
   * @version SVN: $Id$
   */
 
-
-// let PHP find the Zend libraries.
-set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'vendor');
-
 // setup default routes
 if (sfConfig::get('app_lucene_routes', true) && in_array('sfLucene', sfConfig::get('sf_enabled_modules', array())))
 {
