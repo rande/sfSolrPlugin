@@ -18,9 +18,9 @@
 
 abstract class sfLuceneBaseTask extends sfBaseTask
 {
-  protected function standardBootstrap($app)
+  protected function standardBootstrap($app, $env = 'search')
   {
-    $this->bootstrapSymfony($app, 'search', true);
+    $this->bootstrapSymfony($app, $env, true);
 
     sfAutoload::getInstance()->autoload('Propel'); // see ticket #2613
 

@@ -25,6 +25,10 @@ class sfLuceneCleanupTask extends sfLuceneBaseTask
       new sfCommandArgument('confirmation', sfCommandArgument::OPTIONAL, 'Confirmation to delete')
     ));
 
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'search')
+    ));
+
     $this->aliases = array('lucene-clean');
     $this->namespace = 'lucene';
     $this->name = 'clean';
@@ -47,7 +51,7 @@ EOF;
 
   protected function execute($arguments = array(), $options = array())
   {
-    $this->standardBootstrap($arguments['application']);
+    $this->standardBootstrap($arguments['application'], $options['env']);
 
     $remove = sfLuceneToolkit::getDirtyIndexRemains();
 

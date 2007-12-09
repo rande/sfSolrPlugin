@@ -24,6 +24,10 @@ class sfLuceneInitializeTask extends sfLuceneBaseTask
       new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name')
     ));
 
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'search')
+    ));
+
     $this->aliases = array('lucene-init');
     $this->namespace = 'lucene';
     $this->name = 'initialize';
@@ -44,7 +48,7 @@ EOF;
     $app = $arguments['application'];
 
     $this->checkAppExists($app);
-    $this->standardBootstrap($app);
+    $this->standardBootstrap($app, $options['env']);
 
     $skeletonDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'skeleton';
     $projectConfig = sfConfig::get('sf_config_dir') . DIRECTORY_SEPARATOR . 'search.yml';

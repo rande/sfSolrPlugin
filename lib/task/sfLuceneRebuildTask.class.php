@@ -24,6 +24,10 @@ class sfLuceneRebuildTask extends sfLuceneBaseTask
       new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name')
     ));
 
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'search')
+    ));
+
     $this->aliases = array('lucene-rebuild');
     $this->namespace = 'lucene';
     $this->name = 'rebuild';
@@ -52,7 +56,7 @@ EOF;
     $app = $arguments['application'];
 
     $this->checkAppExists($app);
-    $this->standardBootstrap($app);
+    $this->standardBootstrap($app, $options['env']);
 
     $start = microtime(true);
 

@@ -24,6 +24,10 @@ class sfLuceneAboutTask extends sfLuceneBaseTask
       new sfCommandArgument('application', sfCommandArgument::OPTIONAL, 'The application name')
     ));
 
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'search')
+    ));
+
     $this->aliases = array('lucene-about');
     $this->namespace = 'lucene';
     $this->name = 'about';
@@ -48,7 +52,7 @@ EOF;
     if ($app)
     {
       $this->checkAppExists($app);
-      $this->standardBootstrap($app);
+      $this->standardBootstrap($app, $options['env']);
 
       foreach (sfLucene::getAllInstances() as $search)
       {
