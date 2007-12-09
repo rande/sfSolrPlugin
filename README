@@ -76,6 +76,8 @@ index:
 
 "analyzer" can either by text, textnum, utf8, or utf8num.  If you choose text, all numbers will be ignored.  If you require the index to be case sensitive, set "case_sensitive" to "on".    mb_string determines whether to use the mb_* string functions instead of the standard PHP string filters.  This adds a huge performance bottleneck to indexing when turned on, so use with care.  You only need to turn mb_string on if you are working with a case-insensitive utf8 index.
 
+By default, in the command line sfLucene operates in the "search" environment.  This has the advantage to that if you require a different configuration setting for the search environment, you can easily set it up.  But, if your database is only selectively configured per environment (ie, not for "all"), then you will quickly run into trouble.  To get around this, define a database for either "all" or the "search" environment.  
+
 = Indexing =
 sfLucene currently supports two ways to add information to the index:
   1. Through the ORM layer
