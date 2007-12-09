@@ -196,6 +196,17 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     return true;
   }
 
+
+  protected function validate()
+  {
+    if (!($this->getModel() instanceof BaseObject))
+    {
+      return 'Model is not a Propel object';
+    }
+
+    return null;
+  }
+
   protected function getModelCategories()
   {
     $retval = array();
@@ -259,15 +270,5 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
   protected function getModelGuid()
   {
     return $this->getGuid( $this->getModelName() . '_' . $this->getModel()->hashCode() );
-  }
-
-  protected function validate()
-  {
-    if (!($this->getModel() instanceof BaseObject))
-    {
-      return 'Model is not a Propel object';
-    }
-
-    return null;
   }
 }

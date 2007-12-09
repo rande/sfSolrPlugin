@@ -172,22 +172,6 @@ class sfLucene
   }
 
   /**
-  * Returns all of the config.
-  */
-  static public function getConfig()
-  {
-    // for unit tests *only*
-    if (defined('SF_LUCENE_UNIT_TEST'))
-    {
-      return FakeLucene::getTestConfig();
-    }
-
-    require(sfConfigCache::getInstance()->checkConfig(sfConfig::get('sf_config_dir_name').DIRECTORY_SEPARATOR.'search.yml'));
-
-    return $config;
-  }
-
-  /**
    * Returns all the instances
    * @param bool $rebuild If true, every instance is rebuilt.
    */
@@ -213,12 +197,29 @@ class sfLucene
     return $instances;
   }
 
+
   /**
   * Returns the name of every registered index.
   */
   static public function getAllNames()
   {
     return array_keys(self::getConfig());
+  }
+
+  /**
+  * Returns all of the config.
+  */
+  static public function getConfig()
+  {
+    // for unit tests *only*
+    if (defined('SF_LUCENE_UNIT_TEST'))
+    {
+      return FakeLucene::getTestConfig();
+    }
+
+    require(sfConfigCache::getInstance()->checkConfig(sfConfig::get('sf_config_dir_name').DIRECTORY_SEPARATOR.'search.yml'));
+
+    return $config;
   }
 
   /**
@@ -304,6 +305,11 @@ class sfLucene
     return $this->culture;
   }
 
+  public function getParameterHolder()
+  {
+    return $this->parameters;
+  }
+
   /**
   * Returns the categories for this index.
   */
@@ -315,6 +321,105 @@ class sfLucene
     }
 
     return $this->categories;
+  }
+
+  /**
+  * Returns the lucene object
+  * @return Zend_Search_Lucene
+  */
+  public function getLucene()
+  {
+    if ($this->lucene == null)
+    {
+      sfLuceneToolkit::loadZend();
+
+      if (file_exists($this->getIndexLoc()) && !$this->rebuild)
+      {
+        $lucene = Zend_Search_Lucene::open( new sfLuceneDirectoryStorage($this->getIndexLoc()) );
+        $this->isNew = false;
+      }
+      else
+      {
+        if (sfConfig::get('sf_logging_enabled'))
+        {
+          if ($this->rebuild && file_exists($this->getIndexLoc()))
+          {
+            $this->getContext()->getLogger()->info(sprintf('erased index "%s"', $this->getIndexLoc()));
+          }
+
+          $this->getContext()->getLogger()->info(sprintf('created index "%s"', $this->getIndexLoc()));
+        }
+
+        $this->rebuild = false;
+        $this->isNew = true;
+        $lucene = Zend_Search_Lucene::create( new sfLuceneDirectoryStorage($this->getIndexLoc()) );
+      }
+
+      $this->lucene = $lucene;
+   }
+
+    return $this->lucene;
+  }
+
+  /**
+  * Shortcut to retrieve the index location
+  */
+  public function getIndexLoc()
+  {
+    return sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR . $this->name . DIRECTORY_SEPARATOR . $this->getCulture();
+  }
+
+  /**
+  * Gets the specified indexer from the factory.
+  * @return mixed An instance of the indexer factory.
+  */
+  public function getIndexer()
+  {
+    return new sfLuceneIndexerFactory($this);
+  }
+
+  /**
+  * Gets the context.  Right now, this exists for forward-compatability.
+  * TODO: Remove singleton
+  */
+  public function getContext()
+  {
+    return sfContext::getInstance();
+  }
+
+
+  /**
+  * Returns all the models
+  */
+  public function dumpModels($model = null)
+  {
+    if ($model)
+    {
+      $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(sprintf('calling ->dumpModels() with a model argument is deprecated; please use ->dumpModel() instead'))));
+
+      return $this->dumpModel($model);
+    }
+    else
+    {
+      return $this->models;
+    }
+  }
+
+  /**
+    * Returns just one model
+    * @param string $model The model to look up
+    * @return mixed Null if not found, array of config options if found.
+    */
+  public function dumpModel($model)
+  {
+    if (isset($this->models[$model]))
+    {
+      return $this->models[$model];
+    }
+    else
+    {
+      return null;
+    }
   }
 
   /**
@@ -368,87 +473,6 @@ class sfLucene
     Zend_Search_Lucene_Analysis_Analyzer::setDefault($analyzer);
 
     $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.configure.post'));
-  }
-
-  /**
-  * Returns all the models
-  */
-  public function dumpModels($model = null)
-  {
-    if ($model)
-    {
-      $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(sprintf('calling ->dumpModels() with a model argument is deprecated; please use ->dumpModel() instead'))));
-
-      return $this->dumpModel($model);
-    }
-    else
-    {
-      return $this->models;
-    }
-  }
-
-  /**
-    * Returns just one model
-    * @param string $model The model to look up
-    * @return mixed Null if not found, array of config options if found.
-    */
-  public function dumpModel($model)
-  {
-    if (isset($this->models[$model]))
-    {
-      return $this->models[$model];
-    }
-    else
-    {
-      return null;
-    }
-  }
-
-  /**
-  * Returns the lucene object
-  * @return Zend_Search_Lucene
-  */
-  public function getLucene()
-  {
-    if ($this->lucene == null)
-    {
-      sfLuceneToolkit::loadZend();
-
-      if (file_exists($this->getIndexLoc()) && !$this->rebuild)
-      {
-        $lucene = Zend_Search_Lucene::open( new sfLuceneDirectoryStorage($this->getIndexLoc()) );
-        $this->isNew = false;
-      }
-      else
-      {
-        if (sfConfig::get('sf_logging_enabled'))
-        {
-          if ($this->rebuild && file_exists($this->getIndexLoc()))
-          {
-            $this->getContext()->getLogger()->info(sprintf('erased index "%s"', $this->getIndexLoc()));
-          }
-
-          $this->getContext()->getLogger()->info(sprintf('created index "%s"', $this->getIndexLoc()));
-        }
-
-        $this->rebuild = false;
-        $this->isNew = true;
-        $lucene = Zend_Search_Lucene::create( new sfLuceneDirectoryStorage($this->getIndexLoc()) );
-      }
-
-      $this->lucene = $lucene;
-   }
-
-    return $this->lucene;
-  }
-
-  /**
-  * Gets the context.  Right now, this exists for forward-compatability.
-  * TODO: Remove singleton
-  */
-  public function getContext()
-  {
-    return sfContext::getInstance();
   }
 
   /**
@@ -520,28 +544,6 @@ class sfLucene
     $this->getLucene()->setMergeFactor(10);
 
     return $this;
-  }
-
-  /**
-  * Shortcut to retrieve the index location
-  */
-  public function getIndexLoc()
-  {
-    return sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR . $this->name . DIRECTORY_SEPARATOR . $this->getCulture();
-  }
-
-  /**
-  * Gets the specified indexer from the factory.
-  * @return mixed An instance of the indexer factory.
-  */
-  public function getIndexer()
-  {
-    return new sfLuceneIndexerFactory($this);
-  }
-
-  public function getParameterHolder()
-  {
-    return $this->parameters;
   }
 
   /**

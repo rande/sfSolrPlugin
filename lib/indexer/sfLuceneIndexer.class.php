@@ -30,7 +30,6 @@ abstract class sfLuceneIndexer
 
     $this->search = $search;
     $this->encoding = $this->getSearch()->getEncoding();
-    $this->context = $this->getSearch()->getContext();
 
     $this->getSearch()->configure();
   }
@@ -70,7 +69,7 @@ abstract class sfLuceneIndexer
 
   protected function getContext()
   {
-    return $this->context;
+    return $this->getSearch()->getContext();
   }
 
   /**

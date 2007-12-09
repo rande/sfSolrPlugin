@@ -35,6 +35,36 @@ class sfLuceneResult
   }
 
   /**
+  * Gets the score of this hit.
+  */
+  public function getScore()
+  {
+    return ((int) ($this->result->score * 100 + .5)); // round to nearest integer
+  }
+
+  /**
+  * Gets the partial
+  */
+  public function getInternalPartial()
+  {
+    return 'sfLucene/' . $this->getInternalType() . 'Result';
+  }
+
+  public function getInternalDescription()
+  {
+    try
+    {
+      return strip_tags($this->sfl_description);
+    }
+    catch (Exception $e)
+    {
+      $responses = array('Click for more information', 'No description available', 'Open this item for more information');
+
+      return $responses[array_rand($responses)];
+    }
+  }
+
+  /**
   * To be implemented later
   */
   public function valid()
@@ -109,36 +139,6 @@ class sfLuceneResult
     }
 
     return $property;
-  }
-
-  /**
-  * Gets the score of this hit.
-  */
-  public function getScore()
-  {
-    return ((int) ($this->result->score * 100 + .5)); // round to nearest integer
-  }
-
-  /**
-  * Gets the partial
-  */
-  public function getInternalPartial()
-  {
-    return 'sfLucene/' . $this->getInternalType() . 'Result';
-  }
-
-  public function getInternalDescription()
-  {
-    try
-    {
-      return strip_tags($this->sfl_description);
-    }
-    catch (Exception $e)
-    {
-      $responses = array('Click for more information', 'No description available', 'Open this item for more information');
-
-      return $responses[array_rand($responses)];
-    }
   }
 
   /**
