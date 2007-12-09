@@ -97,6 +97,11 @@ class sfLucene
   protected $parameters = array();
 
   /**
+   * Holds the categories holder
+   */
+  protected $categories = null;
+
+  /**
   * Holder for the instances
   */
   static protected $instances = array();
@@ -304,7 +309,12 @@ class sfLucene
   */
   public function getCategories()
   {
-    return sfLuceneCategory::getAllCategories($this);
+    if ($this->categories == null)
+    {
+      $this->categories = new sfLuceneCategories($this);
+    }
+
+    return $this->categories;
   }
 
   /**
@@ -448,7 +458,7 @@ class sfLucene
   {
     $this->setBatchMode();
 
-    sfLuceneCategory::clearAll($this);
+    $this->getCategories()->clear()->save();
 
     $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.rebuild.pre'));
 
@@ -515,7 +525,7 @@ class sfLucene
   /**
   * Shortcut to retrieve the index location
   */
-  protected function getIndexLoc()
+  public function getIndexLoc()
   {
     return sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR . $this->name . DIRECTORY_SEPARATOR . $this->getCulture();
   }

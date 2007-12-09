@@ -120,7 +120,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     // category support
     $categories = $this->getModelCategories();
 
-    if (count($categories))
+    if (count($categories) > 0)
     {
       foreach ($categories as $category)
       {
@@ -248,7 +248,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
         }
         else
         {
-          $retvak[] = $category;
+          $retval[] = $category;
         }
       }
     }
