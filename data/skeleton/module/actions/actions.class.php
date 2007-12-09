@@ -13,8 +13,15 @@ require_once(SF_ROOT_DIR . '/plugins/sfLucenePlugin/modules/sfLucene/lib/BasesfL
  * @package    sfLucenePlugin
  * @subpackage Module
  * @author     Carl Vondrick <carlv@carlsoft.net>
- * @version SVN: $Id$
+ * @version SVN: $Id: actions.class.php 6247 2007-12-01 03:25:13Z Carl.Vondrick $
  */
-class sfLuceneActions extends BasesfLuceneActions
+class ##MODULE_NAME##Actions extends BasesfLuceneActions
 {
+  /**
+   * Returns an instance of sfLucene configured for this environment.
+   */
+  protected function getLuceneInstance()
+  {
+    return ##CALLABLE##;
+  }
 }

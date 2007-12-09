@@ -236,13 +236,25 @@ sfConfig::set('app_lucene_index', 'MyIndex');
 == Customizing the Interface ==
 As every application is different, it is easy to customize the search interface to fit the look and feel of your site. Doing this is easy as all you must do is overload the templates and actions.
 
+=== Creating a Skeleton Module ===
+
 To get started, simply run the following on the command line:
 
 {{{
-$ symfony lucene:init-module myapp
+$ symfony lucene:init-module myApp
 }}}
 
-If you look in myapp's module folder. you will see a new sfLucene module.  Use this to customize your interface.
+If you look in myapp's module folder, you will see a new sfLucene module.  Use this to customize your interface.
+
+The lucene:init-module task is capable of custom module names and linking each module to a certain index.  This makes it possible to have multiple search interfaces in the same application.  To do this, simply run the above command with two extra parameters:
+
+{{{
+$ symfony lucene:init-module myApp myLucene myIndex
+}}}
+
+The above will create a skelelton module called "myLucene" in the application "myApp" and configure this module to search off the index "myIndex".
+
+=== Customizing Results ===
 
 Often, when writing a search engine, you need to display a different result template for each model.  For instance, a blog post should show differently than a forum post.  You can easily customize your results by changing the "partial" value in your application's search.yml file.   For example:
 {{{
@@ -263,6 +275,8 @@ For ForumPost, the partial apps/myapp/modules/forum/templates/_searchResult.php 
   * {{{ $result->getXXX() }}} returns the XXX field.
 
 In addition to the $result object, it is also given a $query string, which was what the user searched for.  This is useful for highlighting the results.
+
+=== Advanced Search ===
 
 If you wish to disable the advanced search interface, open the application's app.yml file and add the following:
 

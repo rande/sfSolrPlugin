@@ -36,7 +36,7 @@ abstract class BasesfLuceneComponents extends sfComponents
 
   public function executeCategories()
   {
-    $installed = sfLuceneToolkit::getApplicationInstance()->getCategories();
+    $installed = $this->getLuceneInstance()->getCategories();
 
     sort($installed);
 
@@ -50,5 +50,10 @@ abstract class BasesfLuceneComponents extends sfComponents
     $this->show = count($categories) > 1 ? true : false;
 
     $this->selected = $this->getRequestParameter('category', 0);
+  }
+
+  protected function getLuceneInstance()
+  {
+    return sfLuceneToolkit::getApplicationInstance();
   }
 }
