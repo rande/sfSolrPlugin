@@ -36,7 +36,7 @@ abstract class BasesfLuceneComponents extends sfComponents
 
   public function executeCategories()
   {
-    $installed = $this->getLuceneInstance()->getCategories();
+    $installed = array_keys($this->getLuceneInstance()->getCategories()->getAllCategories());
 
     sort($installed);
 
