@@ -14,7 +14,7 @@
   * @version SVN: $Id$
   */
 
-require dirname(__FILE__) . '/../bootstrap/unit.php';
+require dirname(__FILE__) . '/bootstrap/unit.php';
 
 $h = new lime_harness(new lime_output_color());
 $h->base_dir = dirname(__FILE__);
