@@ -34,4 +34,8 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
   public function shouldIndex()
   {
   }
+
+  protected function getModelGuid()
+  {
+  }
 }

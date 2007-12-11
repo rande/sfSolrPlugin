@@ -36,10 +36,7 @@ class sfLuceneStorageFilesystem implements sfLuceneStorage
 
   public function write($data)
   {
-    if (!is_dir(dirname($this->file)))
-    {
-      $this->mkdir(dirname($this->file));
-    }
+    $this->mkdir(dirname($this->file));
 
     return file_put_contents($this->file, $data);
   }
@@ -53,15 +50,11 @@ class sfLuceneStorageFilesystem implements sfLuceneStorage
 
   protected function mkdir($dir)
   {
-    if (is_null($dir) || $dir === '') {
-        return false;
+    if (is_dir($dir))
+    {
+      return true;
     }
-    if (is_dir($dir) || $dir === '/') {
-        return true;
-    }
-    if ($this->mkdir(dirname($dir))) {
-        return mkdir($dir);
-    }
-    return false;
+
+    return mkdir($dir, 0777, true);
   }
 }

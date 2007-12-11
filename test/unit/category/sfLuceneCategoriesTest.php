@@ -17,7 +17,7 @@
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 require dirname(__FILE__) . '/../../bin/FakeLucene.php';
 
-$t = new lime_test(19, new lime_output_color());
+$t = new lime_test(20, new lime_output_color());
 
 $lucene = FakeLucene::getInstance('testLucene', 'en');
 
@@ -89,6 +89,14 @@ $writer->write('$categories = array();$categories[\'baz\'] = 4;');
 
 $t->is($c->load()->getCategory('baz')->getCount(), 4, '->load() reloads the categories list from the writer');
 $t->is(count($c->getAllCategories()), 1, '->load() removes any old categories');
+
+$writer->write('$foo = array();');
+try {
+  $c->load();
+  $t->fail('->load() throws an exception with malformed data');
+} catch (Exception $e) {
+  $t->pass('->load() throws an exception with malformed data');
+}
 
 $t->diag('testing ->clear()');
 $c->clear();

@@ -28,6 +28,6 @@ $c->extension = '.class.php';
 $c->verbose = true;
 $c->base_dir = realpath(dirname(__FILE__).'/../lib');
 
-$finder = sfFinder::type('file')->name('*.php')->prune('vendor')->prune('listener');
+$finder = sfFinder::type('file')->name('*.php')->prune('vendor');
 $c->register($finder->in($c->base_dir));
 $c->run();

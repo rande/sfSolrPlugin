@@ -16,7 +16,9 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(17, new lime_output_color());
+$t = new lime_test(19, new lime_output_color());
+
+class Foo { }
 
 function inst($content, $blacklist = null)
 {
@@ -46,9 +48,22 @@ try {
   $t->pass('highlighter rejects invalid HTML with a body');
 }
 
+try {
+  inst('<body>good</body>', new Foo);
+  $t->fail('highlighter rejects invalid blacklist');
+} catch (Exception $e) {
+  $t->pass('highlighter rejects invalid blacklist');
+}
+
 $t->diag('testing highlighting');
 
 $t->is(inst('<body>Hello</body>')->addKeyword('Hello')->addHighlighter('<h>%s</h>')->highlight(), '<body><h>Hello</h></body>', 'highlighter handles simple highlighting');
+
+try {
+  $t->is(inst('<body>Hello</body>')->addKeyword('Hello')->highlight(), '<body><strong>Hello</strong></body>', 'highlighter works without defining a highlighter');
+} catch (Exception $e) {
+  $t->fail('highlighter works without defining a highlighter');
+}
 
 $t->is(inst('<body><test>test yahoo</test></body>')->addKeyword('test')->addKeyword('yahoo')->addHighlighter('<h>%s</h>')->addHighlighter('<q>%s</q>')->highlight(), '<body><test><h>test</h> <q>yahoo</q></test></body>', 'highlighter highlights multiple keywords');
 

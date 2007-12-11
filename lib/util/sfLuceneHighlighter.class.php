@@ -40,17 +40,15 @@ class sfLuceneHighlighter
 
     if ($blacklist == null)
     {
-      $this->blacklist = array_merge(range('a', 'z'), array('ß', 'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ð', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', 'œ', 'ø', 'ù', 'ú', 'û', 'ü', 'ý', 'þ', 'ÿ'));
+      $blacklist = array_merge(range('a', 'z'), array('ß', 'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ð', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', 'œ', 'ø', 'ù', 'ú', 'û', 'ü', 'ý', 'þ', 'ÿ'));
     }
 
     elseif (!is_array($blacklist))
     {
-      throw new sfLuceneHighterException('Word characters must be null or an array');
+      throw new sfLuceneHighlighterException('Word characters must be null or an array');
     }
-    else
-    {
-      $this->blacklist = $blacklist;
-    }
+
+    $this->blacklist = $blacklist;
   }
 
   /**
@@ -206,10 +204,11 @@ class sfLuceneHighlighter
       {
         $left = 0;
       }
-      elseif ($position - $length > $radius)
-      {
-        $left = $position - $size;
-      }
+      // the follwing seems impossible to ever execute, but maybe it's important?
+      //elseif ($position - $length > $radius)
+      //{
+      //  $left = $position - $size;
+      //}
       else
       {
         $left = $position - $radius + floor(strlen($indexItem['word']) / 2);

@@ -21,18 +21,34 @@ require dirname(__FILE__) . '/../../bin/AllFakeModels.php';
 class Foo { }
 class Bar extends BaseObject { }
 
-$t = new lime_test(10, new lime_output_color());
+$t = new lime_test(12, new lime_output_color());
 
 $lucene = FakeLucene::getInstance('testLucene', 'en');
 $indexer = $lucene->getIndexer();
 
 $model = new FakeForum;
 
-$t->diag('testing factory');
+$t->diag('testing factory through indirect manipulation');
 $t->isa_ok($indexer, 'sfLuceneIndexerFactory', '->getIndexer() returns the factory');
 
 $indexer = $indexer->getModel($model);
 $t->isa_ok($indexer, 'sfLucenePropelIndexer', '->getIndexer()->getModel() returns the propel indexer');
+
+$t->diag('testing direct manipulation');
+
+try {
+  $indexer = new sfLucenePropelIndexer('a', $model);
+  $t->fail('__construct() rejects an invalid search instance');
+} catch (Exception $e) {
+  $t->pass('__construct() rejects an invalid search instance');
+}
+
+try {
+  $indexer = new sfLucenePropelIndexer($lucene, new Foo);
+  $t->fail('__construct() rejects an invalid model instance');
+} catch (Exception $e) {
+  $t->pass('__construct() rejects an invalid model instance');
+}
 
 $t->diag('testing normal conditions');
 

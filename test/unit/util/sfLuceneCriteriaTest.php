@@ -16,7 +16,9 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(36, new lime_output_color());
+$t = new lime_test(39, new lime_output_color());
+
+class Foo { }
 
 $t->diag('testing constructors');
 try {
@@ -94,6 +96,13 @@ try {
   $t->pass('->add() rejects bad syntax');
 }
 
+try {
+  $criteria->add(new Foo());
+  $t->fail('->add() rejects invalid queries');
+} catch (Exception $e) {
+  $t->pass('->add() rejects invalid queries');
+}
+
 $t->diag('testing ->addSane()');
 
 $criteria = new sfLuceneCriteria();
@@ -159,6 +168,13 @@ try {
 } catch (Exception $e) {
   $t->fail('->addField() accepted an array value');
   $t->skip('->addField() registers the array field');
+}
+
+try {
+  $criteria->addField(new Foo());
+  $t->fail('->addField() rejects invalid values');
+} catch (Exception $e) {
+  $t->pass('->addField() rejects invalid values');
 }
 
 $t->diag('testing sorting');
@@ -244,3 +260,7 @@ try {
 $s = sfLuceneCriteria::newInstance()->addRange('a', 'b', 'c', false)->getQuery()->getSubqueries();
 $q = new Zend_Search_Lucene_Search_Query_Range(new Zend_Search_Lucene_Index_Term('a', 'c'), new Zend_Search_Lucene_Index_Term('b', 'c'), false);
 $t->ok($s[0] == $s[0], '->addRange() registers a complex exclusive query');
+
+$t->diag('testing getNewCriteria()');
+
+$t->isa_ok(sfLuceneCriteria::newInstance()->getNewCriteria(), 'sfLuceneCriteria', '->getNewCriteria() returns a new instance of sfLuceneCriteria');

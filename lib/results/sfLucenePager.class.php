@@ -100,6 +100,15 @@ class sfLucenePager
 
   public function setPage($page)
   {
+    if ($page <= 0)
+    {
+      $page = 1;
+    }
+    elseif ($page > $this->getLastPage())
+    {
+      $page = $this->getLastPage();
+    }
+
     $this->page = $page;
   }
 
@@ -152,32 +161,11 @@ class sfLucenePager
 
   public function getFirstIndice()
   {
-    if ($this->getPage() == 0)
-    {
-      return 1;
-    }
-    else
-    {
-      return ($this->getPage() - 1) * $this->getMaxPerPage() + 1;
-    }
+    return ($this->getPage() - 1) * $this->getMaxPerPage() + 1;
   }
 
   public function getLastIndice()
   {
-    if ($this->getPage() == 0)
-    {
-      return $this->getNbResults();
-    }
-    else
-    {
-      if (($this->getPage() * $this->getMaxPerPage()) >= $this->getNbResults())
-      {
-        return $this->getNbResults();
-      }
-      else
-      {
-        return ($this->getPage() * $this->getMaxPerPage());
-      }
-    }
+    return ($this->getPage() * $this->getMaxPerPage());
   }
 }
