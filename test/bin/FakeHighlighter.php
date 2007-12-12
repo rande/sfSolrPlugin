@@ -16,49 +16,17 @@
 
 class FakeHighlighter extends sfLuceneHighlightFilter
 {
-  protected $testMode = true;
-
   public function __construct()
   {
     $this->initialize(sfContext::getInstance());
-  }
 
-  protected function warn($msg)
-  {
-    throw new sfException($msg);
-  }
-
-  protected function shouldCheckReferer()
-  {
-    return true;
-  }
-  protected function getHighlightQs()
-  {
-    return 'h';
-  }
-  protected function getNoticeTag()
-  {
-    return '~notice~';
-  }
-  protected function getHighlightStrings()
-  {
-    return array('<highlighted>%s</highlighted>', '<highlighted2>%s</highlighted2>');
-  }
-  protected function getNoticeRefererString()
-  {
-    return '<from>%from%</from><keywords>%keywords%</keywords><remove>%remove%</remove>';
-  }
-  protected function getNoticeString()
-  {
-    return '<keywords>%keywords%</keywords><remove>%remove%</remove>';
-  }
-  protected function getRemoveString()
-  {
-    return '~remove~';
-  }
-
-  protected function getCssLocation()
-  {
-    return 'search.css';
+    $this->setParameter('check_referer', true);
+    $this->setParameter('highlight_qs', 'h');
+    $this->setParameter('notice_tag', '~notice~');
+    $this->setParameter('highlight_strings', array('<highlighted>%s</highlighted>', '<highlighted2>%s</highlighted2>'));
+    $this->setParameter('notice_referer_string', '<from>%from%</from><keywords>%keywords%</keywords><remove>%remove%</remove>');
+    $this->setParameter('notice_string', '<keywords>%keywords%</keywords><remove>%remove%</remove>');
+    $this->setParameter('remove_string', '~remove~');
+    $this->setParameter('css', 'search.css');
   }
 }

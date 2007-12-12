@@ -17,7 +17,7 @@
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 require dirname(__FILE__) . '/../../bin/FakeHighlighter.php';
 
-$t = new lime_test(19, new lime_output_color());
+$t = new lime_test(21, new lime_output_color());
 
 $chain = new sfFilterChain();
 
@@ -25,14 +25,9 @@ $context = sfContext::getInstance();
 $response = $context->getResponse();
 $request = $context->getRequest();
 
-if (sfConfig::get('sf_i18n'))
-{
-  $context->getI18N()->initialize($context);
-  $context->getI18N()->setMessageSourceDir(dirname(__FILE__), 'en');
-}
+sfConfig::set('sf_i18n', false);
 
 $highlight = new FakeHighlighter();
-$highlight->initialize(sfContext::getInstance());
 
 $t->diag('testing validation');
 
@@ -128,6 +123,13 @@ $t->unlike($response->getContent(), '#~notice~#', 'highlighter removes notice re
 $t->unlike($response->getContent(), '#<link .*?href=".*?/search\.css".*?/>\n</head>#', 'highlighter does not add the search stylesheet if there is nothing to do');
 $t->is($response->getContent(), '<head></head><body> keywords</body>', 'highlighter leaves result untouched except for notice bang if there is nothing to do');
 
+$_SERVER['HTTP_REFERER'] = 'http://www.slashdot.org/';
+$response->setContent('<head></head><body>~notice~ google search test</body>');
+$request->getParameterHolder()->remove('h');
+$highlight->execute($chain);
+
+$t->is($response->getContent(), '<head></head><body> google search test</body>', 'highlighter removes notice if there is a possible but invalid refer and does not touch rest of response');
+
 $t->diag('testing different content types');
 $content = '<head></head><body>~notice~ keyword</body>';
 $response->setContent($content);
@@ -147,3 +149,13 @@ $response->setContentType('image/jpeg');
 $highlight->execute($chain);
 $t->is($response->getContent(), $content, 'highlighter skips highlighting for non X/HTML content');
 $response->setContentType('text/html');
+
+$t->diag('testing i18n');
+
+sfConfig::set('sf_i18n', true);
+sfContext::getInstance()->set('i18n', new sfI18N(sfContext::getInstance()));
+
+$response->setContent('<body>highlight the keyword</body>');
+$request->setParameter('h', 'keyword');
+$highlight->execute($chain);
+$t->is($response->getContent(), '<body>highlight the <highlighted>keyword</highlighted></body>', 'highlighter highlights a single keyword with i18n');

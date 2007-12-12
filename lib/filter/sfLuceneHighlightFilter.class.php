@@ -20,11 +20,6 @@
  */
 class sfLuceneHighlightFilter extends sfFilter
 {
-  /**
-   * for unit tests only
-   */
-  protected $testMode = false;
-
   public function execute($filterChain)
   {
     $filterChain->execute();
@@ -60,13 +55,8 @@ class sfLuceneHighlightFilter extends sfFilter
     }
     catch (sfLuceneHighlighterException $e)
     {
-      $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array('{sfLuceneHighlightFilter} silently ignoring exception: ' . $e->getMessage())));
-
-      if ($this->testMode)
-      {
-        $timer->addTime();
-        throw $e;
-      }
+      $timer->addTime();
+      throw $e;
     }
     catch (Exception $e)
     {
