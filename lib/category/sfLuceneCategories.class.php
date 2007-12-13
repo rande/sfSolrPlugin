@@ -46,7 +46,7 @@ class sfLuceneCategories
 
     if ($writer == null)
     {
-      $writer = new sfLuceneStorageFilesystem($search->getIndexLoc() . DIRECTORY_SEPARATOR . 'categories.php');
+      $writer = new sfLuceneStorageFilesystem($search->getParameter('index_location') . DIRECTORY_SEPARATOR . 'categories.php');
     }
 
     if (!($writer instanceof sfLuceneStorage))

@@ -87,7 +87,7 @@ EOF;
   {
     $start = microtime(true);
 
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->format(sprintf('Processing "%s/%s" now...', $search->getName(), $search->getCulture()), array('fg' => 'red', 'bold' => true)))));
+    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->format(sprintf('Processing "%s/%s" now...', $search->getParameter('name'), $search->getParameter('culture')), array('fg' => 'red', 'bold' => true)))));
 
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('lucene', 'Rebuilding...'))));
     $search->rebuildIndex();

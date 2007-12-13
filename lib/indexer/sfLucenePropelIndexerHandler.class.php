@@ -18,10 +18,10 @@ class sfLucenePropelIndexerHandler extends sfLuceneModelIndexerHandler
 {
   public function rebuildModel($name)
   {
-    $options = $this->getSearch()->dumpModel($name);
+    $options = $this->getSearch()->getParameter('models')->get($name);
 
-    $per = $options['rebuild_limit'];
-    $peer = $options['peer'];
+    $per = $options->get('rebuild_limit');
+    $peer = $options->get('peer');
 
     // calculate total number of pages
     $count = call_user_func(array($peer, 'doCount'), new Criteria);

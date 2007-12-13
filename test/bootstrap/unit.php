@@ -32,5 +32,14 @@ require_once($sf_symfony_lib_dir.'/vendor/lime/lime.php');
 
 define('SANDBOX_DIR', dirname(dirname(__FILE__)) . '/sandbox');
 
-// clear sandbox
-sfToolkit::clearDirectory(SANDBOX_DIR);
+
+function clear_sandbox()
+{
+  // clear sandbox
+  sfToolkit::clearDirectory(SANDBOX_DIR);
+}
+
+clear_sandbox();
+
+sfConfig::set('sf_config_dir_name', dirname(__FILE__) . '/../data/config');
+sfConfig::set('sf_data_dir', SANDBOX_DIR . '/data');

@@ -15,7 +15,6 @@
   */
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
-require dirname(__FILE__) . '/../../bin/FakeLucene.php';
 require dirname(__FILE__) . '/../../bin/AllFakeModels.php';
 
 class Foo { }
@@ -23,7 +22,7 @@ class Bar extends BaseObject { }
 
 $t = new lime_test(12, new lime_output_color());
 
-$lucene = FakeLucene::getInstance('testLucene', 'en');
+$lucene = sfLucene::getInstance('testLucene', 'en');
 $indexer = $lucene->getIndexer();
 
 $model = new FakeForum;

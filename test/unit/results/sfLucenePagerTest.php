@@ -15,9 +15,8 @@
   */
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
-require dirname(__FILE__) . '/../../bin/FakeLucene.php';
 
-$lucene = FakeLucene::getInstance('testLucene', 'en');
+$lucene = sfLucene::getInstance('testLucene', 'en');
 
 $t = new lime_test(29, new lime_output_color());
 

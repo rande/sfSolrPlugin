@@ -18,11 +18,11 @@ abstract class sfLuceneModelIndexerHandler extends sfLuceneIndexerHandler
 {
   public function rebuild()
   {
-    $models = $this->getSearch()->dumpModels();
+    $models = $this->getSearch()->getParameter('models');
 
-    foreach ($models as $model => $config)
+    foreach ($models->getNames() as $name)
     {
-      $this->rebuildModel($model);
+      $this->rebuildModel($name);
     }
   }
 }

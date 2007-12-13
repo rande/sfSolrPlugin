@@ -15,7 +15,6 @@
   */
 
 require dirname(__FILE__) . '/../bootstrap/unit.php';
-require dirname(__FILE__) . '/../bin/FakeLucene.php';
 require dirname(__FILE__) . '/../bin/AllFakeModels.php';
 
 $t = new lime_test(2, new lime_output_color());

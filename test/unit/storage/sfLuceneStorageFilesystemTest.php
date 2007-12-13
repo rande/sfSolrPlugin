@@ -16,7 +16,9 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(10, new lime_output_color());
+clearstatcache(); // for some reason this unit test will go crazy without this...
+
+$t = new lime_test(12, new lime_output_color());
 
 $file = SANDBOX_DIR . '/storage/long/folder/tree';
 
@@ -39,13 +41,30 @@ try {
   $bh->write('foobar');
   $t->pass('->write() can write data');
   $t->is($bh->read(), 'foobar', '->read() reads the data written by ->write()');
-  $t->ok(file_exists($file), '->write() creates the file');
-  $t->is(file_get_contents($file), 'foobar', '->write() writes the data to the file');
 } catch (Exception $e) {
   $t->fail('->write() can write data');
   $t->skip('->read() reads the data written by ->write()');
 }
 
+$t->ok(file_exists($file), '->write() creates the file');
+$t->is(file_get_contents($file), 'foobar', '->write() writes the data to the file');
+
+try {
+  $bh2 = new sfLuceneStorageFileSystem(SANDBOX_DIR . '/storage/long/folder/flower');
+  $t->pass('__construct() functions if the directory tree already exists');
+} catch (Exception $e) {
+  $t->fail('__construct() functions if the directory tree already exists');
+}
+
+try {
+  $bh2->write('foobar');
+  $t->pass('->write() functions if the directory tree already exists');
+} catch (Exception $e) {
+  $t->fail('->write() functions if the directory tree already exists');
+}
+
 $bh->delete();
 $t->is($bh->read(), null, '->delete() causes ->read() to return null');
 $t->ok(!file_exists($file), '->delete() deletes the file');
+
+

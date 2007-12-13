@@ -23,7 +23,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   {
     parent::__construct($search);
 
-    if (!$search->dumpModel(get_class($instance)))
+    if ($search->getParameter('models')->get(get_class($instance), null) == null)
     {
       throw new sfLuceneIndexerException(sprintf('Model "%s" is not registered.', get_class($instance)));
     }
@@ -63,19 +63,19 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   */
   protected function getModelProperties()
   {
-    return $this->getSearch()->dumpModel($this->getModelName());
+    return $this->getSearch()->getParameter('models')->get($this->getModelName());
   }
 
   protected function getModelCategories()
   {
     $properties = $this->getModelProperties();
 
-    if (!isset($properties['categories']))
+    if (!$properties->has('categories'))
     {
       return array();
     }
 
-    $categories = $properties['categories'];
+    $categories = $properties->get('categories');
 
     if (!is_array($categories))
     {

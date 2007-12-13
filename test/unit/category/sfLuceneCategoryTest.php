@@ -15,11 +15,10 @@
   */
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
-require dirname(__FILE__) . '/../../bin/FakeLucene.php';
 
 $t = new lime_test(14, new lime_output_color());
 
-$lucene = FakeLucene::getInstance('testLucene', 'en');
+$lucene = sfLucene::getInstance('testLucene', 'en');
 $writer = new sfLuceneStorageBlackhole('foo');
 
 $holder = new sfLuceneCategories($lucene, $writer);

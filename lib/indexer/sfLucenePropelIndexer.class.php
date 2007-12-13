@@ -40,9 +40,9 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     $properties = $this->getModelProperties();
 
     // get our base document from callback?
-    if (!empty($properties['callback']))
+    if ($properties->get('callback'))
     {
-      $cb = $properties['callback'];
+      $cb = $properties->get('callback');
 
       if (!is_callable(array($this->getModel(), $cb)))
       {
@@ -62,10 +62,12 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     }
 
     // add the fields
-    if (isset($properties['fields']))
+    if ($properties->has('fields'))
     {
-      foreach ($properties['fields'] as $field => $field_properties)
+      foreach ($properties->get('fields')->getNames() as $field)
       {
+        $field_properties = $properties->get('fields')->get($field);
+
         $getter = 'get' . $field;
 
         if (!is_callable(array($this->getModel(), $getter)))
@@ -73,8 +75,8 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
           throw new sfLuceneIndexerException(sprintf('%s::%s() cannot be called', $this->getModel(), $getter));
         }
 
-        $type = $field_properties['type'];
-        $boost = $field_properties['boost'];
+        $type = $field_properties->get('type');
+        $boost = $field_properties->get('boost');
 
         $value = $this->getModel()->$getter();
 
@@ -100,14 +102,14 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
         }
 
         // handle a possible transformation function
-        if ($field_properties['transform'])
+        if ($field_properties->get('transform'))
         {
-          if (!is_callable($field_properties['transform']))
+          if (!is_callable($field_properties->get('transform')))
           {
             throw new sfLuceneIndexerException('Transformation function cannot be called in field "' . $field . '" on model "' . $this->getModelName() . '"');
           }
 
-          $value = call_user_func($field_properties['transform'], $value);
+          $value = call_user_func($field_properties->get('transform'), $value);
         }
 
         $zsl_field = $this->getLuceneField($type, strtolower($field), $value);
@@ -134,6 +136,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     $doc->addField($this->getLuceneField('unindexed', 'sfl_type', 'model'));
 
     // add document
+    // TODO: Clean this up
     $this->addDocument($doc, $this->getModelGuid());
 
     $formatter = new sfAnsiColorFormatter();
@@ -161,6 +164,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
   {
     if ($this->deleteGuid( $this->getModelGuid() ))
     {
+      // TODO: Clean this up
       $formatter = new sfAnsiColorFormatter();
 
       $this->getContext()->getEventDispatcher()->notify(
@@ -186,7 +190,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
   protected function shouldIndex()
   {
     $properties = $this->getModelProperties();
-    $method = $properties['validator'];
+    $method = $properties->get('validator');
 
     if (method_exists($this->getModel(), $method))
     {
@@ -220,9 +224,9 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     // see: http://www.nabble.com/Lucene-and-n:m-t4449653s16154.html#a12695579
     foreach (parent::getModelCategories() as $category)
     {
-      if (preg_match('/^%(.*)%$/', $category, $matches))
+      if (substr($category, 0, 1) == '%' && substr($category, -1, 1) == '%')
       {
-        $category = $matches[1];
+        $category = substr($category, 1, -1);
 
         $getter = 'get' . $category;
 

@@ -56,7 +56,7 @@ EOF;
 
       foreach (sfLucene::getAllInstances() as $search)
       {
-        $this->dispatcher->notify(new sfEvent($this, 'command.log', array( $this->formatter->format(sprintf('For %s/%s:', $search->getName(), $search->getCulture()), array('fg' => 'red', 'bold' => true)) )));
+        $this->dispatcher->notify(new sfEvent($this, 'command.log', array( $this->formatter->format(sprintf('For %s/%s:', $search->getParameter('name'), $search->getParameter('name')), array('fg' => 'red', 'bold' => true)) )));
 
         $segments = $search->segmentCount();
 

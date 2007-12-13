@@ -31,13 +31,13 @@ class sfLuceneIndexerFactory
 
   public function getHandlers()
   {
-    $factories = $this->search->getFactories();
+    $factories = $this->search->getParameter('factories')->get('indexers');
     $retval = array();
     $model = 'sfLucene' . ucfirst(sfConfig::get('sf_orm', 'Propel')) . 'IndexerHandler';
 
-    $factories['indexers'] = array_merge(array('model' => array($model), 'action' => array('sfLuceneActionIndexerHandler')), $factories['indexers']);
+    $indexers = array_merge(array('model' => array($model), 'action' => array('sfLuceneActionIndexerHandler')), $factories);
 
-    foreach ($factories['indexers'] as $label => $indexer)
+    foreach ($indexers as $label => $indexer)
     {
       if (is_null($indexer))
       {
@@ -56,19 +56,19 @@ class sfLuceneIndexerFactory
 
   public function getModel($instance)
   {
-    $model = $this->search->dumpModel(get_class($instance));
+    $options = $this->search->getParameter('models')->get(get_class($instance));
 
-    if (isset($model['indexer']) && $model['indexer'])
+    if ($options && $options->get('indexer'))
     {
-      $indexer = $model['indexer'];
+      $indexer = $options->get('indexer');
     }
     else
     {
-      $factories = $this->search->getFactories();
+      $factories = $this->search->getParameter('factories')->get('indexers');
 
-      if (isset($factories['indexers']['model'][1]))
+      if (isset($factories['model'][1]))
       {
-        $indexer = $factories['indexers']['model'][1];
+        $indexer = $factories['model'][1];
       }
       else
       {
@@ -87,11 +87,11 @@ class sfLuceneIndexerFactory
 
   public function getAction($module, $action)
   {
-    $factories = $this->search->getFactories();
+    $factories = $this->search->getParameter('factories')->get('indexers');
 
-    if (isset($factories['indexers']['action'][1]))
+    if (isset($factories['action'][1]))
     {
-      $indexer = $factories['indexers']['action'][1];
+      $indexer = $factories['action'][1];
     }
     else
     {

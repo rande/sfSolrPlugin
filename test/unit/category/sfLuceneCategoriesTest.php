@@ -15,11 +15,10 @@
   */
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
-require dirname(__FILE__) . '/../../bin/FakeLucene.php';
 
 $t = new lime_test(20, new lime_output_color());
 
-$lucene = FakeLucene::getInstance('testLucene', 'en');
+$lucene = sfLucene::getInstance('testLucene', 'en');
 
 $writer = new sfLuceneStorageBlackhole('foo');
 
@@ -37,6 +36,8 @@ try {
   $t->pass('__construct() must accept an instance of sfLucene');
 } catch (Exception $e) {
   $t->fail('__construct() must accept an instance of sfLucene');
+
+  $e->printStackTrace();
 }
 
 try {

@@ -25,17 +25,16 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
     $this->module = $module;
     $this->action = $action;
 
-
     $config = sfConfig::get('sf_app_dir') . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR  . $module . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'search.yml';
 
     include(sfConfigCache::getInstance()->checkConfig($config));
 
-    if (!isset($actions[$this->getSearch()->getName()][$action]))
+    if (!isset($actions[$this->getSearch()->getParameter('name')][$action]))
     {
       throw new sfLuceneIndexerException('Specified action is not registered for indexing');
     }
 
-    $this->properties = $actions[$this->getSearch()->getName()][$action];
+    $this->properties = $actions[$this->getSearch()->getParameter('name')][$action];
   }
 
   protected function shouldIndex()

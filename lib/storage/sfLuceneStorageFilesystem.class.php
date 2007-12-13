@@ -44,8 +44,6 @@ class sfLuceneStorageFilesystem implements sfLuceneStorage
   public function delete()
   {
     unlink($this->file);
-
-    clearstatcache();
   }
 
   protected function mkdir($dir)

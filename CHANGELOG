@@ -10,6 +10,7 @@ Trunk
   * Fixed sfLucene conflict with external Zend Framework bundle (closes #2404).
   * Added storage containers to aid unit testing
   * Refactored category support
+  * Minor refactoring of sfLucene class to move to sfParameterHolder
 
 Version 0.1.1 Beta
   * Fixed i18n category "All" value

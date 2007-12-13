@@ -29,7 +29,7 @@ abstract class sfLuceneIndexer
     }
 
     $this->search = $search;
-    $this->encoding = $this->getSearch()->getEncoding();
+    $this->encoding = $search->getParameter('encoding');
 
     $this->getSearch()->configure();
   }
@@ -64,7 +64,7 @@ abstract class sfLuceneIndexer
 
   protected function getCulture()
   {
-    return $this->getSearch()->getCulture();
+    return $this->getSearch()->getParameter('culture');
   }
 
   protected function getContext()
@@ -114,11 +114,6 @@ abstract class sfLuceneIndexer
   */
   protected function deleteGuid($guid)
   {
-    if ($this->getSearch()->isNew())
-    {
-      return 0;
-    }
-
     $term = $this->getLuceneField('index term', 'sfl_guid', $guid );
 
     $query = new Zend_Search_Lucene_Search_Query_Term($term);

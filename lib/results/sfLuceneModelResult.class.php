@@ -23,16 +23,16 @@ class sfLuceneModelResult extends sfLuceneResult
   {
     $model = $this->retrieveModel();
 
-    if (isset($model['title']) && is_string($model['title']))
+    if (is_string($model->get('title')))
     {
-      $getter = 'get' . $model['title'];
+      $getter = 'get' . $model->get('title');
       return $this->$getter();
     }
     else
     {
       foreach (array('title', 'subject') as $check)
       {
-        if (isset($model['fields'][$check]) && is_string($model['fields'][$check]) )
+        if ($model->get('fields')->has($check))
         {
           $getter = 'get' . $check;
 
@@ -51,12 +51,12 @@ class sfLuceneModelResult extends sfLuceneResult
   {
     $model = $this->retrieveModel();
 
-    if (!isset($model['route']))
+    if ($model->has('route'))
     {
       throw new sfLuceneIndexerException(sprintf('A route for model "%s" was not defined in the search.yml file.  Did you define one for this application?', $this->getInternalModel()));
     }
 
-    return preg_replace_callback('/%(\w+)%/', array($this, 'internalUriCallback'), $model['route']);
+    return preg_replace_callback('/%(\w+)%/', array($this, 'internalUriCallback'), $model->get('route'));
   }
 
   /**
@@ -76,9 +76,9 @@ class sfLuceneModelResult extends sfLuceneResult
   {
     $model = $this->retrieveModel();
 
-    if (isset($model['partial']))
+    if ($model->get('partial'))
     {
-      return $model['partial'];
+      return $model->get('partial');
     }
 
     return parent::getInternalPartial();
@@ -88,15 +88,15 @@ class sfLuceneModelResult extends sfLuceneResult
   {
     $model = $this->retrieveModel();
 
-    if (isset($model['description']) && is_string($model['description']))
+    if (is_string($model->get('description')))
     {
-      $getter = 'get' . $model['description'];
+      $getter = 'get' . $model->get('description');
       return strip_tags($this->$getter());
     }
 
     foreach (array('description','summary','about') as $check)
     {
-      if (isset($model['fields'][$check]) && is_string($model['fields'][$check]))
+      if ($model->get('fields')->has($check))
       {
         $getter = 'get' . $check;
         return strip_tags($this->$getter());
@@ -111,6 +111,6 @@ class sfLuceneModelResult extends sfLuceneResult
   */
   protected function retrieveModel()
   {
-    return $this->search->dumpModel($this->getInternalModel());
+    return $this->search->getParameter('models')->get($this->getInternalModel());
   }
 }

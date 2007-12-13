@@ -53,9 +53,9 @@ class sfLuceneActionIndexerHandler extends sfLuceneIndexerHandler
       return;
     }
 
-    if (isset($actions[$this->getSearch()->getName()]))
+    if (isset($actions[$this->getSearch()->getParameter('name')]))
     {
-      foreach ($actions[$this->getSearch()->getName()] as $action => $properties)
+      foreach ($actions[$this->getSearch()->getParameter('name')] as $action => $properties)
       {
         $this->getFactory()->getAction($module, $action)->save();
       }
