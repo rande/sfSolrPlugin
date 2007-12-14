@@ -71,7 +71,7 @@ EOF;
   {
     $start = microtime(true);
 
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->format(sprintf('Optimizing "%s/%s" now...', $search->getParameter('name'), $search->getParameter('name')), array('fg' => 'red', 'bold' => true)))));
+    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->format(sprintf('Optimizing "%s/%s" now...', $search->getParameter('name'), $search->getParameter('culture')), array('fg' => 'red', 'bold' => true)))));
 
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('lucene', 'Optimizing...'))));
     $search->optimize();
