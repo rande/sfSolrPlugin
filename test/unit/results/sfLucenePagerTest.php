@@ -124,9 +124,9 @@ $t->diag('testing mixins');
 
 function callListener($event)
 {
-  if ($event->getParameter('method') == 'goodMethod')
+  if ($event['method'] == 'goodMethod')
   {
-    $args = $event->getParameter('arguments');
+    $args = $event['arguments'];
 
     $event->setReturnValue($args[0] + 1);
 

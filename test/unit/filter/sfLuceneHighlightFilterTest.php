@@ -152,6 +152,14 @@ $response->setContentType('text/html');
 
 $t->diag('testing i18n');
 
+sfConfig::add(array(
+  'sf_i18n_default_culture' => 'en_US',
+  'sf_i18n_source' => 'XLIFF',
+  'sf_i18n_debug' => false,
+  'sf_i18n_untranslated_prefix' => '[T]',
+  'sf_i18n_untranslated_suffix' => '[/T]',
+));
+
 sfConfig::set('sf_i18n', true);
 sfContext::getInstance()->set('i18n', new sfI18N(sfContext::getInstance()));
 
