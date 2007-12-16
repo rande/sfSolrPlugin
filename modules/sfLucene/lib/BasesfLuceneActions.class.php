@@ -20,7 +20,7 @@ abstract class BasesfLuceneActions extends sfActions
   /**
    * For compatiability with default routing rules.
    */
-  public function executeIndex()
+  public function executeIndex($request)
   {
     $this->forward($this->getModuleName(), 'search');
   }
@@ -30,27 +30,26 @@ abstract class BasesfLuceneActions extends sfActions
   * parameters, then a search is executed and uses a paged result.  If not, then
   * the search box is displayed to prompt the user to enter controls.
   */
-  public function executeSearch()
+  public function executeSearch($request)
   {
     // determine if the user pressed the "Advanced"  button
-    if ($this->getRequestParameter('commit') == $this->translate('Advanced'))
+    if ($request->getParameter('commit') == $this->translate('Advanced'))
     {
       // user did, so redirect to advanced search
       $this->redirect($this->getModuleName() . '/advancedSearch');
     }
 
-    $this->advanced_enabled = sfConfig::get('sf_lucene_interface_advanced', true);
-    $this->categories_enabled = sfConfig::get('sf_lucene_interface_categories', true);
+    $form = new sfLuceneSimpleForm();
+    $this->configureCategories($form);
+    $form->bind($request->getParameter('form'));
 
-    $query = $this->getRequestParameter('query');
-
-    // did user enter a query?
-    if ($query)
+    // do we have a query?
+    if ($form->isValid())
     {
-      $category = $this->getRequestParameter('category', null);
+      $values = $form->getValues();
 
       // get results
-      $pager = $this->getResults($query, $category);
+      $pager = $this->getResults($form);
 
       $num = $pager->getNbResults();
 
@@ -58,11 +57,12 @@ abstract class BasesfLuceneActions extends sfActions
       if ($num > 0)
       {
         // display results
-        $this->configurePager($pager);
+        $pager = $this->configurePager($pager, $request);
 
         $this->num = $num;
         $this->pager = $pager;
-        $this->query = $query;
+        $this->query = $values['query'];
+        $this->form = $form;
 
         $this->setTitleNumResults($pager);
 
@@ -71,6 +71,7 @@ abstract class BasesfLuceneActions extends sfActions
       else
       {
         // display error
+        $this->form = $form;
         $this->setTitleI18n('No Results Found');
 
         return 'NoResults';
@@ -79,6 +80,7 @@ abstract class BasesfLuceneActions extends sfActions
     else
     {
       // display search controls
+      $this->form = $form;
       $this->setTitleI18n('Search');
 
       return 'Controls';
@@ -89,57 +91,77 @@ abstract class BasesfLuceneActions extends sfActions
   * This action is a friendly advanced search interface.  It lets the
   * user use a form to control some of the advanced query syntaxes.
   */
-  public function executeAdvancedSearch()
+  public function executeAdvancedSearch($request)
   {
     // disable this action if advanced searching is disabled.
     $this->forward404Unless( sfConfig::get('app_lucene_advanced', true) == true, 'advanced support is disabled' );
 
     // determine if the "Basic" button was clicked
-    if ($this->getRequestParameter('commit') == $this->translate('Basic'))
+    if ($request->getParameter('commit') == $this->translate('Basic'))
     {
       $this->redirect($this->getModuleName() . '/search');
     }
 
-    // did the user submit the form?
-    if ($this->getRequestParameter('mode') == 'search')
+    $form = new sfLuceneAdvancedForm();
+    $this->configureCategories($form);
+
+    // continue only if there was a submit
+    if ($request->getParameter('commit'))
     {
-      // base quey
-      $query = $this->getRequestParameter('keywords');
+      $form->bind($request->getParameter('form'));
 
-      // build the must have part
-      $musthave = preg_split('/ +/', $this->getRequestParameter('musthave'), -1, PREG_SPLIT_NO_EMPTY);
-
-      if (count($musthave))
+        // is the form valid?
+      if ($form->isValid())
       {
-        $query .= ' +' . implode($musthave, ' +');
-      }
+        $values = $form->getValues();
 
-      // build the must not have
-      $mustnothave = preg_split('/ +/', $this->getRequestParameter('mustnothave'), -1, PREG_SPLIT_NO_EMPTY);
+        // base quey
+        $query = $values['keywords'];
 
-      if (count($mustnothave))
-      {
-        $query .= ' -' . implode($mustnothave, ' -');
-      }
+        // build the must have part
+        $musthave = preg_split('/ +/', $values['musthave'], -1, PREG_SPLIT_NO_EMPTY);
 
-      // build the has pharse part
-      if ($this->getRequestParameter('hasphrase') != '')
-      {
-        $query .= ' "' . str_replace('"', '', $this->getRequestParameter('hasphrase')) . '"';
-      }
+        if (count($musthave))
+        {
+          $query .= ' +' . implode($musthave, ' +');
+        }
 
-      $query = trim($query);
+        // build the must not have
+        $mustnothave = preg_split('/ +/', $values['mustnothave'], -1, PREG_SPLIT_NO_EMPTY);
 
-      // is there a query?
-      if ($query)
-      {
-        // yes, so search
+        if (count($mustnothave))
+        {
+          $query .= ' -' . implode($mustnothave, ' -');
+        }
 
-        $this->getRequest()->setParameter('query', $query);
+        // build the has pharse part
+        if ($values['hasphrase'] != '')
+        {
+          $query .= ' "' . str_replace('"', '', $values['hasphrase']) . '"';
+        }
 
-        $this->forward($this->getModuleName(), 'search');
+        $query = trim($query);
+
+        // is there a query?
+        if ($query)
+        {
+          // yes, so search
+
+          $requestParam = array('query' => $query);
+
+          if (isset($values['category']))
+          {
+            $requestParam['category'] = $values['category'];
+          }
+
+          $request->setParameter('form', $requestParam);
+
+          $this->forward($this->getModuleName(), 'search');
+        }
       }
     }
+
+    $this->form = $form;
 
     $this->setTitleI18n('Advanced Search');
 
@@ -149,14 +171,16 @@ abstract class BasesfLuceneActions extends sfActions
   /**
   * Wrapper function for getting the results.
   */
-  protected function getResults($querystring, $category = null)
+  protected function getResults($form)
   {
-    $query = new sfLuceneCriteria();
-    $query->addSane($querystring);
+    $data = $form->getValues();
 
-    if (sfConfig::get('app_lucene_categories', true) && $category)
+    $query = new sfLuceneCriteria();
+    $query->addSane($data['query']);
+
+    if (sfConfig::get('app_lucene_categories', true) && isset($data['category']) && $data['category'] != $this->translate('All'))
     {
-      $query->add('sfl_category: ' . $category);
+      $query->add('sfl_category: ' . $data['category']);
     }
 
     return new sfLucenePager( $this->getLuceneInstance()->friendlyFind($query) );
@@ -171,11 +195,32 @@ abstract class BasesfLuceneActions extends sfActions
   }
 
   /**
+   * Configures the form for categories
+   */
+  protected function configureCategories($form)
+  {
+    $categories = $this->getLuceneInstance()->getCategories()->getAllCategories();
+
+    if (!sfConfig::get('app_lucene_categories', true) || count($categories) == 0)
+    {
+      return;
+    }
+
+    $categories = array_merge(array($this->translate('All')), $categories);
+
+    $categories = array_combine($categories, $categories);
+
+    $form->setCategories($categories);
+
+    return $form;
+  }
+
+  /**
   * Configures the pager according to the request parameters.
   */
-  protected function configurePager($pager)
+  protected function configurePager($pager, $request)
   {
-    $page = (int) ($this->getRequestParameter('page', 1));
+    $page = (int) ($request->getParameter('page', 1));
 
     $pager->setMaxPerPage(sfConfig::get('app_lucene_per_page', 10));
 

@@ -7,18 +7,19 @@
  */
 ?>
 
-<?php use_helper('sfLucene') ?>
-
-<?php echo form_tag('sfLucene/search', 'method=get class=search-controls') ?>
+<form action="<?php echo url_for('sfLucene/search') ?>" method="get" class="search-controls">
 
   <label for="query"><?php echo __('What are you looking for?') ?></label>
-  <?php echo input_tag('query', $query, 'accesskey=q') ?>
-  <?php if (has_search_categories()): ?>
-    <?php include_search_categories() ?>
+  <?php echo $form['query'] ?>
+
+  <?php if ($form->hasCategories()): ?>
+    <?php echo $form['category'] ?>
   <?php endif ?>
-  <?php echo submit_tag(__('Search'), 'accesskey=s') ?>
+
+  <input type="submit" name="commit" accesskey="s" value="<?php echo __('Search') ?>" />
+
   <?php if (sfConfig::get('app_lucene_advanced', true)): ?>
-    <?php echo submit_tag(__('Advanced'), 'accesskey=a') ?>
+    <input type="submit" name="commit" accesskey="a" value="<?php echo __('Advanced') ?>" />
   <?php endif ?>
 
 </form>

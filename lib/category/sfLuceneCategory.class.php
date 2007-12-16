@@ -33,6 +33,11 @@ class sfLuceneCategory
     $this->count = $count;
   }
 
+  public function __toString()
+  {
+    return $this->name;
+  }
+
   public function add($c = 1)
   {
     $this->count += $c;

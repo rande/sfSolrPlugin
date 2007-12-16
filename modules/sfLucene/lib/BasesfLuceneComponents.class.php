@@ -15,11 +15,6 @@
  */
 abstract class BasesfLuceneComponents extends sfComponents
 {
-  public function executeControls()
-  {
-    $this->query = $this->getRequestParameter('query');
-  }
-
   public function executePublicControls()
   {
     $this->query = $this->getRequestParameter('query');

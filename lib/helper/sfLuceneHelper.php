@@ -19,24 +19,14 @@ function include_search_result($result, $query = null)
   include_partial($result->getInternalPartial(), array('result' => $result, 'query' => $query));
 }
 
-function include_search_controls($query = null)
+function include_search_controls($form)
 {
-  include_component(sfContext::getInstance()->getModuleName(), 'controls', array('query' => $query));
+  include_partial(sfContext::getInstance()->getModuleName() . '/controls', array('form' => $form));
 }
 
 function include_search_pager($pager, $radius = 5)
 {
   include_component('sfLucene', 'pagerNavigation', array('pager' => $pager, 'radius' => $radius));
-}
-
-function include_search_categories($multiple = false)
-{
-  include_component('sfLucene', 'categories', array('multiple' => $multiple));
-}
-
-function has_search_categories()
-{
-  return (sfConfig::get('app_lucene_categories', true) ? true : false) && (count(sfLuceneToolkit::getApplicationInstance()->getCategories()) > 0);
 }
 
 function highlight_result_text($text, $query, $size = 200, $highlighter = '<strong class="highlight">%s</strong>')

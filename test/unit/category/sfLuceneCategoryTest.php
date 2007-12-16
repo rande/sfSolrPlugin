@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(14, new lime_output_color());
+$t = new lime_test(15, new lime_output_color());
 
 $lucene = sfLucene::getInstance('testLucene', 'en');
 $writer = new sfLuceneStorageBlackhole('foo');
@@ -58,3 +58,6 @@ $c->setCount(8);
 $t->ok($c->worthSaving(), '->worthSaving() returns true if the count is greater than 0');
 
 $t->is($c->getPhp(), '$categories[\'bar\'] = 8;', '->getPhp() returns valid PHP to save');
+
+$t->diag('testing magic methods');
+$t->is($c->__toString(), 'bar', '__toString() returns the name');
