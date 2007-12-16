@@ -14,6 +14,8 @@
   * @version SVN: $Id$
   */
 
+// WARNING: Currently broken in symfony trunk; see ticket #2408
+
 // setup default routes
 if (sfConfig::get('app_lucene_routes', true) && in_array('sfLucene', sfConfig::get('sf_enabled_modules', array())))
 {
@@ -24,7 +26,7 @@ if (sfConfig::get('app_lucene_routes', true) && in_array('sfLucene', sfConfig::g
 
   if (sfConfig::get('app_lucene_advanced', true))
   {
-    $r->prependRoute('sf_lucene_search_advanced', '/search/advanced', array('module' => 'sfLucene', 'action' => 'advancedSearch'));
+    $r->prependRoute('sf_lucene_search_advanced', '/search/advanced', array('module' => 'sfLucene', 'action' => 'advanced'));
   }
 
   if (sfConfig::get('app_lucene_categories', true))

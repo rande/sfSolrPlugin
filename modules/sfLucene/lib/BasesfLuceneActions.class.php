@@ -36,7 +36,7 @@ abstract class BasesfLuceneActions extends sfActions
     if ($request->getParameter('commit') == $this->translate('Advanced'))
     {
       // user did, so redirect to advanced search
-      $this->redirect($this->getModuleName() . '/advancedSearch');
+      $this->redirect($this->getModuleName() . '/advanced');
     }
 
     $form = new sfLuceneSimpleForm();
@@ -91,7 +91,7 @@ abstract class BasesfLuceneActions extends sfActions
   * This action is a friendly advanced search interface.  It lets the
   * user use a form to control some of the advanced query syntaxes.
   */
-  public function executeAdvancedSearch($request)
+  public function executeAdvanced($request)
   {
     // disable this action if advanced searching is disabled.
     $this->forward404Unless( sfConfig::get('app_lucene_advanced', true) == true, 'advanced support is disabled' );

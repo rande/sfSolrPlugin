@@ -11,7 +11,7 @@
 
 <h2><?php echo __('Advanced Search') ?></h2>
 
-<form action="<?php echo url_for('sfLucene/advancedSearch') ?>" method="get">
+<form action="<?php echo url_for('sfLucene/advanced') ?>" method="get">
   <fieldset>
     <legend><?php echo __('Search Terms') ?></legend>
 
