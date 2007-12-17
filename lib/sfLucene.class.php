@@ -203,6 +203,7 @@ class sfLucene
       $data->set('peer', $model['peer']);
       $data->set('rebuild_limit', $model['rebuild_limit']);
       $data->set('validator', $model['validator']);
+      $data->set('categories', $model['categories']);
 
       $models->set($name, $data);
     }
