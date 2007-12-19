@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(10, new lime_output_color());
+$t = new lime_test(12, new lime_output_color());
 
 $t->diag('testing constructor');
 
@@ -50,3 +50,12 @@ $form->setCategories(array());
 
 $t->ok(!$form->getWidgetSchema()->offsetExists('category'), '->setCategories() removes "category" key from widget schema');
 $t->ok(!$form->getValidatorSchema()->offsetExists('category'), '->setCategories() removes "category" key from validator schema');
+
+$t->diag('testing url string generation');
+
+$form = new sfLuceneSimpleForm;
+$form->setCategories(array('baz'));
+$form->bind(array('query' => 'foobar', 'category' => 'baz', 'page' => 2));
+
+$t->is($form->getQueryString(), 'form%5Bquery%5D=foobar&amp;form%5Bcategory%5D=baz&amp;form%5Bpage%5D=2', '->getQueryString() returns querystring');
+$t->is($form->getQueryString(5), 'form%5Bquery%5D=foobar&amp;form%5Bcategory%5D=baz&amp;form%5Bpage%5D=5', '->getQueryString() returns querystring with altered page');

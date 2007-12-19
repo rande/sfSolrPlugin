@@ -49,7 +49,8 @@ abstract class sfLuceneSimpleFormBase extends sfLuceneForm
 
     $validatorSchema = new sfValidatorSchema(
     array( // fields
-      'query' => new sfValidatorString(array('required' => true))
+      'query' => new sfValidatorString(array('required' => true)),
+      'page' => new sfValidatorInteger(array('required' => false, 'empty_value' => 1))
     ),
     array( //options
     ),
@@ -67,5 +68,27 @@ abstract class sfLuceneSimpleFormBase extends sfLuceneForm
     $this->setWidgetSchema($widgetSchema);
 
     $this->setValidatorSchema($validatorSchema);
+  }
+
+  public function getQueryString($page = null)
+  {
+    $values = $this->getValues();
+
+    if ($page)
+    {
+      $values['page'] = $page;
+    }
+
+    $string = '';
+
+    foreach ($values as $key => $value)
+    {
+      $key = urlencode(sprintf($this->widgetSchema->getNameFormat(), $key));
+      $string .= $key . '=' . $value . '&amp;';
+    }
+
+    $string = substr($string, 0, -5);
+
+    return $string;
   }
 }

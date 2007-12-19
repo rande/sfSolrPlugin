@@ -19,6 +19,6 @@
   <?php endforeach ?>
 </ol>
 
-<?php include_search_pager($pager, sfConfig::get('app_lucene_pager_radius', 5)) ?>
+<?php include_search_pager($pager, $form, sfConfig::get('app_lucene_pager_radius', 5)) ?>
 
 <?php include_search_controls($form) ?>

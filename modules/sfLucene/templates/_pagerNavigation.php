@@ -10,19 +10,19 @@
 <?php if ($pager->haveToPaginate()): ?>
   <div class="search-page-numbers">
     <?php if ($pager->getPage() != $pager->getPreviousPage()): ?>
-      <?php echo link_to(__('Prev'), 'sfLucene/search?query=' . $query . '&page=' . $pager->getPreviousPage(), 'class=bookend') ?>
+      <a href="<?php echo url_for('sfLucene/search') ?>?<?php echo $form->getQueryString($pager->getPreviousPage()) ?>" class="bookend"><?php echo __('Prev') ?></a>
     <?php endif ?>
 
-    <?php foreach ($links as $page): ?>
+    <?php foreach ($pager->getLinks($radius) as $page): ?>
       <?php if ($page == $pager->getPage()): ?>
         <strong><?php echo $page ?></strong>
       <?php else: ?>
-        <?php echo link_to($page, 'sfLucene/search?query=' . $query . '&page=' . $page) ?>
+        <a href="<?php echo url_for('sfLucene/search') ?>?<?php echo $form->getQueryString($page) ?>"><?php echo $page ?></a>
       <?php endif ?>
     <?php endforeach ?>
 
     <?php if ($pager->getPage() != $pager->getNextPage()): ?>
-      <?php echo link_to(__('Next'), 'sfLucene/search?query=' . $query . '&page=' . $pager->getNextPage(), 'class=bookend') ?>
+      <a href="<?php echo url_for('sfLucene/search') ?>?<?php echo $form->getQueryString($pager->getNextPage()) ?>" class="bookend"><?php echo __('Next') ?></a>
     <?php endif ?>
   </div>
 

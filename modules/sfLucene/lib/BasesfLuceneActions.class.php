@@ -57,7 +57,7 @@ abstract class BasesfLuceneActions extends sfActions
       if ($num > 0)
       {
         // display results
-        $pager = $this->configurePager($pager, $request);
+        $pager = $this->configurePager($pager, $form);
 
         $this->num = $num;
         $this->pager = $pager;
@@ -218,9 +218,10 @@ abstract class BasesfLuceneActions extends sfActions
   /**
   * Configures the pager according to the request parameters.
   */
-  protected function configurePager($pager, $request)
+  protected function configurePager($pager, $form)
   {
-    $page = (int) ($request->getParameter('page', 1));
+    $values = $form->getValues();
+    $page = $values['page'];
 
     $pager->setMaxPerPage(sfConfig::get('app_lucene_per_page', 10));
 

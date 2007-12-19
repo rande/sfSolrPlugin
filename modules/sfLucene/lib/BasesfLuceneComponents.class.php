@@ -20,15 +20,6 @@ abstract class BasesfLuceneComponents extends sfComponents
     $this->query = $this->getRequestParameter('query');
   }
 
-  public function executePagerNavigation()
-  {
-    $radius = isset($this->radius) ? $this->radius : 5;
-
-    $this->links = $this->pager->getLinks($radius);
-
-    $this->query = $this->getRequestParameter('query');
-  }
-
   public function executeCategories()
   {
     $installed = array_keys($this->getLuceneInstance()->getCategories()->getAllCategories());
