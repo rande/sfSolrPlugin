@@ -204,6 +204,7 @@ class sfLucene
       $data->set('rebuild_limit', $model['rebuild_limit']);
       $data->set('validator', $model['validator']);
       $data->set('categories', $model['categories']);
+      $data->set('route', $model['route']);
 
       $models->set($name, $data);
     }
