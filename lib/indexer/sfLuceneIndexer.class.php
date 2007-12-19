@@ -114,6 +114,12 @@ abstract class sfLuceneIndexer
   */
   protected function deleteGuid($guid)
   {
+    if ($this->search->getParameter('delete_lock'))
+    {
+      // index has told us not to delete, so abort
+      return 0;
+    }
+
     $term = $this->getLuceneField('index term', 'sfl_guid', $guid );
 
     $query = new Zend_Search_Lucene_Search_Query_Term($term);

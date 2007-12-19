@@ -361,7 +361,7 @@ class sfLucene
     $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.configure.post'));
   }
 
-  /**
+/**
   * Rebuilds the entire index.  This will be quite slow, so only run from the command line.
   */
   public function rebuildIndex()
@@ -369,6 +369,9 @@ class sfLucene
     $this->setBatchMode();
 
     $this->getCategories()->clear()->save();
+
+    $original = $this->getParameter('delete_lock', false);
+    $this->setParameter('delete_lock', true); // tells the indexers not to bother deleting
 
     $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.rebuild.pre'));
 
@@ -378,6 +381,8 @@ class sfLucene
     }
 
     $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.rebuild.post'));
+
+    $this->setParameter('delete_lock', $original);
 
     return $this;
   }
