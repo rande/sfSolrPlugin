@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(19, new lime_output_color());
+$t = new lime_test(21, new lime_output_color());
 
 class Foo { }
 
@@ -80,6 +80,10 @@ $t->diag('testing keyword strings');
 $t->is(inst('<body><test>test yahoo</test></body>')->addKeywordSlug('test yahoo')->addHighlighter('<h>%s</h>')->addHighlighter('<q>%s</q>')->highlight(), '<body><test><h>test</h> <q>yahoo</q></test></body>', 'highlighter highlights a keyword slug correctly');
 
 $t->is(inst('<body><test>économe yahoo</test></body>')->addKeywordSlug('économe yahoo')->addHighlighter('<h>%s</h>')->addHighlighter('<q>%s</q>')->highlight(), '<body><test><h>économe</h> <q>yahoo</q></test></body>', 'highlighter highlights a keyword utf8 slug correctly');
+
+$t->is(inst('<body><test>that was fun! fun0</test></body>')->addKeywordSlug('fun')->addHighlighter('<h>%s</h>')->highlight(), '<body><test>that was <h>fun</h>! fun0</test></body>', 'highlighter highlights a keyword surrounded by numbers correctly');
+
+$t->is(inst('<body><test>that was fun! fun0</test></body>')->addKeywordSlug('fun0')->addHighlighter('<h>%s</h>')->highlight(), '<body><test>that was fun! <h>fun0</h></test></body>', 'highlighter highlights a keyword with numbers correctly');
 
 $t->diag('density cropping');
 
