@@ -218,7 +218,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     if (sfConfig::get('sf_i18n'))
     {
       $i18n = $this->getSearch()->getContext()->getI18N();
-      $i18n->setMessageSourceDir(null, $this->getCulture());
+      $i18n->setMessageSource(null, $this->getCulture());
     }
 
     // see: http://www.nabble.com/Lucene-and-n:m-t4449653s16154.html#a12695579

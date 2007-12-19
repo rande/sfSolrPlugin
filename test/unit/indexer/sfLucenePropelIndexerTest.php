@@ -20,7 +20,7 @@ require dirname(__FILE__) . '/../../bin/AllFakeModels.php';
 class Foo { }
 class Bar extends BaseObject { }
 
-$t = new lime_test(12, new lime_output_color());
+$t = new lime_test(14, new lime_output_color());
 
 $lucene = sfLucene::getInstance('testLucene', 'en');
 $indexer = $lucene->getIndexer();
@@ -79,6 +79,26 @@ try {
 $lucene->commit();
 
 $t->is($lucene->numDocs(), $numDocs, '->numDocs() returns a document count that is back to original value');
+
+$t->diag('testing i18n');
+
+configure_i18n();
+
+try {
+  $indexer->insert();
+  $t->pass('->insert() inserts a valid model without exception with i18n on');
+} catch (Exception $e) {
+  $t->fail('->insert() inserts a valid model without exception with i18n on');
+}
+
+try {
+  $indexer->delete();
+  $t->pass('->delete() deletes a valid model without exception with i18n on');
+} catch (Exception $e) {
+  $t->fail('->delete() deletes a valid model without exception with i18n on');
+}
+
+configure_i18n(false);
 
 $t->diag('testing bad inputs');
 
