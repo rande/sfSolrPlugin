@@ -64,7 +64,7 @@ EOF;
         $this->notifyListRow('Segment Count', $segments, 3);
 
         $rawSize = $search->byteSize();
-        $size = $rawSize / 1024 > 1024 ? (number_format($rawSize / power(1024, 2), 3) . 'MB') : (number_format($rawSize / 1024, 3) . ' KB');
+        $size = $rawSize / 1024 > 1024 ? (number_format($rawSize / pow(1024, 2), 3) . 'MB') : (number_format($rawSize / 1024, 3) . ' KB');
         $this->notifyListRow('Index Size', $size, 3);
 
         if ($segments == 0)
