@@ -18,7 +18,7 @@ require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
 $lucene = sfLucene::getInstance('testLucene', 'en');
 
-$t = new lime_test(29, new lime_output_color());
+$t = new lime_test(30, new lime_output_color());
 
 $t->diag('testing constructor');
 
@@ -109,8 +109,14 @@ $results->setPage(4);
 $t->is($results->getFirstIndice(), 31, '->getFirstIndice() returns correct first indice in results');
 $t->is($results->getLastIndice(), 40, '->getLastIndice() returns correct last indice in result');
 
+$results->setMaxPerPage(8);
+$results->setPage($results->getLastPage());
+
+$t->is($results->getLastIndice(), 1001, '->getLastIndice() returns correct last indice if more can fit on the page');
+
 
 $t->diag('testing link generator');
+$results->setMaxPerPage(10);
 $results->setPage(4);
 $t->is($results->getLinks(5), range(2, 6), '->getLinks() returns the correct link range');
 

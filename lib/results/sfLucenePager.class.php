@@ -166,6 +166,13 @@ class sfLucenePager
 
   public function getLastIndice()
   {
-    return ($this->getPage() * $this->getMaxPerPage());
+    if (($this->getPage() * $this->getMaxPerPage()) >= $this->getNbResults())
+    {
+      return $this->getNbResults();
+    }
+    else
+    {
+      return $this->getPage() * $this->getMaxPerPage();
+    }
   }
 }
