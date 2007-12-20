@@ -21,9 +21,9 @@ class sfLuceneResult
   protected $search;
 
   /**
-  * Singleton consturctor.
+  * Consturctor, but consider using factor method ::getInstance()
   */
-  protected function __construct($result, $search)
+  public function __construct(Zend_Search_Lucene_Search_QueryHit $result, sfLucene $search)
   {
     $this->result = $result;
     $this->search = $search;

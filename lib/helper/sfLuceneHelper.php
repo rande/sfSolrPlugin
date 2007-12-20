@@ -75,12 +75,3 @@ function add_highlight_qs($query, $keywords)
 
   return $query;
 }
-
-function select_for_search_categories($categories)
-{
-  $n_categories = array('0' => '--All--');
-
-  $n_categories += array_combine($categories, $categories);
-
-  return options_for_select($n_categories, 0);
-}
