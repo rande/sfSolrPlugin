@@ -3,7 +3,10 @@ sfLucenePlugin integrates symfony and Zend Search Lucene to instantly add a sear
 
 = Requirements =
   * symfony SVN 1.1 branch checkout (latest revision only!)
-  * Propel
+  * Propel 1.2 (1.3 untested)
+  * PHP 5.2.x+
+
+sfLucene ships with all external dependencies satisfied and will work on both private and shared hosting environments.
 
 = Main Features =
   * Configured all by YAML files
@@ -17,7 +20,7 @@ sfLucenePlugin integrates symfony and Zend Search Lucene to instantly add a sear
   * Extensible
 
 = Development Status =
-The 1.1 branch for sfLucene will work, however it is not rock-solid stable.  Please use it, but be ready to report a bug or two.
+The 1.1 branch for sfLucene will work, however it is not rock-solid stable.  Please use it, but be ready to report a few bugs to Trac.
 
 = Installation =
   * Install the plugin (from project directory):
@@ -76,7 +79,7 @@ index:
 
 "analyzer" can either by text, textnum, utf8, or utf8num.  If you choose text, all numbers will be ignored.  If you require the index to be case sensitive, set "case_sensitive" to "on".    mb_string determines whether to use the mb_* string functions instead of the standard PHP string filters.  This adds a huge performance bottleneck to indexing when turned on, so use with care.  You only need to turn mb_string on if you are working with a case-insensitive utf8 index.
 
-By default, in the command line sfLucene operates in the "search" environment.  This has the advantage to that if you require a different configuration setting for the search environment, you can easily set it up.  But, if your database is only selectively configured per environment (ie, not for "all"), then you will quickly run into trouble.  To get around this, define a database for either "all" or the "search" environment.  
+By default, in the command line sfLucene operates in the "search" environment.  This has the advantage to that if you require a different configuration setting for the search environment, you can easily set it up.  But, if your database is only selectively configured per environment (ie, not for "all"), then you will quickly run into trouble.  To get around this, define a database for either "all" or the "search" environment.
 
 = Indexing =
 sfLucene currently supports two ways to add information to the index:
