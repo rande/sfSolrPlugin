@@ -49,7 +49,7 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
   {
     extract($this->getActionProperties());
 
-    if ( $this->deleteGuid( $this->getGuid($params) ) && $this->shouldLog())
+    if ( $this->deleteGuid( $this->getGuid($params) ) )
     {
       $formatter = new sfAnsiColorFormatter();
 
@@ -58,13 +58,6 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
           $formatter->formatSection('indexer', sprintf('Deleted action "%s" of module "%s"', $action, $module))
         ))
       );
-
-      $categories = $this->getModelCategories();
-
-      foreach ($categories as $category)
-      {
-        $this->removeCategory($category);
-      }
     }
 
     return $this;
@@ -107,6 +100,8 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
 
       $doc->addField( $this->getLuceneField('text', 'sfl_category', implode(', ', $categories)) );
     }
+
+    $doc->addField( $this->getLuceneField('unindexed', 'sfl_categories_cache', serialize($categories)) );
 
     $guid = $this->getGuid($params);
 

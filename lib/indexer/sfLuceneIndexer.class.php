@@ -128,9 +128,14 @@ abstract class sfLuceneIndexer
 
     foreach ($hits as $hit)
     {
-      $timer = sfTimerManager::getTimer('Zend Search Lucene');
+      $categories = unserialize($hit->sfl_categories_cache);
+
+      foreach ($categories as $category)
+      {
+        $this->removeCategory($category);
+      }
+
       $this->getLucene()->delete($hit->id);
-      $timer->addTime();
     }
 
     $this->commit();

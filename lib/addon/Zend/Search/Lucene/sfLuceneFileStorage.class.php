@@ -21,12 +21,6 @@ class sfLuceneFileStorage extends Zend_Search_Lucene_Storage_File_Filesystem
   {
     parent::__construct($filename, $mode);
 
-    if (file_exists($filename) && substr(sprintf('%o', fileperms($filename)), -4) != '0777')
-    {
-      if (!@chmod($filename, 0777))
-      {
-        throw new sfException(sprintf('Unable to chmod file "%s".  Permissions are already %o', $filename, fileperms($filename)));
-      }
-    }
+    sfLuceneStorageFilesystem::chmod($filename, 0777);
   }
 }

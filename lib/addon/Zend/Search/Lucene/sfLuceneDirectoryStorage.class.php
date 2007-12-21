@@ -22,14 +22,7 @@ class sfLuceneDirectoryStorage extends Zend_Search_Lucene_Storage_Directory_File
     {
       parent::__construct($path);
 
-      if (is_dir($path) && substr(sprintf('%o', fileperms($path)), -4) != '0777')
-      {
-        if (!@chmod($path, 0777))
-        {
-          ini_set('track_errors', $trackErrors);
-          throw new sfException(sprintf('Unable to chmod file "%s".  Permissions are already %o', $path, fileperms($path)));
-        }
-      }
+      sfLuceneStorageFilesystem::chmod($path, 0777);
     }
 
     /**
@@ -49,14 +42,7 @@ class sfLuceneDirectoryStorage extends Zend_Search_Lucene_Storage_Directory_File
         global $php_errormsg;
         $trackErrors = ini_get('track_errors'); ini_set('track_errors', '1');
 
-        if (file_exists($this->_dirPath . '/' . $filename) && substr(sprintf('%o', fileperms($this->_dirPath . '/' . $filename)), -4) != '0777')
-        {
-          if (!@chmod($this->_dirPath . '/' . $filename, 0777))
-          {
-            ini_set('track_errors', $trackErrors);
-            throw new sfException(sprintf('Unable to chmod file "%s".  Permissions are already %o', $this->_dirPath . '/' . $filename, fileperms($this->_dirPath . '/' . $filename)));
-          }
-        }
+        sfLuceneStorageFilesystem::chmod($this->_dirPath, 0777);
 
         ini_set('track_errors', $trackErrors);
 

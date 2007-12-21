@@ -129,8 +129,10 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
         $this->addCategory($category);
       }
 
-      $doc->addField( $this->getLuceneField('text', 'sfl_category', implode(', ', $categories)) );
+      $doc->addField( $this->getLuceneField('text', 'sfl_category', implode(' ', $categories)) );
     }
+
+    $doc->addField( $this->getLuceneField('unindexed', 'sfl_categories_cache', serialize($categories)) );
 
     $doc->addField($this->getLuceneField('unindexed', 'sfl_model', $this->getModelName()));
     $doc->addField($this->getLuceneField('unindexed', 'sfl_type', 'model'));
@@ -139,13 +141,14 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     // TODO: Clean this up
     $this->addDocument($doc, $this->getModelGuid());
 
-    $formatter = new sfAnsiColorFormatter();
-
-    $this->getContext()->getEventDispatcher()->notify(
-      new sfEvent($this, 'command.log', array(
-        $formatter->formatSection('indexer', sprintf('Inserted model "%s" with PK = %s', $this->getModelName(), $this->getModel()->getPrimaryKey()))
-      ))
-    );
+// Intentional regression: this needs major clean up!
+//     $formatter = new sfAnsiColorFormatter();
+//
+//     $this->getContext()->getEventDispatcher()->notify(
+//       new sfEvent($this, 'command.log', array(
+//         $formatter->formatSection('indexer', sprintf('Inserted model "%s" with PK = %s', $this->getModelName(), $this->getModel()->getPrimaryKey()))
+//       ))
+//     );
 
     // restore culture in symfony i18n detection
     if ($old_culture)
@@ -165,20 +168,14 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     if ($this->deleteGuid( $this->getModelGuid() ))
     {
       // TODO: Clean this up
-      $formatter = new sfAnsiColorFormatter();
-
-      $this->getContext()->getEventDispatcher()->notify(
-        new sfEvent($this, 'command.log', array(
-          $formatter->formatSection('indexer', sprintf('Deleted model "%s" with PK = %s', $this->getModelName(), $this->getModel()->getPrimaryKey()))
-        ))
-      );
-
-      $categories = $this->getModelCategories();
-
-      foreach ($categories as $category)
-      {
-        $this->removeCategory($category);
-      }
+// Intentional regression: this needs major clean up!
+//       $formatter = new sfAnsiColorFormatter();
+//
+//       $this->getContext()->getEventDispatcher()->notify(
+//         new sfEvent($this, 'command.log', array(
+//           $formatter->formatSection('indexer', sprintf('Deleted model "%s" with PK = %s', $this->getModelName(), $this->getModel()->getPrimaryKey()))
+//         ))
+//       );
     }
 
     return $this;

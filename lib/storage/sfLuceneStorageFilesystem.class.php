@@ -19,9 +19,12 @@ class sfLuceneStorageFilesystem implements sfLuceneStorage
 {
   protected $file;
 
-  public function __construct($file)
+  protected $mode;
+
+  public function __construct($file,  $mode = 0777)
   {
     $this->file = $file;
+    $this->mode = $mode;
   }
 
   public function read()
@@ -38,7 +41,11 @@ class sfLuceneStorageFilesystem implements sfLuceneStorage
   {
     $this->mkdir(dirname($this->file));
 
-    return file_put_contents($this->file, $data);
+    $retval = file_put_contents($this->file, $data);
+
+    self::chmod($this->file, $this->mode);
+
+    return $retval;
   }
 
   public function delete()
@@ -53,6 +60,14 @@ class sfLuceneStorageFilesystem implements sfLuceneStorage
       return true;
     }
 
-    return mkdir($dir, 0777, true);
+    return mkdir($dir, $this->mode, true);
+  }
+
+  static public function chmod($file, $mode)
+  {
+    if (file_exists($file) && substr(sprintf('%o', fileperms($file)), -4) != sprintf('%o', $mode))
+    {
+      chmod($file, 0777);
+    }
   }
 }

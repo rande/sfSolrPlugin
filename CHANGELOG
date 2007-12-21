@@ -12,6 +12,7 @@ Trunk
   * Refactored category support
   * Minor refactoring of sfLucene class to move to sfParameterHolder
   * Upgraded forms to sfForm
+  * Fixed sfLucene does not handle changed categories (closes #2687)
 
 Version 0.1.1 Beta
   * Fixed i18n category "All" value
