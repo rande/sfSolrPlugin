@@ -61,6 +61,14 @@ function configure_i18n($status = true, $culture = 'en_US')
   }
 }
 
+function remove_from_sfconfig($what)
+{
+  $all = sfConfig::getAll();
+  unset($all[$what]);
+  sfConfig::clear();
+  sfConfig::add($all);
+}
+
 clear_sandbox();
 
 sfConfig::set('sf_config_dir_name', dirname(__FILE__) . '/../data/config');

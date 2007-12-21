@@ -5,7 +5,7 @@ testLucene:
         id:
           type: unindexed
           boost: 1
-        title:  
+        title:
           type: text
           boost: 2
         description:
@@ -28,3 +28,7 @@ testLucene:
   interface:
     categories: on
     advanced: on
+
+fooLucene:
+  index:
+    cultures: [en]

@@ -96,18 +96,7 @@ class sfLuceneToolkit
 
       if (!is_readable($lucene))
       {
-        $error = 'Could not open Zend_Search_Lucene for inclusion. ';
-
-        if (file_exists($lucene))
-        {
-          $error .= 'Check permissions on "' . $lucene . '"';
-        }
-        else
-        {
-          $error .= 'Make sure a Zend folder containing the Zend framework is in "' . $vendor . '"';
-        }
-
-        throw new sfLuceneException($error);
+        throw new sfLuceneException('Could not open Zend_Search_Lucene for inclusion at: ' . $vendor);
       }
 
       // let PHP find the Zend libraries.
