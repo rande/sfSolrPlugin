@@ -12,12 +12,12 @@
   </lead>
   <date>2007-11-17</date>
   <version>
-    <release>0.1.1</release>
-    <api>0.1.1</api>
+    <release>0.2.0</release>
+    <api>0.2.0</api>
   </version>
   <stability>
-    <release>beta</release>
-    <api>beta</api>
+    <release>devel</release>
+    <api>devel</api>
   </stability>
   <license uri="http://www.symfony-project.com/license">MIT license</license>
  <notes>-</notes>
@@ -29,7 +29,7 @@
  <dependencies>
    <required>
      <php>
-       <min>5.1.0</min>
+       <min>5.2.0</min>
      </php>
      <pearinstaller>
        <min>1.4.1</min>
