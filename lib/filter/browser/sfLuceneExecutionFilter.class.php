@@ -15,7 +15,7 @@
  */
 class sfLuceneExecutionFilter extends sfExecutionFilter
 {
-    /**
+  /**
    * Executes and renders the view.
    *
    * The behavior of this method depends on the controller render mode:

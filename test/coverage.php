@@ -20,8 +20,8 @@ $h = new lime_harness(new lime_output_color());
 $h->base_dir = realpath(dirname(__FILE__));
 
 // unit tests
-$h->register_glob($h->base_dir.'/unit/*Test.php');
-$h->register_glob($h->base_dir.'/unit/*/*Test.php');
+$finder = sfFinder::type('file')->ignore_version_control()->follow_link()->name('*Test.php');
+$h->register($finder->in($h->base_dir));
 
 $c = new lime_coverage($h);
 $c->extension = '.class.php';
