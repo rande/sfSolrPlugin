@@ -514,6 +514,7 @@ class sfLucene
     $timer = sfTimerManager::getTimer('Zend Search Lucene Find');
 
     $sort = array();
+    $scoring = null;
 
     if ($query instanceof sfLuceneCriteria)
     {
@@ -524,11 +525,20 @@ class sfLucene
         $sort[] = $sortable['order'];
       }
 
+      $scoring = $query->getScoringAlgorithm();
       $query = $query->getQuery();
     }
     elseif (is_string($query))
     {
       $query = sfLuceneCriteria::newInstance()->add($query)->getQuery();
+    }
+
+
+    $defaultScoring = Zend_Search_Lucene_Search_Similarity::getDefault();
+
+    if ($scoring)
+    {
+      Zend_Search_Lucene_Search_Similarity::setDefault($scoring);
     }
 
     try
@@ -547,10 +557,13 @@ class sfLucene
     }
     catch (Exception $e)
     {
+      Zend_Search_Lucene_Search_Similarity::setDefault($defaultScoring);
       $timer->addTime();
+
       throw $e;
     }
 
+    Zend_Search_Lucene_Search_Similarity::setDefault($defaultScoring);
     $timer->addTime();
 
     return $results;

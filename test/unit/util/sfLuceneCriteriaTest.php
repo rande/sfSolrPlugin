@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(47, new lime_output_color());
+$t = new lime_test(51, new lime_output_color());
 
 class Foo { }
 
@@ -177,19 +177,6 @@ try {
   $t->pass('->addField() rejects invalid values');
 }
 
-$t->diag('testing sorting');
-
-$sorts = sfLuceneCriteria::newInstance()->addSortBy('foo', SORT_ASC, SORT_REGULAR)->addSortBy('bar', SORT_DESC, SORT_NUMERIC)->getSorts();
-
-$t->is_deeply($sorts, array( array('field' => 'foo', 'order' => SORT_ASC, 'type' => SORT_REGULAR), array('field' => 'bar', 'order' => SORT_DESC, 'type' => SORT_NUMERIC)), '->addSortBy() correctly adds the sort fields');
-
-$sorts = sfLuceneCriteria::newInstance()->addAscendingSortBy('foo', SORT_STRING)->getSorts();
-$t->is_deeply($sorts, array(array('field' => 'foo', 'order' => SORT_ASC, 'type' => SORT_STRING)), '->addAscendingSortBy() correctly adds a sort field');
-
-$sorts = sfLuceneCriteria::newInstance()->addDescendingSortBy('foo', SORT_STRING)->getSorts();
-$t->is_deeply($sorts, array(array('field' => 'foo', 'order' => SORT_DESC, 'type' => SORT_STRING)), '->addDescendingSortBy() correctly adds a sort field');
-
-
 $t->diag('testing addMultiTerm()');
 $s = sfLuceneCriteria::newInstance()->addMultiTerm(range(1, 10), 'foo')->getQuery()->getSubqueries();
 
@@ -287,6 +274,38 @@ $t->is_deeply(explode(chr(0), $s[0]->getLowerTerm()->key()), array('latitude', '
 $t->is_deeply(explode(chr(0), $s[0]->getUpperTerm()->key()), array('latitude', '39.5718409907'), '->addProximity() calculates correct upper bound latitude');
 $t->is_deeply(explode(chr(0), $s[1]->getLowerTerm()->key()), array('longitude', '-124.692219999'), '->addProximity() calculates correct lower bound longitude');
 $t->is_deeply(explode(chr(0), $s[1]->getUpperTerm()->key()), array('longitude', '-120.146180001'), '->addProximity() calculates correct upper bound longitude');
+
+
+$t->diag('testing sorting');
+
+$sorts = sfLuceneCriteria::newInstance()->addSortBy('foo', SORT_ASC, SORT_REGULAR)->addSortBy('bar', SORT_DESC, SORT_NUMERIC)->getSorts();
+
+$t->is_deeply($sorts, array( array('field' => 'foo', 'order' => SORT_ASC, 'type' => SORT_REGULAR), array('field' => 'bar', 'order' => SORT_DESC, 'type' => SORT_NUMERIC)), '->addSortBy() correctly adds the sort fields');
+
+$sorts = sfLuceneCriteria::newInstance()->addAscendingSortBy('foo', SORT_STRING)->getSorts();
+$t->is_deeply($sorts, array(array('field' => 'foo', 'order' => SORT_ASC, 'type' => SORT_STRING)), '->addAscendingSortBy() correctly adds a sort field');
+
+$sorts = sfLuceneCriteria::newInstance()->addDescendingSortBy('foo', SORT_STRING)->getSorts();
+$t->is_deeply($sorts, array(array('field' => 'foo', 'order' => SORT_DESC, 'type' => SORT_STRING)), '->addDescendingSortBy() correctly adds a sort field');
+
+$t->diag('testing scoring');
+
+class FooScoring extends Zend_Search_Lucene_Search_Similarity_Default
+{
+}
+
+$fooScoring = new FooScoring;
+
+$t->is(sfLuceneCriteria::newInstance()->getScoringAlgorithm(), null, '->getScoringAlgorithm() is null by default');
+$t->ok(sfLuceneCriteria::newInstance()->setScoringAlgorithm($fooScoring)->getScoringAlgorithm() === $fooScoring, '->setScoringAlgorithm() changes the algorithm');
+$t->is(sfLuceneCriteria::newInstance()->setScoringAlgorithm(null)->getScoringAlgorithm(), null, '->setScoringAlgorithm() with null algorithm reverts to default');
+
+try {
+  sfLuceneCriteria::newInstance()->setScoringAlgorithm('foo');
+  $t->fail('->setScoringAlgorithm() rejects invalid algorithms');
+} catch (Exception $e) {
+  $t->pass('->setScoringAlgorithm() rejects invalid algorithms');
+}
 
 $t->diag('testing getNewCriteria()');
 

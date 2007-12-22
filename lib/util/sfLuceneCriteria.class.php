@@ -30,6 +30,8 @@ class sfLuceneCriteria
 
   protected $sorts = array();
 
+  protected $scoring = null;
+
   public function __construct()
   {
     sfLuceneToolkit::loadZend();
@@ -308,6 +310,22 @@ class sfLuceneCriteria
   }
 
   /**
+   * Sets the scoring algorithm for this query.
+   * @param null|Zend_Search_Lucene_Search_Similarity $algorithm An instance of the algorithm to use (null for default)
+   */
+  public function setScoringAlgorithm($algorithm)
+  {
+    if ($algorithm != null && !($algorithm instanceof Zend_Search_Lucene_Search_Similarity))
+    {
+      throw new sfLuceneException('Scoring algorithm must either be null (for default) or an instance of Zend_Search_Lucene_Search_Similarity');
+    }
+
+    $this->scoring = $algorithm;
+
+    return $this;
+  }
+
+  /**
    * Returns a Zend_Search_Lucene query that can be fed directly to Lucene
    */
   public function getQuery()
@@ -318,6 +336,11 @@ class sfLuceneCriteria
   public function getSorts()
   {
     return $this->sorts;
+  }
+
+  public function getScoringAlgorithm()
+  {
+    return $this->scoring;
   }
 
   public function getNewCriteria()
