@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(39, new lime_output_color());
+$t = new lime_test(47, new lime_output_color());
 
 class Foo { }
 
@@ -260,6 +260,33 @@ try {
 $s = sfLuceneCriteria::newInstance()->addRange('a', 'b', 'c', false)->getQuery()->getSubqueries();
 $q = new Zend_Search_Lucene_Search_Query_Range(new Zend_Search_Lucene_Index_Term('a', 'c'), new Zend_Search_Lucene_Index_Term('b', 'c'), false);
 $t->ok($s[0] == $s[0], '->addRange() registers a complex exclusive query');
+
+$t->diag('testing addProximity()');
+
+try {
+  sfLuceneCriteria::newInstance()->addProximity(37.7752, -122.4192, 0);
+  $t->fail('->addProximity() rejects a zero proximity');
+} catch (Exception $e) {
+  $t->pass('->addProximity() rejects a zero proximity');
+}
+
+try {
+  sfLuceneCriteria::newInstance()->addProximity(37.7752, -122.4192, 90, 0);
+  $t->fail('->addProximity() rejects a zero radius');
+} catch (Exception $e) {
+  $t->pass('->addProximity() rejects a zero radius');
+}
+
+$s = sfLuceneCriteria::newInstance()->addProximity(37.7752, -122.4192, 200)->getQuery()->getSubqueries();
+$s = $s[0]->getSubqueries();
+
+$t->ok($s[0]->isInclusive(), '->addProximity() uses inclusive range queries');
+$t->ok($s[1]->isInclusive(), '->addProximity() uses inclusive range queries');
+
+$t->is_deeply(explode(chr(0), $s[0]->getLowerTerm()->key()), array('latitude', '35.9785590093'), '->addProximity() calculates correct lower bound latitude');
+$t->is_deeply(explode(chr(0), $s[0]->getUpperTerm()->key()), array('latitude', '39.5718409907'), '->addProximity() calculates correct upper bound latitude');
+$t->is_deeply(explode(chr(0), $s[1]->getLowerTerm()->key()), array('longitude', '-124.692219999'), '->addProximity() calculates correct lower bound longitude');
+$t->is_deeply(explode(chr(0), $s[1]->getUpperTerm()->key()), array('longitude', '-120.146180001'), '->addProximity() calculates correct upper bound longitude');
 
 $t->diag('testing getNewCriteria()');
 
