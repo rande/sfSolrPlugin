@@ -34,7 +34,7 @@ class sfLuceneLowerCaseFilter extends Zend_Search_Lucene_Analysis_TokenFilter_Lo
   {
     if ($this->mbString)
     {
-      $value = mb_strtolower( $srcToken->getTermText() );
+      $value = mb_strtolower( $srcToken->getTermText(), 'utf8');
     }
     else
     {
