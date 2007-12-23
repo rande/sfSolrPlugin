@@ -13,9 +13,12 @@ testLucene:
           boost: 1
       title: title
       description: description
-      categories: Forum
+      categories: [Forum]
       route: "forum/showForum?id=%id%"
       validator: isIndexable
+      rebuild_limit: 5
+      peer: FakeForumPeer
+      partial: modelResult
   index:
     encoding: UTF-8
     cultures: [en, fr]

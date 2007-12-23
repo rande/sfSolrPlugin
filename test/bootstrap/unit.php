@@ -31,7 +31,7 @@ include(SF_ROOT_DIR.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'config.php
 require_once($sf_symfony_lib_dir.'/vendor/lime/lime.php');
 
 define('SANDBOX_DIR', dirname(dirname(__FILE__)) . '/sandbox');
-
+define('DATA_DIR', dirname(dirname(__FILE__)) . '/data');
 
 function clear_sandbox()
 {

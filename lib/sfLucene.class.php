@@ -22,19 +22,9 @@
 class sfLucene
 {
   /**
-  * Holder for lucene instance
-  */
-  protected $lucene = null;
-
-  /**
    * Holds various misc. parameters
    */
-  protected $parameters = array();
-
-  /**
-   * Holds the categories holder
-   */
-  protected $categories = null;
+  protected $parameters = null;
 
   /**
   * Holder for the instances
@@ -241,12 +231,12 @@ class sfLucene
   */
   public function getCategories()
   {
-    if ($this->categories == null)
+    if (!$this->getParameterHolder()->has('categories'))
     {
-      $this->categories = new sfLuceneCategories($this);
+      $this->setParameter('categories', new sfLuceneCategories($this));
     }
 
-    return $this->categories;
+    return $this->getParameter('categories');
   }
 
   /**
@@ -257,7 +247,7 @@ class sfLucene
   {
     $location = $this->getParameter('index_location');
 
-    if ($this->lucene == null)
+    if (!$this->getParameterHolder()->has('lucene'))
     {
       sfLuceneToolkit::loadZend();
 
@@ -284,10 +274,10 @@ class sfLucene
         $lucene = Zend_Search_Lucene::create( new sfLuceneDirectoryStorage($location) );
       }
 
-      $this->lucene = $lucene;
+      $this->setParameter('lucene', $lucene);
    }
 
-    return $this->lucene;
+    return $this->getParameter('lucene');
   }
 
   /**
@@ -296,7 +286,12 @@ class sfLucene
   */
   public function getIndexer()
   {
-    return new sfLuceneIndexerFactory($this);
+    if (!$this->getParameterHolder()->has('indexer_factory'))
+    {
+      $this->setParameter('indexer_factory', new sfLuceneIndexerFactory($this));
+    }
+
+    return $this->getParameter('indexer_factory');
   }
 
   /**
@@ -393,7 +388,7 @@ class sfLucene
   */
   public function setAutomaticMode()
   {
-    $mode = $this->getContext()->getInstance()->getController()->inCLI();
+    $mode = $this->getContext()->getController()->inCLI();
 
     if ($mode)
     {
@@ -488,7 +483,10 @@ class sfLucene
 
     foreach ( new DirectoryIterator($this->getParameter('index_location')) as $node)
     {
-      $size += $node->getSize();
+      if (!in_array($node->getFilename(), array('CVS', '.svn')))
+      {
+        $size += $node->getSize();
+      }
     }
 
     return $size;
@@ -576,7 +574,7 @@ class sfLucene
   */
   public function friendlyFind($query)
   {
-    return new sfLuceneResults( $this->find($query) , $this);
+    return new sfLuceneResults( $this->find($query), $this);
   }
 
   /**
@@ -591,5 +589,14 @@ class sfLucene
     }
 
     return $event->getReturnValue();
+  }
+
+  /**
+   * Removes this instance from the singleton.  Do not ever use except for
+   * unit testing.
+   */
+  public function unlatch()
+  {
+    unset(self::$instances[$this->getParameter('name')][$this->getParameter('culture')]);
   }
 }
