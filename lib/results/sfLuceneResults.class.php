@@ -99,7 +99,7 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
 
   public function offsetGet($offset)
   {
-    return $this->results[$offset];
+    return $this->getInstance($this->results[$offset]);
   }
 
   public function offsetSet($offset, $set)

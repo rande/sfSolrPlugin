@@ -29,9 +29,14 @@ class sfLuceneResult
     $this->search = $search;
   }
 
-  protected function getSearch()
+  public function getSearch()
   {
     return $this->search;
+  }
+
+  public function getResult()
+  {
+    return $this->result;
   }
 
   /**
@@ -45,31 +50,33 @@ class sfLuceneResult
   /**
   * Gets the partial
   */
-  public function getInternalPartial()
+  public function getInternalPartial($module = 'sfLucene')
   {
-    return 'sfLucene/' . $this->getInternalType() . 'Result';
+    return $module . '/' . $this->getInternalType() . 'Result';
   }
 
   public function getInternalDescription()
   {
     try
     {
-      return strip_tags($this->sfl_description);
+      return strip_tags($this->result->getDocument()->getFieldValue('sfl_description'));
     }
     catch (Exception $e)
     {
-      $responses = array('Click for more information', 'No description available', 'Open this item for more information');
-
-      return $responses[array_rand($responses)];
+      return 'No description available.';
     }
   }
 
-  /**
-  * To be implemented later
-  */
-  public function valid()
+  public function getInternalTitle()
   {
-    return true;
+    try
+    {
+      return $this->result->getDocument()->getFieldValue('sfl_title');
+    }
+    catch (Exception $e)
+    {
+      return 'No title available.';
+    }
   }
 
   /**
@@ -77,7 +84,7 @@ class sfLuceneResult
   */
   static public function getInstance($result, $search)
   {
-    switch ($result->sfl_type)
+    switch ($result->getDocument()->getFieldValue('sfl_type'))
     {
       case 'action':
         $c = 'sfLuceneActionResult';
@@ -115,14 +122,13 @@ class sfLuceneResult
       }
     }
 
-    $call = array($this->results, $method);
-
-    if (is_callable($call))
+    $event = $this->getSearch()->getContext()->getEventDispatcher()->notifyUntil(new sfEvent($this, 'lucene.result.method_not_found', array('method' => $method, 'arguments' => $args)));
+    if (!$event->isProcessed())
     {
-      return call_user_func_array($call, $args);
+      throw new sfException(sprintf('Call to undefined method %s::%s.', __CLASS__, $method));
     }
 
-    return sfMixer::callMixins();
+    return $event->getReturnValue();
   }
 
   /**
@@ -139,13 +145,5 @@ class sfLuceneResult
     }
 
     return $property;
-  }
-
-  /**
-  * Wrapper for lucene's __get()
-  */
-  public function __get($property)
-  {
-    return $this->result->$property;
   }
 }

@@ -127,7 +127,7 @@ $t->is($m->get('route'), 'forum/showForum?id=%id%', 'model property "route" is t
 $t->is($m->get('validator'), 'isIndexable', 'model property "validator" is the correct validator');
 $t->is($m->get('peer'), 'FakeForumPeer', 'model property "peer" is the correct peer');
 $t->is($m->get('rebuild_limit'), 5, 'model property "rebuild_limit" is the correct rebuild limit');
-$t->is($m->get('partial'), 'modelResult', 'model property "partial" is the correct partial');
+$t->is($m->get('partial'), 'forumResult', 'model property "partial" is the correct partial');
 
 $f = $m->get('fields');
 $t->isa_ok($f, 'sfParameterHolder', 'model property "fields" is a sfParameterHolder');

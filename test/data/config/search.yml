@@ -18,7 +18,7 @@ testLucene:
       validator: isIndexable
       rebuild_limit: 5
       peer: FakeForumPeer
-      partial: modelResult
+      partial: forumResult
   index:
     encoding: UTF-8
     cultures: [en, fr]
