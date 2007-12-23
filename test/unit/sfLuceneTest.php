@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../bootstrap/unit.php';
 
-$t = new lime_test(85, new lime_output_color());
+$t = new lime_test(91, new lime_output_color());
 
 $t->diag('testing ::getInstance()');
 
@@ -361,14 +361,41 @@ $t->is($lucene->segmentCount(), 2, '->segmentCount() returns the correct segment
 
 $lucene->setParameter('index_location', $originalLocation);
 
-$t->diag('testing batch mode');
+$t->diag('testing modes');
+
+class FooController
+{
+  public $cli = true;
+
+  public function inCLI()
+  {
+    return $this->cli;
+  }
+}
+
+$controller = new FooController();
+$oldController = sfContext::getInstance()->get('controller');
+sfContext::getInstance()->set('controller', $controller);
+
+$lucene->setAutomaticMode();
+$t->is($lucene->getLucene()->getMaxBufferedDocs(), 500, '->setAutomaticMode() sets MaxBufferedDocs to 500 in a CLI environment');
+$t->is($lucene->getLucene()->getMaxMergeDocs(), PHP_INT_MAX, '->setAutomaticMode() sets MaxMaxMergeDocs to PHP_INT_MAX in a CLI environment');
+$t->is($lucene->getLucene()->getMergeFactor(), 50, '->setAutomaticMode() sets MergeFactor to 50 in a CLI environment');
+
+$controller->cli = false;
+
+$lucene->setAutomaticMode();
+$t->is($lucene->getLucene()->getMaxBufferedDocs(), 10, '->setAutomaticMode() sets MaxBufferedDocs to 10 in a web environment');
+$t->is($lucene->getLucene()->getMaxMergeDocs(), PHP_INT_MAX, '->setAutomaticMode() sets MaxMaxMergeDocs to PHP_INT_MAX in a web environment');
+$t->is($lucene->getLucene()->getMergeFactor(), 10, '->setAutomaticMode() sets MergeFactor to 10 in a web environment');
+
+sfContext::getInstance()->set('controller', $oldController);
 
 $lucene->setBatchMode();
 $t->is($lucene->getLucene()->getMaxBufferedDocs(), 500, '->setBatchMode() sets MaxBufferedDocs to 500');
 $t->is($lucene->getLucene()->getMaxMergeDocs(), PHP_INT_MAX, '->setBatchMode() sets MaxMaxMergeDocs to PHP_INT_MAX');
 $t->is($lucene->getLucene()->getMergeFactor(), 50, '->setBatchMode() sets MergeFactor to 50');
 
-$t->diag('testing interactive mode');
 $lucene->setInteractiveMode();
 $t->is($lucene->getLucene()->getMaxBufferedDocs(), 10, '->setInteractiveMode() sets MaxBufferedDocs to 10');
 $t->is($lucene->getLucene()->getMaxMergeDocs(), PHP_INT_MAX, '->setInteractiveMode() sets MaxMaxMergeDocs to PHP_INT_MAX');
