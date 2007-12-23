@@ -52,7 +52,7 @@ function configure_i18n($status = true, $culture = 'en_US')
     ));
 
     sfConfig::set('sf_i18n', true);
-    sfContext::getInstance()->set('i18n', new sfI18N(sfContext::getInstance()));
+    sfContext::getInstance()->set('i18n', new sfI18N(sfContext::getInstance()->getEventDispatcher()));
   }
   else
   {
