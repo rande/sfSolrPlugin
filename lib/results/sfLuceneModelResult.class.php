@@ -67,7 +67,7 @@ class sfLuceneModelResult extends sfLuceneResult
   /**
   * Gets the partial specified for this result.
   */
-  public function getInternalPartial()
+  public function getInternalPartial($module = 'sfLucene')
   {
     $model = $this->retrieveModel();
 
@@ -76,7 +76,7 @@ class sfLuceneModelResult extends sfLuceneResult
       return $model->get('partial');
     }
 
-    return parent::getInternalPartial();
+    return parent::getInternalPartial($module);
   }
 
   public function getInternalDescription()
