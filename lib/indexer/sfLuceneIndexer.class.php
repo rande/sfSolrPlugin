@@ -17,9 +17,7 @@
 abstract class sfLuceneIndexer
 {
   private $search = null;
-  private $context = null;
 
-  protected $encoding = 'UTF-8';
 
   public function __construct($search)
   {
@@ -29,15 +27,29 @@ abstract class sfLuceneIndexer
     }
 
     $this->search = $search;
-    $this->encoding = $search->getParameter('encoding');
 
-    $this->getSearch()->configure();
+    $search->configure();
   }
 
+  /**
+   * Inserts the record into the index.
+   */
   abstract public function insert();
+
+  /**
+   * Deletes the record from the index
+   */
   abstract public function delete();
+
+  /**
+   * Verifies if this record should be indexed.
+   * If returns true, indexing proceeds.  If false, indexing is skipped.
+   */
   abstract protected function shouldIndex();
 
+  /**
+   * Saves the record.
+   */
   public function save()
   {
     $this->delete();
@@ -47,65 +59,16 @@ abstract class sfLuceneIndexer
   }
 
   /**
-  * Gets an instance of the lucene engine.
-  */
-  protected function getLucene()
-  {
-    return $this->getSearch()->getLucene();
-  }
-
-  /**
-  * Gets the search engine.
+  * Gets the search instance.
   */
   protected function getSearch()
   {
     return $this->search;
   }
 
-  protected function getCulture()
-  {
-    return $this->getSearch()->getParameter('culture');
-  }
-
   protected function getContext()
   {
-    return $this->getSearch()->getContext();
-  }
-
-  /**
-  * Action to retrieve the GUID for the input
-  */
-  protected function getGuid($input)
-  {
-    return $this->getCulture() . '-' . md5($input) . sha1($input);
-  }
-
-  /**
-  * Factory to obtain the search fields.
-  * @param string $field The type of field
-  * @param string $name To name to use
-  * @param string $contents The contents for the field to have.
-  * @return mixed The requested type.
-  */
-  protected function getLuceneField($field, $name, $contents)
-  {
-    switch (strtolower($field))
-    {
-      case 'keyword':
-        return Zend_Search_Lucene_Field::Keyword($name, $contents, $this->encoding);
-      case 'unindexed':
-        return Zend_Search_Lucene_Field::UnIndexed($name, $contents, $this->encoding);
-      case 'binary':
-        return Zend_Search_Lucene_Field::Binary($name, $contents);
-      case 'text':
-        return Zend_Search_Lucene_Field::Text($name, $contents, $this->encoding);
-      case 'unstored':
-        return Zend_Search_Lucene_Field::UnStored($name, $contents, $this->encoding);
-      case 'index term':
-        return new Zend_Search_Lucene_Index_Term($contents, $name);
-      default:
-        throw new sfLuceneIndexerException(sprintf('Unknown field "%s" in factory', $field));
-    }
+    return $this->search->getContext();
   }
 
   /**
@@ -124,7 +87,7 @@ abstract class sfLuceneIndexer
 
     $query = new Zend_Search_Lucene_Search_Query_Term($term);
 
-    $hits = $this->find($query);
+    $hits = $this->getSearch()->find($query);
 
     foreach ($hits as $hit)
     {
@@ -135,10 +98,10 @@ abstract class sfLuceneIndexer
         $this->removeCategory($category);
       }
 
-      $this->getLucene()->delete($hit->id);
+      $this->getSearch()->getLucene()->delete($hit->id);
     }
 
-    $this->commit();
+    $this->getSearch()->commit();
 
     return count($hits);
   }
@@ -151,7 +114,7 @@ abstract class sfLuceneIndexer
     $document->addField($this->getLuceneField('keyword', 'sfl_guid', $guid));
 
     $timer = sfTimerManager::getTimer('Zend Search Lucene');
-    $this->getLucene()->addDocument($document);
+    $this->getSearch()->getLucene()->addDocument($document);
     $timer->addTime();
   }
 
@@ -176,39 +139,38 @@ abstract class sfLuceneIndexer
   }
 
   /**
-  * Returns a document based off an HTML string.
-  */
-  protected function getHtmlDocString($string)
+   * Action to retrieve the GUID for the input
+   */
+  protected function getGuid($input)
   {
-    return Zend_Search_Lucene_Document_Html::loadHtml($string);
+    return md5($input) . sha1($input);
   }
 
   /**
-  * Returns a document based off an HTML file.
-  */
-  protected function getHtmlDocFile($file)
+   * Factory to obtain the search fields.
+   * @param string $field The type of field
+   * @param string $name To name to use
+   * @param string $contents The contents for the field to have.
+   * @return mixed The requested type.
+   */
+  protected function getLuceneField($field, $name, $contents)
   {
-    return Zend_Search_Lucene_Document_Html::loadHtmlFile($file);
-  }
-
-  protected function getNewDocument()
-  {
-    return new Zend_Search_Lucene_Document();
-  }
-
-  /**
-  * Searches the lucene index for $query
-  */
-  protected function find($query)
-  {
-    return $this->getSearch()->find($query);
-  }
-
-  /**
-  * Commits the changes.
-  */
-  protected function commit()
-  {
-    return $this->getSearch()->commit();
+    switch (strtolower($field))
+    {
+      case 'keyword':
+        return Zend_Search_Lucene_Field::Keyword($name, $contents, $this->getSearch()->getParameter('encoding'));
+      case 'unindexed':
+        return Zend_Search_Lucene_Field::UnIndexed($name, $contents, $this->getSearch()->getParameter('encoding'));
+      case 'binary':
+        return Zend_Search_Lucene_Field::Binary($name, $contents);
+      case 'text':
+        return Zend_Search_Lucene_Field::Text($name, $contents, $this->getSearch()->getParameter('encoding'));
+      case 'unstored':
+        return Zend_Search_Lucene_Field::UnStored($name, $contents, $this->getSearch()->getParameter('encoding'));
+      case 'index term':
+        return new Zend_Search_Lucene_Index_Term($contents, $name);
+      default:
+        throw new sfLuceneIndexerException(sprintf('Unknown field "%s" in factory', $field));
+    }
   }
 }

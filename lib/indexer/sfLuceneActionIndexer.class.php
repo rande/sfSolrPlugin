@@ -79,7 +79,7 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
 
     $content = $output->getContent();
 
-    $doc = $this->getHtmlDocString($content);
+    $doc = Zend_Search_Lucene_Document_Html::loadHtml($content);
 
     $title_field = $this->getLuceneField('text', 'sfl_title', $output->getLastTitle());
     $title_field->boost = 2;
@@ -204,7 +204,7 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
       $browser->setCredentials($credentials);
       $browser->setLayout($layout);
       $browser->setMethod('GET');
-      $browser->setCulture($this->getCulture());
+      $browser->setCulture($this->getSearch()->getParameter('culture'));
 
       return $browser;
     }

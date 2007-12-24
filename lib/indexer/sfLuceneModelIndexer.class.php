@@ -19,6 +19,9 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
 {
   private $instance;
 
+  /**
+   * Constructs a new instance for a model
+   */
   public function __construct($search, $instance)
   {
     parent::__construct($search);
@@ -29,30 +32,24 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
     }
 
     $this->instance = $instance;
-
-    $msg = $this->validate();
-
-    if ($msg)
-    {
-      throw new sfLuceneIndexerException('Model failed validation: ' . $msg);
-    }
   }
 
+  /**
+   * Calculates the GUID for the model
+   */
   abstract protected function getModelGuid();
 
   /**
-   * Optional validation method.  If it returns a message, an exception is thrown.
+   * Returns the instance of the model
    */
-  protected function validate()
-  {
-    return null;
-  }
-
   protected function getModel()
   {
     return $this->instance;
   }
 
+  /**
+   * Returns the model name
+   */
   protected function getModelName()
   {
     return get_class($this->getModel());
@@ -66,6 +63,9 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
     return $this->getSearch()->getParameter('models')->get($this->getModelName());
   }
 
+  /**
+   * Returns an array of the model categories
+   */
   protected function getModelCategories()
   {
     $properties = $this->getModelProperties();
