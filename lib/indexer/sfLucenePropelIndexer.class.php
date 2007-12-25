@@ -19,12 +19,12 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
 {
   public function __construct($search, $instance)
   {
-    parent::__construct($search, $instance);
-
     if (!($instance instanceof BaseObject))
     {
       throw new sfLuceneIndexerException('Model is not a Propel model (must extend BaseObject)');
     }
+
+    parent::__construct($search, $instance);
   }
 
   /**
@@ -78,11 +78,6 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     {
       $cb = $properties->get('callback');
 
-      if (!is_callable(array($this->getModel(), $cb)))
-      {
-        throw new sfLuceneIndexerException(sprintf('Callback "%s::%s()" does not exist', $this->getModelName(), $cb));
-      }
-
       $doc = $this->getModel()->$cb();
 
       if (!($doc instanceof Zend_Search_Lucene_Document))
@@ -110,11 +105,6 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
       $field_properties = $properties->get('fields')->get($field);
 
       $getter = 'get' . $field;
-
-      if (!is_callable(array($this->getModel(), $getter)))
-      {
-        throw new sfLuceneIndexerException(sprintf('%s::%s() cannot be called', $this->getModel(), $getter));
-      }
 
       $type = $field_properties->get('type');
       $boost = $field_properties->get('boost');
@@ -202,7 +192,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     $properties = $this->getModelProperties();
     $method = $properties->get('validator');
 
-    if (method_exists($this->getModel(), $method))
+    if ($method && method_exists($this->getModel(), $method))
     {
       return (bool) $this->getModel()->$method();
     }
@@ -229,11 +219,6 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
 
         $getter = 'get' . $category;
 
-        if (!is_callable(array($this->getModel(), $getter)))
-        {
-          throw new sfLuceneIndexerException(sprintf('%s->%s() cannot be called', $this->getModelName(), $getter));
-        }
-
         $getterValue = $this->getModel()->$getter();
 
         if (is_object($getterValue) && method_exists($getterValue, '__toString'))
@@ -242,21 +227,14 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
         }
         elseif (!is_scalar($getterValue))
         {
-          if (is_object($getterValue))
-          {
-            throw new sfLuceneIndexerException('Category value returned is an object, but could not be casted to a string (add a __toString() method to fix this).');
-          }
-          else
-          {
-            throw new sfLuceneIndexerException('Category value returned is not a string (got a ' . gettype($value) . ' ) and could not be transformed into a string.');
-          }
+          throw new sfLuceneIndexerException('Category value returned is not a string (got a ' . gettype($getterValue) . ' ) and could not be transformed into a string.');
         }
 
         $retval[] = $getterValue;
       }
       else
       {
-        if (sfConfig::get('sf_i18n'))
+        if (isset($i18n) && $i18n)
         {
           $retval[] = $i18n->__($category);
         }
@@ -270,7 +248,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     return $retval;
   }
 
-  protected function getModelGuid()
+  public function getModelGuid()
   {
     return self::getGuid($this->getModelName() . '_' . $this->getModel()->hashCode());
   }
