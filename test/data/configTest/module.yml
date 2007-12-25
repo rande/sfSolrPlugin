@@ -1,0 +1,10 @@
+testLucene:
+  foo:
+    security:
+      authenticated: true
+      credentials: [admin]
+    params:
+      foo: bar
+      baz: foobar
+    layout: true
+  bar: ~

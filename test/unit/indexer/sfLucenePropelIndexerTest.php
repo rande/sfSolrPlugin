@@ -29,7 +29,7 @@ function getDoc($lucene, $guid)
   return $hits[0];
 }
 
-$t = new lime_test(null, new lime_output_color());
+$t = new lime_test(64, new lime_output_color());
 
 $lucene = sfLucene::getInstance('testLucene', 'en');
 $model = new FakeForum;

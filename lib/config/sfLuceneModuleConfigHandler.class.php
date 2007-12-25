@@ -32,6 +32,8 @@ class sfLuceneModuleConfigHandler extends sfYamlConfigHandler
 
       foreach ($mconfig as $action => $config)
       {
+        $retconfig[$index][$action] = $config;
+
         if (!isset($config['security']))
         {
           $retconfig[$index][$action]['security'] = array();

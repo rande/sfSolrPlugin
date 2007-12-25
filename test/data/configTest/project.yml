@@ -1,0 +1,35 @@
+testLucene:
+  models:
+    FakeModel:
+      fields:
+        id:
+        title: text
+        description:
+          type: text
+          boost: 3
+      title: title
+      description: description
+      categories: [Forum]
+      route: "forum/showForum?id=%id%"
+      validator: isIndexable
+      rebuild_limit: 5
+      peer: FakeForumPeer
+      partial: forumResult
+  index:
+    encoding: UTF-8
+    cultures: [en, fr]
+    stop_words: [and, the]
+    short_words: 2
+    analyzer: 'utf8num'
+    case_sensitive: false
+    mb_string: true
+
+  interface:
+    categories: on
+    advanced: on
+
+barLucene:
+  models:
+    FakeModel: ~
+
+fooLucene: ~

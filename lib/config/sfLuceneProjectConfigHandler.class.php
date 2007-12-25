@@ -81,6 +81,8 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
             $transform = null;
             $boost = null;
 
+            $type = null;
+
             if (is_array($field))
             {
               $type = isset($field['type']) ? $field['type'] : null;
@@ -94,10 +96,6 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
             elseif (is_string($field))
             {
               $type = $field;
-            }
-            else
-            {
-              throw new sfConfigurationException('Unknown field data type.');
             }
 
             $type = $type ? $type : 'text';
