@@ -72,7 +72,7 @@ $t->is_deeply($config, array (
     ),
     'index' =>
     array (
-      'encoding' => 'utf-8',
+      'encoding' => 'UTF-8',
       'cultures' =>
       array (
         0 => 'en',
