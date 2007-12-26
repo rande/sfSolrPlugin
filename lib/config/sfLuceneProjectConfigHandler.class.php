@@ -155,7 +155,7 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
       $config['models'] = array();
     }
 
-    $encoding = strtolower(isset($config['index']['name']) ? $config['index']['encoding'] : 'utf-8');
+    $encoding = isset($config['index']['encoding']) ? $config['index']['encoding'] : 'utf-8';
     $cultures = isset($config['index']['cultures']) ? $config['index']['cultures'] : array(sfConfig::get('sf_i18n_default_culture'));
     $stop_words = isset($config['index']['stop_words']) ? $config['index']['stop_words'] : array('a', 'an', 'at',' the', 'and', 'or', 'is', 'am', 'are', 'of');
     $short_words = isset($config['index']['short_words']) ? $config['index']['short_words'] : 2;
