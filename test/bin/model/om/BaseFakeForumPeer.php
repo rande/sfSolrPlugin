@@ -48,7 +48,6 @@ abstract class BaseFakeForumPeer {
 	
 	public static function getMapBuilder()
 	{
-		include_once 'plugins/sfLucenePlugin/test/bin/model/map/FakeForumMapBuilder.php';
 		return BasePeer::getMapBuilder('plugins.sfLucenePlugin.test.bin.model.map.FakeForumMapBuilder');
 	}
 	
@@ -350,6 +349,7 @@ abstract class BaseFakeForumPeer {
 		}
 		$affectedRows = 0; 		try {
 									$con->begin();
+			$affectedRows += FakeForumPeer::doOnDeleteCascade(new Criteria(), $con);
 			$affectedRows += BasePeer::doDeleteAll(FakeForumPeer::TABLE_NAME, $con);
 			$con->commit();
 			return $affectedRows;
@@ -380,7 +380,7 @@ abstract class BaseFakeForumPeer {
 		$affectedRows = 0; 
 		try {
 									$con->begin();
-			
+			$affectedRows += FakeForumPeer::doOnDeleteCascade($criteria, $con);
 			$affectedRows += BasePeer::doDelete($criteria, $con);
 			$con->commit();
 			return $affectedRows;
@@ -388,6 +388,25 @@ abstract class BaseFakeForumPeer {
 			$con->rollback();
 			throw $e;
 		}
+	}
+
+	
+	protected static function doOnDeleteCascade(Criteria $criteria, Connection $con)
+	{
+				$affectedRows = 0;
+
+				$objects = FakeForumPeer::doSelect($criteria, $con);
+		foreach($objects as $obj) {
+
+
+			include_once 'plugins/sfLucenePlugin/test/bin/model/FakeForumI18n.php';
+
+						$c = new Criteria();
+			
+			$c->add(FakeForumI18nPeer::ID, $obj->getId());
+			$affectedRows += FakeForumI18nPeer::doDelete($c, $con);
+		}
+		return $affectedRows;
 	}
 
 	
@@ -468,6 +487,5 @@ if (Propel::isInit()) {
 		Propel::log('Could not initialize Peer: ' . $e->getMessage(), Propel::LOG_ERR);
 	}
 } else {
-			require_once 'plugins/sfLucenePlugin/test/bin/model/map/FakeForumMapBuilder.php';
-	Propel::registerMapBuilder('plugins.sfLucenePlugin.test.bin.model.map.FakeForumMapBuilder');
+			Propel::registerMapBuilder('plugins.sfLucenePlugin.test.bin.model.map.FakeForumMapBuilder');
 }

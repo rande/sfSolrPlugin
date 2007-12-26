@@ -4,47 +4,47 @@
 abstract class BaseFakeForum extends BaseObject  implements Persistent {
 
 
-	
+
 	protected static $peer;
 
 
-	
+
 	protected $id;
 
 
-	
+
 	protected $coolness;
 
-	
+
 	protected $collFakeForumI18ns;
 
-	
+
 	protected $lastFakeForumI18nCriteria = null;
 
-	
+
 	protected $alreadyInSave = false;
 
-	
+
 	protected $alreadyInValidation = false;
 
-  
+
   protected $culture;
 
-	
+
 	public function getId()
 	{
 
 		return $this->id;
 	}
 
-	
+
 	public function getCoolness()
 	{
 
 		return $this->coolness;
 	}
 
-	
+
 	public function setId($v)
 	{
 
@@ -57,8 +57,8 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = FakeForumPeer::ID;
 		}
 
-	} 
-	
+	}
+
 	public function setCoolness($v)
 	{
 
@@ -67,8 +67,8 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = FakeForumPeer::COOLNESS;
 		}
 
-	} 
-	
+	}
+
 	public function hydrate(ResultSet $rs, $startcol = 1)
 	{
 		try {
@@ -81,13 +81,13 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 
 			$this->setNew(false);
 
-						return $startcol + 2; 
+						return $startcol + 2;
 		} catch (Exception $e) {
 			throw new PropelException("Error populating FakeForum object", $e);
 		}
 	}
 
-	
+
 	public function delete($con = null)
 	{
 
@@ -118,7 +118,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 			$con->rollback();
 			throw $e;
 		}
-	
+
 
     foreach (sfMixer::getCallables('BaseFakeForum:delete:post') as $callable)
     {
@@ -126,7 +126,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
     }
 
   }
-	
+
 	public function save($con = null)
 	{
 
@@ -159,12 +159,13 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 
 			return $affectedRows;
 		} catch (PropelException $e) {
+    sfException::createFromException($e)->printStackTrace();
 			$con->rollback();
 			throw $e;
 		}
 	}
 
-	
+
 	protected function doSave($con)
 	{
 		$affectedRows = 0; 		if (!$this->alreadyInSave) {
@@ -174,8 +175,9 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 						if ($this->isModified()) {
 				if ($this->isNew()) {
 					$pk = FakeForumPeer::doInsert($this, $con);
-					$affectedRows += 1; 										 										 
-					$this->setId($pk);  
+
+					$affectedRows += 1;
+					$this->setId($pk);
 					$this->setNew(false);
 				} else {
 					$affectedRows += FakeForumPeer::doUpdate($this, $con);
@@ -193,17 +195,17 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 			$this->alreadyInSave = false;
 		}
 		return $affectedRows;
-	} 
-	
+	}
+
 	protected $validationFailures = array();
 
-	
+
 	public function getValidationFailures()
 	{
 		return $this->validationFailures;
 	}
 
-	
+
 	public function validate($columns = null)
 	{
 		$res = $this->doValidate($columns);
@@ -216,7 +218,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 		}
 	}
 
-	
+
 	protected function doValidate($columns = null)
 	{
 		if (!$this->alreadyInValidation) {
@@ -246,14 +248,14 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 		return (!empty($failureMap) ? $failureMap : true);
 	}
 
-	
+
 	public function getByName($name, $type = BasePeer::TYPE_PHPNAME)
 	{
 		$pos = FakeForumPeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
 		return $this->getByPosition($pos);
 	}
 
-	
+
 	public function getByPosition($pos)
 	{
 		switch($pos) {
@@ -268,7 +270,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 				break;
 		} 	}
 
-	
+
 	public function toArray($keyType = BasePeer::TYPE_PHPNAME)
 	{
 		$keys = FakeForumPeer::getFieldNames($keyType);
@@ -279,14 +281,14 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 		return $result;
 	}
 
-	
+
 	public function setByName($name, $value, $type = BasePeer::TYPE_PHPNAME)
 	{
 		$pos = FakeForumPeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
 		return $this->setByPosition($pos, $value);
 	}
 
-	
+
 	public function setByPosition($pos, $value)
 	{
 		switch($pos) {
@@ -298,7 +300,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 				break;
 		} 	}
 
-	
+
 	public function fromArray($arr, $keyType = BasePeer::TYPE_PHPNAME)
 	{
 		$keys = FakeForumPeer::getFieldNames($keyType);
@@ -307,7 +309,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 		if (array_key_exists($keys[1], $arr)) $this->setCoolness($arr[$keys[1]]);
 	}
 
-	
+
 	public function buildCriteria()
 	{
 		$criteria = new Criteria(FakeForumPeer::DATABASE_NAME);
@@ -318,7 +320,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 		return $criteria;
 	}
 
-	
+
 	public function buildPkeyCriteria()
 	{
 		$criteria = new Criteria(FakeForumPeer::DATABASE_NAME);
@@ -328,19 +330,19 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 		return $criteria;
 	}
 
-	
+
 	public function getPrimaryKey()
 	{
 		return $this->getId();
 	}
 
-	
+
 	public function setPrimaryKey($key)
 	{
 		$this->setId($key);
 	}
 
-	
+
 	public function copyInto($copyObj, $deepCopy = false)
 	{
 
@@ -354,14 +356,14 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 				$copyObj->addFakeForumI18n($relObj->copy($deepCopy));
 			}
 
-		} 
+		}
 
 		$copyObj->setNew(true);
 
-		$copyObj->setId(NULL); 
+		$copyObj->setId(NULL);
 	}
 
-	
+
 	public function copy($deepCopy = false)
 	{
 				$clazz = get_class($this);
@@ -370,7 +372,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 		return $copyObj;
 	}
 
-	
+
 	public function getPeer()
 	{
 		if (self::$peer === null) {
@@ -379,7 +381,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 		return self::$peer;
 	}
 
-	
+
 	public function initFakeForumI18ns()
 	{
 		if ($this->collFakeForumI18ns === null) {
@@ -387,11 +389,10 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 		}
 	}
 
-	
+
 	public function getFakeForumI18ns($criteria = null, $con = null)
 	{
-				include_once 'plugins/sfLucenePlugin/test/bin/model/om/BaseFakeForumI18nPeer.php';
-		if ($criteria === null) {
+				if ($criteria === null) {
 			$criteria = new Criteria();
 		}
 		elseif ($criteria instanceof Criteria)
@@ -411,7 +412,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 			}
 		} else {
 						if (!$this->isNew()) {
-												
+
 
 				$criteria->add(FakeForumI18nPeer::ID, $this->getId());
 
@@ -425,11 +426,10 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 		return $this->collFakeForumI18ns;
 	}
 
-	
+
 	public function countFakeForumI18ns($criteria = null, $distinct = false, $con = null)
 	{
-				include_once 'plugins/sfLucenePlugin/test/bin/model/om/BaseFakeForumI18nPeer.php';
-		if ($criteria === null) {
+				if ($criteria === null) {
 			$criteria = new Criteria();
 		}
 		elseif ($criteria instanceof Criteria)
@@ -442,7 +442,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 		return FakeForumI18nPeer::doCount($criteria, $distinct, $con);
 	}
 
-	
+
 	public function addFakeForumI18n(FakeForumI18n $l)
 	{
 		$this->collFakeForumI18ns[] = $l;
@@ -525,4 +525,4 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
   }
 
 
-} 
+}

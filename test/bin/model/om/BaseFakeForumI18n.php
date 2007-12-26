@@ -478,9 +478,7 @@ abstract class BaseFakeForumI18n extends BaseObject  implements Persistent {
 	public function getFakeForum($con = null)
 	{
 		if ($this->aFakeForum === null && ($this->id !== null)) {
-						include_once 'plugins/sfLucenePlugin/test/bin/model/om/BaseFakeForumPeer.php';
-
-			$this->aFakeForum = FakeForumPeer::retrieveByPK($this->id, $con);
+						$this->aFakeForum = FakeForumPeer::retrieveByPK($this->id, $con);
 
 			
 		}

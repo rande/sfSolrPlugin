@@ -54,7 +54,6 @@ abstract class BaseFakeForumI18nPeer {
 	
 	public static function getMapBuilder()
 	{
-		include_once 'plugins/sfLucenePlugin/test/bin/model/map/FakeForumI18nMapBuilder.php';
 		return BasePeer::getMapBuilder('plugins.sfLucenePlugin.test.bin.model.map.FakeForumI18nMapBuilder');
 	}
 	
@@ -583,6 +582,5 @@ if (Propel::isInit()) {
 		Propel::log('Could not initialize Peer: ' . $e->getMessage(), Propel::LOG_ERR);
 	}
 } else {
-			require_once 'plugins/sfLucenePlugin/test/bin/model/map/FakeForumI18nMapBuilder.php';
-	Propel::registerMapBuilder('plugins.sfLucenePlugin.test.bin.model.map.FakeForumI18nMapBuilder');
+			Propel::registerMapBuilder('plugins.sfLucenePlugin.test.bin.model.map.FakeForumI18nMapBuilder');
 }

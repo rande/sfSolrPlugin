@@ -24,11 +24,6 @@ class sfLuceneIndexerFactory
     $this->search = $search;
   }
 
-  static public function newInstance($search)
-  {
-    return new self($search);
-  }
-
   public function getHandlers()
   {
     $factories = $this->search->getParameter('factories')->get('indexers');
@@ -39,15 +34,15 @@ class sfLuceneIndexerFactory
 
     foreach ($indexers as $label => $indexer)
     {
-      if (is_null($indexer))
-      {
-        unset($retval[$label]);
-      }
-      elseif (isset($indexer[0]))
+      if (!is_null($indexer) && isset($indexer[0]))
       {
         $indexer = $indexer[0];
 
         $retval[$label] = new $indexer($this->search);
+      }
+      else
+      {
+        unset($retval[$label]);
       }
     }
 
@@ -75,11 +70,6 @@ class sfLuceneIndexerFactory
         $orm      = ucfirst(sfConfig::get('sf_orm', 'Propel'));
         $indexer  = 'sfLucene' . $orm . 'Indexer';
       }
-    }
-
-    if (!class_exists($indexer, true))
-    {
-      throw new sfLuceneIndexerException('Cannot locate "' . $indexer . '"');
     }
 
     return new $indexer($this->search, $instance);
