@@ -109,33 +109,33 @@ $criteria = new sfLuceneCriteria();
 
 try {
   $criteria->addSane('test');
-  $t->pass('->saneFind() accepts a valid query');
+  $t->pass('->addSane() accepts a valid query');
 
   $s = $criteria->getQuery()->getSubqueries();
 
-  $t->ok($s[0] == Zend_Search_Lucene_Search_QueryParser::parse('test'), '->saneFind() correctly adds a valid query');
+  $t->ok($s[0] == Zend_Search_Lucene_Search_QueryParser::parse('test'), '->addSane() correctly adds a valid query');
 } catch (Exception $e) {
-  $t->fail('->saneFind() accepts a valid query');
-  $t->skip('->saneFind() correctly adds a valid query');
+  $t->fail('->addSane() accepts a valid query');
+  $t->skip('->addSane() correctly adds a valid query');
 }
 
 try {
-  try {
-    $criteria->add('carl~');
-    $t->fail('->add() rejects an illegal query');
-  } catch (Exception $e) {
-    $t->pass('->add() rejects an illegal query');
-  }
+  $criteria->add('carl!');
+  $t->fail('->add() rejects an illegal query');
+} catch (Exception $e) {
+  $t->pass('->add() rejects an illegal query');
+}
 
-  $criteria->addSane('carl~');
-  $t->pass('->saneFind() accepts an illegal query');
+try {
+  $criteria->addSane('carl!');
+  $t->pass('->addSane() accepts an illegal query');
 
   $s = $criteria->getQuery()->getSubqueries();
 
-  $t->ok($s[1] == Zend_Search_Lucene_Search_QueryParser::parse('carl'), '->saneFind() correctly adds an illegal query');
+  $t->ok($s[1] == Zend_Search_Lucene_Search_QueryParser::parse('carl'), '->addSane() correctly adds an illegal query');
 } catch (Exception $e) {
-  $t->fail('->saneFind() accepts an illegal query');
-  $t->skip('->saneFind() correctly adds an illegal query');
+  $t->fail('->addSane() accepts an illegal query');
+  $t->skip('->addSane() correctly adds an illegal query');
 }
 
 
