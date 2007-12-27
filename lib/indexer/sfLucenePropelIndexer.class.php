@@ -191,7 +191,6 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
   {
     $properties = $this->getModelProperties();
     $method = $properties->get('validator');
-    $method = sfInflector::camelize($method);
 
     if ($method && method_exists($this->getModel(), $method))
     {
