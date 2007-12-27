@@ -104,7 +104,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     {
       $field_properties = $properties->get('fields')->get($field);
 
-      $getter = 'get' . $field;
+      $getter = 'get' . sfInflector::camelize($field);
 
       $type = $field_properties->get('type');
       $boost = $field_properties->get('boost');
@@ -191,6 +191,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
   {
     $properties = $this->getModelProperties();
     $method = $properties->get('validator');
+    $method = sfInflector::camelize($method);
 
     if ($method && method_exists($this->getModel(), $method))
     {
@@ -217,7 +218,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
       {
         $category = substr($category, 1, -1);
 
-        $getter = 'get' . $category;
+        $getter = 'get' . sfInflector::camelize($category);
 
         $getterValue = $this->getModel()->$getter();
 

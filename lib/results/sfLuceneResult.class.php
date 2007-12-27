@@ -137,11 +137,15 @@ class sfLuceneResult
   protected function getProperty($method, $prefix)
   {
     $property = substr($method, strlen($prefix));
-    $property = strtolower($property);
+    $property = $property;
 
-    if (substr($property, 0, 8) == 'internal')
+    if (strtolower(substr($property, 0, 8)) == 'internal')
     {
-      $property = 'sfl_' . substr($property, 8);
+      $property = 'sfl_' . sfInflector::underscore(substr($property, 8));
+    }
+    else
+    {
+      $property = sfInflector::underscore($property);
     }
 
     return $property;

@@ -160,13 +160,13 @@ try {
 
 $indexer->delete();
 $h->get('fields')->remove('nonScalar');
-$h->get('fields')->set('stringableObject', $ph);
+$h->get('fields')->set('stringable_object', $ph);
 
 try {
   $indexer->insert();
   $lucene->commit();
   $doc = getDoc($lucene, $indexer->getModelGuid());
-  $t->is($doc->stringableobject, 'Strings!', '->insert() converts objects to strings in field getters');
+  $t->is($doc->stringable_object, 'Strings!', '->insert() converts objects to strings in field getters');
 } catch (Exception $e) {
   $t->fail('->insert() converts objects to strings in field getters');
 }
@@ -345,7 +345,7 @@ try {
   $t->pass('->insert() fails if category callback returns a non-scalar');
 }
 
-$h->set('categories', array('Forum', '%stringableObject%'));
+$h->set('categories', array('Forum', '%stringable_object%'));
 
 $indexer->delete();
 $indexer->insert();

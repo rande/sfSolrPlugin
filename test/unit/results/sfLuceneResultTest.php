@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(21, new lime_output_color());
+$t = new lime_test(23, new lime_output_color());
 
 $lucene = sfLucene::getInstance('testLucene');
 
@@ -36,7 +36,7 @@ class MockDocument
 {
   public function getFieldValue($field)
   {
-    if (!isset($this->$field)) throw new Exception('You said to');
+    if (!isset($this->$field)) throw new Exception('Field ' . $field . ' does not exist');
 
     return $this->$field;
   }
@@ -80,6 +80,10 @@ $t->diag('testing dynamic ->getXXX()');
 $doc->sequence = '123';
 $t->is($result->getSequence(), '123', '->getXXX() returns property XXX on document');
 $t->ok($result->hasSequence(), '->hasXXX() returns true if document has property XXX');
+
+$doc->super_duper_man = 'Fabien Potencier';
+$t->is($result->getSuperDuperMan(), 'Fabien Potencier', '->getXXX() returns property XXX for camel case');
+$t->ok($result->hasSuperDuperMan(), '->hasXXX() returns if document has property XXX for camel case');
 
 try {
   $result->getSomethingReallyBad();

@@ -50,18 +50,10 @@ class sfLuceneModelResult extends sfLuceneResult
 
     if (!$model->has('route'))
     {
-      throw new sfLuceneIndexerException(sprintf('A route for model "%s" was not defined in the search.yml file.', $this->getInternalModel()));
+      throw new sfLuceneIndexerException(sprintf('A route for model "%s" was not defined.', $this->getInternalModel()));
     }
 
-    return preg_replace_callback('/%(\w+?)%/', array($this, 'internalUriCallback'), $model->get('route'));
-  }
-
-  /**
-  * Callback for self::getInternalUri()
-  */
-  protected function internalUriCallback($matches)
-  {
-    return $this->result->getDocument()->getFieldValue($matches[1]);
+    return preg_replace('/%(\w+?)%/e', '$this->result->getDocument()->getFieldValue("$1")', $model->get('route'));
   }
 
   /**

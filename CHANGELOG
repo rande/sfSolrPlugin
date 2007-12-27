@@ -13,6 +13,9 @@ Trunk
   * Minor refactoring of sfLucene class to move to sfParameterHolder
   * Upgraded forms to sfForm
   * Fixed sfLucene does not handle changed categories (closes #2687)
+  * BC: Reinstated camel case for indexes.  If you had "superDuperMan" in a
+    fields or categories parameter, you now *must* make the declaration
+    "super_duper_man".
 
 Version 0.1.1 Beta
   * Fixed i18n category "All" value

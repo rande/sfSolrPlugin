@@ -10,14 +10,11 @@ sfLucene ships with all external dependencies satisfied and will work on both pr
 
 = Main Features =
   * Configured all by YAML files
-  * Complete integration with symfony
+  * Complete integration with symfony 1.1
   * i18n ready
   * Keyword highlighting
-  * Stop words, short words
-  * Index optimization
-  * Custom indexers
-  * Multiple indexes
-  * Extensible
+  * Management of Lucene indexes
+  * 500+ unit tests and 98% API code coverage
 
 = Development Status =
 The 1.1 branch for sfLucene will work, however it is not rock-solid stable.  Please use it, but be ready to report a few bugs to Trac.
@@ -115,7 +112,7 @@ In the above example, two models are set to index: BlogPost and BlogComment.  In
 
 When search results are displayed, the system intelligently guesses which field should be displayed as the result "title" and which field is the result "description." However, to be explicit, you can specify a description and title field, as in BlogComment.
 
-Note that the fields do not have to exist as fields in your database.  As long as it has a getter on the model, you can use it in your index.
+Note that the fields do not have to exist as fields in your database.  As long as it has a getter on the model, you can use it in your index.  The fields are automatically camelized, so if you wish to call "->getSuperDuperMan()" as one of your fieds, you must write it in the YAML file as "super_duper_man".
 
 See [http://framework.zend.com/manual/en/zend.search.lucene.html the Zend_Search_Lucene documentation] for more about the field types.
 
@@ -179,7 +176,7 @@ If only some of your objects should be stored in the index, you can define an va
 MyIndex:
   models:
     BlogPost:
-      validator: shouldIndex
+      validator: should_index
 }}}
 
 == symfony actions method ==
@@ -402,6 +399,8 @@ models:
 }}}
 
 The "Blog" model above will be placed both into the blog category and the string returned by ->getCategory() on the model. After you rebuild your model, a category drop down will automatically appear on the search interface.
+
+The same rules applies as model indexing: Note that the fields do not have to exist as fields in your database.  As long as it has a getter on the model, you can use it in your index.  The fields are automatically camelized, so if you wish to call "->getSuperDuperMan()" as one of your fieds, you must write it in the YAML file as "super_duper_man".
 
 To disable category support all-together, open the application level app.yml file and add:
 
