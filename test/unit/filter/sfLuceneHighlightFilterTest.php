@@ -15,7 +15,6 @@
   */
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
-require dirname(__FILE__) . '/../../bin/FakeHighlighter.php';
 
 $t = new lime_test(21, new lime_output_color());
 
@@ -27,7 +26,18 @@ $request = $context->getRequest();
 
 sfConfig::set('sf_i18n', false);
 
-$highlight = new FakeHighlighter();
+$highlight = new sfLuceneHighlightFilter($context, array(
+  'highlight_qs'              => 'h',
+  'notice_tag'                => '~notice~',
+  'highlight_strings'         => array(
+                                    '<highlighted>%s</highlighted>',
+                                    '<highlighted2>%s</highlighted2>'
+                                ),
+  'notice_referer_string'     => '<from>%from%</from><keywords>%keywords%</keywords><remove>%remove%</remove>',
+  'notice_string'             => '<keywords>%keywords%</keywords><remove>%remove%</remove>',
+  'remove_string'             => '~remove~',
+  'css'                       => 'search.css',
+));
 
 $t->diag('testing validation');
 

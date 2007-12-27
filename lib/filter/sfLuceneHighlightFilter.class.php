@@ -20,6 +20,52 @@
  */
 class sfLuceneHighlightFilter extends sfFilter
 {
+  /**
+   * Initializes this Filter.
+   *
+   * @param sfContext The current application context
+   * @param array   An associative array of initialization parameters
+   *
+   * @return boolean true, if initialization completes successfully, otherwise false
+   */
+  public function initialize($context, $parameters = array())
+  {
+    $this->context = $context;
+
+    $this->parameterHolder = new sfParameterHolder();
+
+    // add default options
+    $this->parameterHolder->add(
+      array(
+        'check_referer'             => true,
+        'highlight_qs'              => 'sf_highlight',
+        'notice_tag'                => '<!--[HIGHLIGHTER_NOTICE]-->',
+        'highlight_strings'         => array(
+                                        '<strong class="highlight hcolor1">%s</strong>',
+                                        '<strong class="highlight hcolor2">%s</strong>',
+                                        '<strong class="highlight hcolor3">%s</strong>',
+                                        '<strong class="highlight hcolor4">%s</strong>',
+                                        '<strong class="highlight hcolor5">%s</strong>'
+                                      ),
+        'notice_referer_string'     => '<div>Welcome from <strong>%from%</strong>!  The following keywords were automatically highlighted: %keywords% %remove%</div>',
+        'notice_string'             => '<div>The following keywords were automatically highlighted: %keywords% %remove%</div>',
+        'remove_string'             => '[<a href="%url%">remove highlighting</a>]',
+        'css'                       => '../sfLucenePlugin/css/search.css',
+        'possible_refers'           => array(
+                                        'google'  => array('qs' => 'q', 'name' => 'Google'),
+                                        'yahoo'   => array('qs' => 'p', 'name' => 'Yahoo'),
+                                        'msn'     => array('qs' => 'q', 'name' => 'MSN'),
+                                        'ask'     => array('qs' => 'q', 'name' => 'Ask')
+                                      )
+      )
+    );
+
+    // add custom options
+    $this->parameterHolder->add($parameters);
+
+    return true;
+  }
+
   public function execute($filterChain)
   {
     $filterChain->execute();
@@ -69,7 +115,7 @@ class sfLuceneHighlightFilter extends sfFilter
 
   protected function highlight()
   {
-    $terms = $this->getContext()->getRequest()->getParameter( $this->getHighlightQs() );
+    $terms = $this->getContext()->getRequest()->getParameter( $this->getParameter('highlight_qs'));
     $terms = $this->prepareTerms($terms);
 
     if (count($terms))
@@ -80,13 +126,13 @@ class sfLuceneHighlightFilter extends sfFilter
 
       return true;
     }
-    elseif ($this->shouldCheckReferer())
+    elseif ($this->getParameter('check_referer'))
     {
       $referer = $this->getContext()->getRequest()->getReferer();
 
       if ($referer)
       {
-        foreach ($this->getPossibleRefers() as $domain => $value)
+        foreach ($this->getParameter('possible_refers') as $domain => $value)
         {
           if (preg_match($this->getRefererRegex($domain, $value['qs']), $referer, $matches))
           {
@@ -111,7 +157,7 @@ class sfLuceneHighlightFilter extends sfFilter
 
     $lighter = new sfLuceneHighlighter($content);
     $lighter->addKeywords($terms);
-    $lighter->addHighlighters($this->getHighlightStrings());
+    $lighter->addHighlighters($this->getParameter('highlight_strings'));
     $lighter->hasBody(true);
 
     $this->getContext()->getResponse()->setContent($lighter->highlight());
@@ -121,7 +167,7 @@ class sfLuceneHighlightFilter extends sfFilter
   {
     $content = $this->getContext()->getResponse()->getContent();
 
-    $css = $this->getCssLocation();
+    $css = $this->getParameter('css');
 
     if ($css && false !== ($pos = stripos($content, '</head>')))
     {
@@ -146,7 +192,7 @@ class sfLuceneHighlightFilter extends sfFilter
   protected function removeNotice()
   {
     $this->getContext()->getResponse()->setContent(
-      str_replace($this->getNoticeTag(), '', $this->getContext()->getResponse()->getContent())
+      str_replace($this->getParameter('notice_tag'), '', $this->getContext()->getResponse()->getContent())
     );
   }
 
@@ -157,21 +203,21 @@ class sfLuceneHighlightFilter extends sfFilter
     $term_string = implode($terms, ', ');
 
     $route = $route = $this->getContext()->getRouting()->getCurrentInternalUri();
-    $route = preg_replace('/(\?|&)' . $this->getHighlightQs() . '=.*?(&|$)/', '$1', $route);
+    $route = preg_replace('/(\?|&)' . $this->getParameter('highlight_qs') . '=.*?(&|$)/', '$1', $route);
     $route = $this->getContext()->getController()->genUrl($route);
 
-    $remove_string = $this->translate($this->getRemoveString(), array('%url%' => $route));
+    $remove_string = $this->translate($this->getParameter('remove_string'), array('%url%' => $route));
 
     if ($from)
     {
-      $message = $this->translate($this->getNoticeRefererString(), array('%from%' => $from, '%keywords%' => $term_string, '%remove%' => $remove_string));
+      $message = $this->translate($this->getParameter('notice_referer_string'), array('%from%' => $from, '%keywords%' => $term_string, '%remove%' => $remove_string));
     }
     else
     {
-      $message = $this->translate($this->getNoticeString(), array('%keywords%' => $term_string, '%remove%' => $remove_string));
+      $message = $this->translate($this->getParameter('notice_string'), array('%keywords%' => $term_string, '%remove%' => $remove_string));
     }
 
-    $content = str_replace($this->getNoticeTag(), $message, $content);
+    $content = str_replace($this->getParameter('notice_tag'), $message, $content);
 
     $this->getContext()->getResponse()->setContent($content);
   }
@@ -188,59 +234,11 @@ class sfLuceneHighlightFilter extends sfFilter
     }
   }
 
-  /* parameter getting items */
-
-  protected function getPossibleRefers()
-  {
-    return array(
-      'google'  => array('qs' => 'q', 'name' => 'Google'),
-      'yahoo'   => array('qs' => 'p', 'name' => 'Yahoo'),
-      'msn'     => array('qs' => 'q', 'name' => 'MSN'),
-      'ask'     => array('qs' => 'q', 'name' => 'Ask')
-    );
-  }
-
   protected function getRefererRegex($domain, $qs)
   {
     $domain = preg_quote($domain, '#');
     $qs = preg_quote($qs, '#');
 
     return '#^https?://(?:\w+\.)*' . $domain . '(?:\.[a-z]+)+.*' . $qs . '=(.*?)(&|$)#';
-  }
-
-  protected function shouldCheckReferer()
-  {
-    return $this->getParameter('check_referer', true);
-  }
-  protected function getHighlightQs()
-  {
-    return $this->getParameter('highlight_qs', 'sf_highlight');
-  }
-  protected function getNoticeTag()
-  {
-    return $this->getParameter('notice_tag', '<!--[HIGHLIGHTER_NOTICE]-->');
-  }
-  protected function getHighlightStrings()
-  {
-    $array = $this->getParameter('highlight_strings', array('<strong class="highlight hcolor1">%s</strong>', '<strong class="highlight hcolor2">%s</strong>', '<strong class="highlight hcolor3">%s</strong>', '<strong class="highlight hcolor4">%s</strong>', '<strong class="highlight hcolor5">%s</strong>'));
-
-    return $array;
-  }
-  protected function getNoticeRefererString()
-  {
-    return $this->getParameter('notice_referer_string', '<div>Welcome from <strong>%from%</strong>!  The following keywords were automatically highlighted: %keywords% %remove%</div>');
-  }
-  protected function getNoticeString()
-  {
-    return $this->getParameter('notice_string', '<div>The following keywords were automatically highlighted: %keywords% %remove%</div>');
-  }
-  protected function getRemoveString()
-  {
-    return $this->getParameter('remove_string', '[<a href="%url%">remove highlighting</a>]');
-  }
-
-  protected function getCssLocation()
-  {
-    return $this->getParameter('css', '../sfLucenePlugin/css/search.css');
   }
 }
