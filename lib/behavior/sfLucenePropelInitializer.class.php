@@ -16,8 +16,6 @@
  */
 class sfLucenePropelInitializer
 {
-  protected $model_setup = false;
-
   /**
   * Singleton.  Gets the instance
   */
@@ -35,33 +33,22 @@ class sfLucenePropelInitializer
 
   /**
   * Singleton constructor.
+  * Initializes the model and Propel behaviors by adding all the appropriate hooks only once.
   */
   protected function __construct()
   {
-  }
+    sfPropelBehavior::registerHooks('search', array(
+      ':save:pre' => array('sfLucenePropelBehavior', 'preSave'),
+      ':save:post' => array('sfLucenePropelBehavior', 'postSave'),
+      ':delete:pre' => array('sfLucenePropelBehavior', 'preDelete'),
+      ':delete:post' => array('sfLucenePropelBehavior', 'postDelete'),
+    ));
 
-  /**
-  * Initializes the model and Propel behaviors by adding all the appropriate hooks only once.
-  */
-  protected function setupModelOneTime()
-  {
-    if (!$this->model_setup)
-    {
-      sfPropelBehavior::registerHooks('search', array(
-        ':save:pre' => array('sfLucenePropelBehavior', 'preSave'),
-        ':save:post' => array('sfLucenePropelBehavior', 'postSave'),
-        ':delete:pre' => array('sfLucenePropelBehavior', 'preDelete'),
-        ':delete:post' => array('sfLucenePropelBehavior', 'postDelete'),
-      ));
-
-      sfPropelBehavior::registerMethods('search', array(
-        array('sfLucenePropelBehavior', 'saveIndex'),
-        array('sfLucenePropelBehavior', 'deleteIndex'),
-        array('sfLucenePropelBehavior', 'insertIndex')
-      ));
-
-      $this->model_setup = true;
-    }
+    sfPropelBehavior::registerMethods('search', array(
+      array('sfLucenePropelBehavior', 'saveIndex'),
+      array('sfLucenePropelBehavior', 'deleteIndex'),
+      array('sfLucenePropelBehavior', 'insertIndex')
+    ));
   }
 
   /**
@@ -69,10 +56,8 @@ class sfLucenePropelInitializer
   * in the search.yml file.
   * @param string $model The model name to setup.
   */
-  public function setupModel($model)
+  public function setup($model)
   {
-    $this->setupModelOneTime();
-
     sfPropelBehavior::add($model, array(
       'search' => array()
     ));

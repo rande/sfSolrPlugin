@@ -28,6 +28,10 @@ class sfLucenePropelBehavior
 
   /**
    * Adds the node to the queue if is modified or is new.
+   *
+   * The presave logic prevents infinite loops when dealing with circular references
+   * in models (such as i18n).  ->preSave() will make sure that the save queue
+   * has a reference to this node only if it is new or modified.
    */
   public function preSave($node)
   {
@@ -48,6 +52,9 @@ class sfLucenePropelBehavior
 
   /**
    * Executes save routine if it can find it in the queue.
+   *
+   * The counterpart to ->preSave(), which goes through the queue and only saves
+   * if it can find it in the queue.
    */
   public function postSave($node)
   {
@@ -116,11 +123,6 @@ class sfLucenePropelBehavior
   */
   public function deleteIndex($node)
   {
-    if (sfConfig::get('sf_logging_enabled'))
-    {
-     sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(sprintf('deleting model "%s" with PK = "%s"', get_class($node), $node->getPrimaryKey()))));
-    }
-
     foreach ($this->getSearchInstances($node) as $instance)
     {
       $instance->getIndexer()->getModel($node)->delete();
@@ -132,17 +134,16 @@ class sfLucenePropelBehavior
   */
   public function insertIndex($node)
   {
-    if (sfConfig::get('sf_logging_enabled'))
-    {
-      sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(sprintf('saving model "%s" with PK = "%s"', get_class($node), $node->getPrimaryKey()))));
-    }
-
     foreach ($this->getSearchInstances($node) as $instance)
     {
       $instance->getIndexer()->getModel($node)->insert();
     }
   }
 
+  /**
+   * Finds all instances of sfLucene that this model appears in.  This does
+   * not return the instance if the model does not exist in it.
+   */
   protected function getSearchInstances($node)
   {
     static $instances;
@@ -154,23 +155,28 @@ class sfLucenePropelBehavior
       $instances = array();
     }
 
+    // continue only if we have not already cached the instances for this class
     if (!isset($instances[$class]))
     {
+      $instances[$class] = array();
+
       $config = sfLucene::getConfig();
 
+      // go through each instance
       foreach ($config as $name => $item)
       {
         if (isset($item['models'][$class]))
         {
           foreach ($item['index']['cultures'] as $culture)
           {
+            // store instance
             $instances[$class][] = sfLucene::getInstance($name, $culture);
           }
         }
       }
     }
 
-    if (!isset($instances[$class]) || count($instances[$class]) == 0)
+    if (count($instances[$class]) == 0)
     {
       throw new sfLuceneException('No sfLucene instances could be found for "' . $class . '"');
     }

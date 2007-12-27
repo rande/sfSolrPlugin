@@ -43,4 +43,4 @@ class Stringable
   }
 }
 
-sfLucenePropelBehavior::getInitializer()->setupModel('FakeForum');
+sfLucenePropelBehavior::getInitializer()->setup('FakeForum');

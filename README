@@ -152,7 +152,7 @@ Finally, you must register the model with the system.  If you are using Propel, 
 === Propel ===
 You can do this by opening up the model's file and putting
 {{{
-sfLucenePropelBehavior::getInitializer()->setupModel('MyModel');
+sfLucenePropelBehavior::getInitializer()->setup('MyModel');
 }}}
 after the class declaration.  So, for a blog, you would open project/lib/model/BlogPost.php and append the above, replacing "!MyModel" with "!BlogPost".
 
@@ -426,7 +426,7 @@ It is possible to integrate sfLucene with other plugins.  To add support to your
 {{{
 if (class_exists('sfLucene', true))
 {
-  sfLucenePropelBehavior::getInitializer()->setupModel('MyModel');
+  sfLucenePropelBehavior::getInitializer()->setup('MyModel');
 }
 }}}
 
