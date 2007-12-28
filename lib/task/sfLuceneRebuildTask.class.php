@@ -64,14 +64,9 @@ EOF;
 
     foreach ($instances as $instance)
     {
-      try
-      {
-        $this->rebuild($instance);
-      }
-      catch (Exception $e)
-      {
-        sfException::createFromException($e)->printStackTrace();
-      }
+      $this->setupEventDispatcher($instance);
+
+      $this->rebuild($instance);
     }
 
     $time = microtime(true) - $start;
@@ -80,7 +75,7 @@ EOF;
     $final .= count($instances) == 1 ? ' index in ' : ' indexes in ';
     $final .= $this->formatter->format(number_format($time, 5), array('fg' => 'cyan')) . ' seconds.';
 
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($final)));
+    $this->dispatcher->notify(new sfEvent($this, 'command.log', array('', $final)));
   }
 
   protected function rebuild($search)
@@ -89,13 +84,8 @@ EOF;
 
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->format(sprintf('Processing "%s/%s" now...', $search->getParameter('name'), $search->getParameter('culture')), array('fg' => 'red', 'bold' => true)))));
 
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('lucene', 'Rebuilding...'))));
     $search->rebuildIndex();
-
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('lucene', 'Optimizing...'))));
     $search->optimize();
-
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('lucene', 'Comitting..'))));
     $search->commit();
 
     $time = microtime(true) - $start;

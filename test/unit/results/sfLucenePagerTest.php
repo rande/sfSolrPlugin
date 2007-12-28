@@ -142,7 +142,7 @@ function callListener($event)
   return false;
 }
 
-$lucene->getContext()->getEventDispatcher()->connect('lucene.pager.method_not_found', 'callListener');
+$lucene->getEventDispatcher()->connect('pager.method_not_found', 'callListener');
 
 try {
   $results->someBadMethod();

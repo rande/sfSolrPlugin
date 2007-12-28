@@ -16,6 +16,7 @@ Trunk
   * BC: Reinstated camel case for indexes.  If you had "superDuperMan" in a
     fields or categories parameter, you now *must* make the declaration
     "super_duper_man".
+  * Added own sfEventDispatcher to each sfLucene instance
 
 Version 0.1.1 Beta
   * Fixed i18n category "All" value

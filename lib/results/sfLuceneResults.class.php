@@ -48,7 +48,8 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
    */
   public function __call($method, $arguments)
   {
-    $event = $this->getSearch()->getContext()->getEventDispatcher()->notifyUntil(new sfEvent($this, 'lucene.results.method_not_found', array('method' => $method, 'arguments' => $arguments)));
+    $event = $this->search->getEventDispatcher()->notifyUntil(new sfEvent($this, 'results.method_not_found', array('method' => $method, 'arguments' => $arguments)));
+
     if (!$event->isProcessed())
     {
       throw new sfException(sprintf('Call to undefined method %s::%s.', __CLASS__, $method));

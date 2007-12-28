@@ -23,12 +23,15 @@ abstract class sfLuceneBaseTask extends sfBaseTask
     $this->bootstrapSymfony($app, $env, true);
 
     sfAutoload::getInstance()->autoload('Propel'); // see ticket #2613
-
-    sfContext::getInstance()->getEventDispatcher()->connect('command.log', array($this, 'passOffEvents'));
   }
 
-  public function passOffEvents($event)
+  protected function setupEventDispatcher($search)
   {
-    $this->dispatcher->notify($event);
+    $source = $search->getEventDispatcher();
+    $target = $this->dispatcher;
+    $formatter = $this->formatter;
+
+    new sfLuceneEventConnectorLogger($source, 'lucene.log', $target, 'command.log', $formatter, 'Lucene');
+    new sfLuceneEventConnectorLogger($source, 'indexer.log', $target, 'command.log', $formatter, 'Indexer');
   }
 }

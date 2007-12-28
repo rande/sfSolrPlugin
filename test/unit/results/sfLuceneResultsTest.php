@@ -103,7 +103,7 @@ function callListener($event)
   return false;
 }
 
-sfContext::getInstance()->getEventDispatcher()->connect('lucene.results.method_not_found', 'callListener');
+$search->getEventDispatcher()->connect('results.method_not_found', 'callListener');
 
 try {
   $results->someBadMethod();

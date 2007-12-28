@@ -110,7 +110,7 @@ $t->is($h->get('name'), 'testLucene', 'property "name" is the name of the index'
 $t->is($h->get('culture'), 'en', 'property "culture" is the culture of the index');
 $t->is($h->get('enabled_cultures'), array('en', 'fr'), 'property "enabled_cultures" contains all enabled cultures');
 $t->like($h->get('index_location'), '#/index/testLucene/en$#', 'property "index_location" is the correct path');
-$t->is($h->get('encoding'), 'utf-8', 'property "encoding" is the encoding');
+$t->is($h->get('encoding'), 'UTF-8', 'property "encoding" is the encoding');
 $t->is($h->get('stop_words'), array('and', 'the'), 'property "stop_words" contains the stop words');
 $t->is($h->get('short_words'), 2, 'property "short_words" is the short word limit');
 $t->is($h->get('mb_string'), true, 'property "mb_string" indicates if to use mb_string functions');
@@ -176,7 +176,7 @@ $t->is($lucene->getContext(), sfContext::getInstance(), '->getContext() returns 
 $t->diag('testing ->configure()');
 $lucene->configure();
 
-$t->is(Zend_Search_Lucene_Search_QueryParser::getDefaultEncoding(), 'utf-8', '->configure() configures the query parsers encoding');
+$t->is(Zend_Search_Lucene_Search_QueryParser::getDefaultEncoding(), 'UTF-8', '->configure() configures the query parsers encoding');
 
 foreach (array('Text', 'TextNum', 'Utf8', 'Utf8Num') as $type)
 {
@@ -417,7 +417,7 @@ function callListener($event)
   return false;
 }
 
-$lucene->getContext()->getEventDispatcher()->connect('lucene.lucene.method_not_found', 'callListener');
+$lucene->getEventDispatcher()->connect('lucene.method_not_found', 'callListener');
 
 try {
   $lucene->someBadMethod();

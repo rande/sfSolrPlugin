@@ -36,7 +36,8 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     // should we continue with indexing?
     if (!$this->shouldIndex())
     {
-      // we should not index this, so abort
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Ignoring model "%s" from index with primary key = %s', $this->getModelName(), $this->getModel()->getPrimaryKey())));
+
       return $this;
     }
 
@@ -62,6 +63,8 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     {
       $this->getModel()->setCulture($old_culture);
     }
+
+    $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Inserted model "%s" from index with primary key = %s', $this->getModelName(), $this->getModel()->getPrimaryKey())));
 
     return $this;
   }
@@ -179,7 +182,10 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
   */
   public function delete()
   {
-    $this->deleteGuid($this->getModelGuid());
+    if ($this->deleteGuid($this->getModelGuid()))
+    {
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Deleted model "%s" from index with primary key = %s', $this->getModelName(), $this->getModel()->getPrimaryKey())));
+    }
 
     return $this;
   }

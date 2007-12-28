@@ -49,15 +49,12 @@ class sfLucene
 
     $this->setParameter('index_location', sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR . $name . DIRECTORY_SEPARATOR . $culture);
 
-    $this->loadConfig();
+    $this->setParameter('event_dispatcher', new sfEventDispatcher);
+
+    $this->initialize();
 
     $this->setAutomaticMode();
     $this->configure();
-
-    if (sfConfig::get('sf_logging_enabled'))
-    {
-      $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(sprintf('constructed new instance of index "%s" and culture "%s"', $name, $culture))));
-    }
   }
 
   /**
@@ -145,7 +142,7 @@ class sfLucene
   /**
   * Loads the config for the search engine.
   */
-  protected function loadConfig()
+  protected function initialize()
   {
     $config = self::getConfig();
 
@@ -295,6 +292,14 @@ class sfLucene
   }
 
   /**
+   * Gets the sfLucene specific event dispatcher
+   */
+  public function getEventDispatcher()
+  {
+    return $this->getParameter('event_dispatcher');
+  }
+
+  /**
   * Gets the context.  Right now, this exists for forward-compatability.
   * TODO: Remove singleton
   */
@@ -313,7 +318,7 @@ class sfLucene
   {
     sfLuceneToolkit::loadZend();
 
-    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.configure.pre'));
+    $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.configure.pre'));
 
     Zend_Search_Lucene_Search_QueryParser::setDefaultEncoding($this->getParameter('encoding'));
 
@@ -354,7 +359,7 @@ class sfLucene
 
     Zend_Search_Lucene_Analysis_Analyzer::setDefault($analyzer);
 
-    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.configure.post'));
+    $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.configure.post'));
   }
 
 /**
@@ -364,21 +369,25 @@ class sfLucene
   {
     $this->setBatchMode();
 
+    $timer = sfTimerManager::getTimer('Zend Search Lucene Rebuild');
+
+    $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Rebuilding index...')));
+
     $this->getCategories()->clear()->save();
 
     $original = $this->getParameter('delete_lock', false);
     $this->setParameter('delete_lock', true); // tells the indexers not to bother deleting
-
-    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.rebuild.pre'));
 
     foreach ($this->getIndexer()->getHandlers() as $handler)
     {
       $handler->rebuild();
     }
 
-    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.rebuild.post'));
-
     $this->setParameter('delete_lock', $original);
+
+    $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Index rebuilt.')));
+
+    $timer->addTime();
 
     return $this;
   }
@@ -388,9 +397,7 @@ class sfLucene
   */
   public function setAutomaticMode()
   {
-    $mode = $this->getContext()->getController()->inCLI();
-
-    if ($mode)
+    if ($this->getContext()->getController()->inCLI())
     {
       $this->setBatchMode();
     }
@@ -433,11 +440,15 @@ class sfLucene
   */
   public function optimize()
   {
+    $this->configure();
+
     $timer = sfTimerManager::getTimer('Zend Search Lucene Optimize');
 
-    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.optimize.pre'));
+    $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Optimizing index...')));
+
     $this->getLucene()->optimize();
-    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.optimize.post'));
+
+    $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Index optimized.')));
 
     $timer->addTime();
   }
@@ -467,9 +478,11 @@ class sfLucene
 
     $timer = sfTimerManager::getTimer('Zend Search Lucene Commit');
 
-    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.commit.pre'));
+    $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Committing changes...')));
+
     $this->getLucene()->commit();
-    $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.lucene.commit.post'));
+
+    $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Changes committed.')));
 
     $timer->addTime();
   }
@@ -582,7 +595,8 @@ class sfLucene
    */
   public function __call($method, $arguments)
   {
-    $event = $this->getContext()->getEventDispatcher()->notifyUntil(new sfEvent($this, 'lucene.lucene.method_not_found', array('method' => $method, 'arguments' => $arguments)));
+    $event = $this->getEventDispatcher()->notifyUntil(new sfEvent($this, 'lucene.method_not_found', array('method' => $method, 'arguments' => $arguments)));
+
     if (!$event->isProcessed())
     {
       throw new sfException(sprintf('Call to undefined method %s::%s.', __CLASS__, $method));

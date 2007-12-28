@@ -64,7 +64,7 @@ EOF;
     $final .= count($instances) == 1 ? ' index in ' : ' indexes in ';
     $final .= $this->formatter->format(number_format($time, 5), array('fg' => 'cyan')) . ' seconds.';
 
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($final)));
+    $this->dispatcher->notify(new sfEvent($this, 'command.log', array('', $final)));
   }
 
   protected function optimize($search)
@@ -73,7 +73,6 @@ EOF;
 
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->format(sprintf('Optimizing "%s/%s" now...', $search->getParameter('name'), $search->getParameter('culture')), array('fg' => 'red', 'bold' => true)))));
 
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('lucene', 'Optimizing...'))));
     $search->optimize();
 
     $time = microtime(true) - $start;

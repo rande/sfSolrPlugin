@@ -122,7 +122,8 @@ class sfLuceneResult
       }
     }
 
-    $event = $this->getSearch()->getContext()->getEventDispatcher()->notifyUntil(new sfEvent($this, 'lucene.result.method_not_found', array('method' => $method, 'arguments' => $args)));
+    $event = $this->getSearch()->getEventDispatcher()->notifyUntil(new sfEvent($this, 'result.method_not_found', array('method' => $method, 'arguments' => $args)));
+
     if (!$event->isProcessed())
     {
       throw new sfException(sprintf('Call to undefined method %s::%s.', __CLASS__, $method));

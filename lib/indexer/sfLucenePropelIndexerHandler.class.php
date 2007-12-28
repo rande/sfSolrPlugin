@@ -26,6 +26,8 @@ class sfLucenePropelIndexerHandler extends sfLuceneModelIndexerHandler
     // calculate total number of pages
     $count = call_user_func(array($peer, 'doCount'), new Criteria);
 
+    $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Discovered %d instances of model "%s"', $count, $name)));
+
     $totalPages = ceil($count / $per);
 
     for ($page = 0; $page < $totalPages; $page++)
