@@ -41,7 +41,7 @@ abstract class BasesfLuceneActions extends sfActions
 
     $form = new sfLuceneSimpleForm();
     $this->configureCategories($form);
-    $form->bind($request->getParameter('form'));
+    $form->bind($request->getParameter('form', array()));
 
     // do we have a query?
     if ($form->isValid())
