@@ -219,8 +219,6 @@ all:
     enabled_modules: [default, sfLucene]
 }}}
 
-You are free to define your own routes in the routing.yml file.
-
 If you have specified multiple indexes in your search.yml files, you need to configure which index that you want to search.  You do this by opening the app.yml file and adding the configuration setting:
 
 {{{
@@ -291,6 +289,8 @@ all:
 This will prevent sfLucene from giving the user the option to use the advanced mode.
 
 == Routing ==
+Note: This is currently broken because symfony 1.1 does not currently support this.  The symfony god, Fabien, is planning to fix this.  Until then, you have to register your own routes.  See ticket #2408 and symfony-devs mailing list.
+
 sfLucene will automatically register friendly routes with symfony.  For example, surfing to {{{ http://example.org/search }}} will route to sfLucene.  If you would like to customize these routes, you can disable them in the app.yml file with:
 
 {{{
