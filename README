@@ -451,9 +451,9 @@ class sfSimpleCMSIndexer extends sfLucenePropelIndexer
       return $this;
     }
 
-    $doc = $this->getNewDocument();
+    $doc = $this->getBaseDocument();
 
-    $slots = $this->getModel()->getSlots( $this->getCulture() );
+    $slots = $this->getModel()->getSlots( $this->getSearch()->getParameter('culture') );
 
     $slotText = '';
 
@@ -463,7 +463,7 @@ class sfSimpleCMSIndexer extends sfLucenePropelIndexer
     }
 
     $doc->addField( $this->getLuceneField('text', 'description', $slotText) );
-    $doc->addField( $this->getLuceneField('text', 'title', $this->getModel()->getSlotValue('title', $this->getCulture()) ));
+    $doc->addField( $this->getLuceneField('text', 'title', $this->getModel()->getSlotValue('title', $this->getSearch()->getParameter('culture')) ));
     $doc->addField( $this->getLuceneField('unindexed', 'slug', $this->getModel()->getSlug() ));
 
     $categories = $this->getModelCategories();
