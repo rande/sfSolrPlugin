@@ -17,6 +17,7 @@ Trunk
     fields or categories parameter, you now *must* make the declaration
     "super_duper_man".
   * Added own sfEventDispatcher to each sfLucene instance
+  * BC: sfLuceneCriteria constructor now requires sfLucene instance
 
 Version 0.1.1 Beta
   * Fixed i18n category "All" value

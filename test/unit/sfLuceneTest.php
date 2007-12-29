@@ -232,10 +232,10 @@ $originalLucene = $lucene->getParameter('lucene');
 $lucene->setParameter('lucene', $mock);
 
 $t->is($lucene->find('foo'), range(1, 100), '->find() returns what ZSL returns');
-$t->ok(sfLuceneCriteria::newInstance()->add('foo')->getQuery() == $mock->args[0], '->find() parses string queries');
+$t->ok(sfLuceneCriteria::newInstance($lucene)->add('foo')->getQuery() == $mock->args[0], '->find() parses string queries');
 $t->isa_ok($mock->scoring, 'Zend_Search_Lucene_Search_Similarity_Default', '->find() with a string uses default scoring algorithm');
 
-$query = sfLuceneCriteria::newInstance()->add('foo')->addRange('a', 'b', 'c');
+$query = sfLuceneCriteria::newInstance($lucene)->add('foo')->addRange('a', 'b', 'c');
 $lucene->find($query);
 $t->ok($query->getQuery() == $mock->args[0], '->find() accepts sfLuceneCriteria queries');
 $t->isa_ok($mock->scoring, 'Zend_Search_Lucene_Search_Similarity_Default', '->find() without specified scorer uses default scoring algorithm');
@@ -246,11 +246,11 @@ $t->ok($query == $mock->args[0], '->find() accepts Zend API queries');
 $t->isa_ok($mock->scoring, 'Zend_Search_Lucene_Search_Similarity_Default', '->find() with a Zend API queries uses default scoring algorithm');
 
 $scoring = new MockScoring;
-$lucene->find(sfLuceneCriteria::newInstance()->add('foo')->setScoringAlgorithm($scoring));
+$lucene->find(sfLuceneCriteria::newInstance($lucene)->add('foo')->setScoringAlgorithm($scoring));
 $t->is($mock->scoring, $scoring, '->find() changes the scoring algorithm if sfLuceneCriteria specifies it');
 $t->isa_ok(Zend_Search_Lucene_Search_Similarity::getDefault(), 'Zend_Search_Lucene_Search_Similarity_Default', '->find() resets the default scoring algorithm after processing');
 
-$lucene->find(sfLuceneCriteria::newInstance()->add('foo')->addAscendingSortBy('sort1')->addDescendingSortBy('sort2', SORT_NUMERIC));
+$lucene->find(sfLuceneCriteria::newInstance($lucene)->add('foo')->addAscendingSortBy('sort1')->addDescendingSortBy('sort2', SORT_NUMERIC));
 
 $t->is_deeply(array_splice($mock->args, 1), array('sort1', SORT_REGULAR, SORT_ASC, 'sort2', SORT_NUMERIC, SORT_DESC), '->find() uses sorting rules from sfLuceneCriteria');
 
@@ -261,7 +261,7 @@ $t->is($results->getSearch(), $lucene, '->friendlyFind() is connected to the Luc
 
 $mock->e = true;
 try {
-  $lucene->find(sfLuceneCriteria::newInstance()->add('foo')->setScoringAlgorithm(new MockScoring));
+  $lucene->find(sfLuceneCriteria::newInstance($lucene)->add('foo')->setScoringAlgorithm(new MockScoring));
   $t->fail('if ZSL throws exception, ->find() also throws the exception');
   $t->skip('if ZSL throws exception, ->find() stills resets the scoring algorithm');
 } catch (Exception $e) {

@@ -175,7 +175,7 @@ abstract class BasesfLuceneActions extends sfActions
   {
     $data = $form->getValues();
 
-    $query = new sfLuceneCriteria();
+    $query = new sfLuceneCriteria($this->getLuceneInstance());
     $query->addSane($data['query']);
 
     if (sfConfig::get('app_lucene_categories', true) && isset($data['category']) && $data['category'] != $this->translate('All'))

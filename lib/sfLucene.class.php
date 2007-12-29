@@ -541,7 +541,7 @@ class sfLucene
     }
     elseif (is_string($query))
     {
-      $query = sfLuceneCriteria::newInstance()->add($query)->getQuery();
+      $query = sfLuceneCriteria::newInstance($this)->addString($query)->getQuery();
     }
 
 

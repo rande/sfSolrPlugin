@@ -32,19 +32,22 @@ class sfLuceneCriteria
 
   protected $scoring = null;
 
-  public function __construct()
+  protected $search = null;
+
+  public function __construct(sfLucene $search)
   {
     sfLuceneToolkit::loadZend();
 
     $this->query = new Zend_Search_Lucene_Search_Query_Boolean();
+    $this->search = $search;
   }
 
   /**
    * Simply provides a way to do one line method chaining
    */
-  static public function newInstance()
+  static public function newInstance(sfLucene $search)
   {
-    return new self;
+    return new self($search);
   }
 
   /**
@@ -55,30 +58,47 @@ class sfLuceneCriteria
   {
     if (is_string($query))
     {
-      $query = Zend_Search_Lucene_Search_QueryParser::parse($query);
+      $this->addString($query, null, $type);
     }
-    else if ($query instanceof self)
+    else
     {
-      if ($query === $this)
+      if ($query instanceof self)
       {
-        throw new sfLuceneException('You cannot add an instance to itself');
+        if ($query === $this)
+        {
+          throw new sfLuceneException('You cannot add an instance to itself');
+        }
+
+        $query = $query->getQuery();
       }
 
-      $query = $query->getQuery();
-    }
+      if (!($query instanceof Zend_Search_Lucene_Search_Query))
+      {
+        throw new sfLuceneException('Invalid query given (must be instance of Zend_Search_Lucene_Search_Query)');
+      }
 
-    if (!($query instanceof Zend_Search_Lucene_Search_Query))
-    {
-      throw new sfLuceneException('Invalid query given');
+      $this->query->addSubquery($query, $type);
     }
-
-    $this->query->addSubquery($query, $type);
 
     return $this;
   }
 
   /**
-  * This does a sane find on the current index.  The query parser tends to throw a lot
+   * Adds a string that is parsed into Zend API queries
+   * @param string $query The query to parse
+   * @param string $encoding The encoding to parse query as
+   */
+  public function addString($query, $encoding = null, $type = true)
+  {
+    $this->search->configure(); // setup query parser
+
+    $this->add(Zend_Search_Lucene_Search_QueryParser::parse($query, $encoding), $type);
+
+    return $this;
+  }
+
+  /**
+  * This does a sane add on the current query.  The query parser tends to throw a lot
   * of exceptions even in normal conditions, so we need to intercept them and then fall back
   * into a reduced state mode should the user have entered invalid syntax.
   */
@@ -137,7 +157,7 @@ class sfLuceneCriteria
   {
     if (is_array($values))
     {
-      $query = new self;
+      $query = $this->getNewCriteria();
 
       foreach($values as $value)
       {
@@ -285,7 +305,7 @@ class sfLuceneCriteria
     $longitudeLower = min($east, $west);
     $longitudeUpper = max($east, $west);
 
-    $subquery = new self;
+    $subquery = $this->getNewCriteria();
     $subquery->addRange($latitudeLower, $latitudeUpper, $latitudeField, true, true);
     $subquery->addRange($longitudeLower, $longitudeUpper, $longitudeField, true, true);
 
@@ -345,6 +365,6 @@ class sfLuceneCriteria
 
   public function getNewCriteria()
   {
-    return new self;
+    return new self($this->search);
   }
 }
