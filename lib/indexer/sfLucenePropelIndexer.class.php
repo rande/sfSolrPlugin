@@ -17,6 +17,11 @@
  */
 class sfLucenePropelIndexer extends sfLuceneModelIndexer
 {
+  /**
+   * Constructs a new instance
+   * @param sfLucene $search The search instance to index to
+   * @param BaseObject $instance The model instance to index
+   */
   public function __construct($search, $instance)
   {
     if (!($instance instanceof BaseObject))
@@ -29,13 +34,13 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
 
   /**
   * Inserts the provided model into the index based off parameters in search.yml.
-  * @param BaseObject $this->getModel() The model to insert
   */
   public function insert()
   {
     // should we continue with indexing?
     if (!$this->shouldIndex())
     {
+      // indexer said to skip indexing
       $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Ignoring model "%s" from index with primary key = %s', $this->getModelName(), $this->getModel()->getPrimaryKey())));
 
       return $this;
@@ -50,12 +55,13 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
       $this->getModel()->setCulture($this->getSearch()->getParameter('culture'));
     }
 
+    // build document
     $doc = $this->getBaseDocument();
     $doc = $this->configureDocumentFields($doc);
     $doc = $this->configureDocumentCategories($doc);
     $doc = $this->configureDocumentMetas($doc);
 
-    // add document
+    // add document to index
     $this->addDocument($doc, $this->getModelGuid());
 
     // restore culture in symfony i18n detection
@@ -64,13 +70,16 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
       $this->getModel()->setCulture($old_culture);
     }
 
+    // notify about new record
     $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Inserted model "%s" from index with primary key = %s', $this->getModelName(), $this->getModel()->getPrimaryKey())));
 
     return $this;
   }
 
   /**
-   * Returns the base document
+   * Returns the base document to work with.  Most of the time this will just
+   * return an empty Zend_Search_Lucene_Document, but if a callback is specified
+   * it will return that.
    */
   protected function getBaseDocument()
   {
@@ -80,7 +89,6 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     if ($properties->get('callback'))
     {
       $cb = $properties->get('callback');
-
       $doc = $this->getModel()->$cb();
 
       if (!($doc instanceof Zend_Search_Lucene_Document))
@@ -97,24 +105,25 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
   }
 
   /**
-   * Builds the fields into the document as configured by the search.yml file.
+   * Builds the fields into the document as configured by the parameters.
    */
-  protected function configureDocumentFields($doc)
+  protected function configureDocumentFields(Zend_Search_Lucene_Document $doc)
   {
     $properties = $this->getModelProperties();
 
+    // loop through each field
     foreach ($properties->get('fields')->getNames() as $field)
     {
       $field_properties = $properties->get('fields')->get($field);
 
+      // build getter by converting from underscore case to camel case
       $getter = 'get' . sfInflector::camelize($field);
+      $value = $this->getModel()->$getter();
 
       $type = $field_properties->get('type');
       $boost = $field_properties->get('boost');
 
-      $value = $this->getModel()->$getter();
-
-      // validate value
+      // validate value to make sure we can really index this
       if (is_object($value) && method_exists($value, '__toString'))
       {
         $value = $value->__toString();
@@ -125,18 +134,18 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
       }
       elseif (!is_scalar($value))
       {
-        throw new sfLuceneIndexerException('Field value returned is not a string (got a ' . gettype($value) . ' ) and it could be casted to a string.');
+        throw new sfLuceneIndexerException('Field value returned is not a string (got a ' . gettype($value) . ' ) and it could be casted to a string for field ' . $field);
       }
 
       // handle a possible transformation function
-      if ($field_properties->get('transform'))
+      if ($transform = $field_properties->get('transform'))
       {
-        if (!is_callable($field_properties->get('transform')))
+        if (!is_callable($transform))
         {
-          throw new sfLuceneIndexerException('Transformation function cannot be called in field "' . $field . '" on model "' . $this->getModelName() . '"');
+          throw new sfLuceneIndexerException('Transformation function ' . $transform . ' does not exist');
         }
 
-        $value = call_user_func($field_properties->get('transform'), $value);
+        $value = call_user_func($transform, $value);
       }
 
       $zsl_field = $this->getLuceneField($type, strtolower($field), $value);
@@ -148,37 +157,8 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     return $doc;
   }
 
-  protected function configureDocumentMetas($doc)
-  {
-    $doc->addField($this->getLuceneField('unindexed', 'sfl_model', $this->getModelName()));
-    $doc->addField($this->getLuceneField('unindexed', 'sfl_type', 'model'));
-
-    return $doc;
-  }
-
-  protected function configureDocumentCategories($doc)
-  {
-    // category support
-    $categories = $this->getModelCategories();
-
-    if (count($categories) > 0)
-    {
-      foreach ($categories as $category)
-      {
-        $this->addCategory($category);
-      }
-
-      $doc->addField( $this->getLuceneField('text', 'sfl_category', implode(' ', $categories)) );
-    }
-
-    $doc->addField( $this->getLuceneField('unindexed', 'sfl_categories_cache', serialize($categories)) );
-
-    return $doc;
-  }
-
   /**
   * Deletes the old model
-  * @param BaseObject $this->getModel() The model to delete
   */
   public function delete()
   {
@@ -198,7 +178,7 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     $properties = $this->getModelProperties();
     $method = $properties->get('validator');
 
-    if ($method && method_exists($this->getModel(), $method))
+    if ($method)
     {
       return (bool) $this->getModel()->$method();
     }
@@ -206,10 +186,14 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     return true;
   }
 
+  /**
+   * Returns an array of all the categories that this model is configured for
+   */
   protected function getModelCategories()
   {
     $retval = array();
 
+    // change i18n to this culture
     if (sfConfig::get('sf_i18n'))
     {
       $i18n = $this->getSearch()->getContext()->getI18N();
@@ -219,27 +203,32 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     // see: http://www.nabble.com/Lucene-and-n:m-t4449653s16154.html#a12695579
     foreach (parent::getModelCategories() as $category)
     {
+      // if category fits into syntax "%XXX%" then we must replace it with ->getXXX() on the model
       if (substr($category, 0, 1) == '%' && substr($category, -1, 1) == '%')
       {
         $category = substr($category, 1, -1);
 
         $getter = 'get' . sfInflector::camelize($category);
-
         $getterValue = $this->getModel()->$getter();
 
+        // attempt to convert value to string
         if (is_object($getterValue) && method_exists($getterValue, '__toString'))
         {
           $getterValue = $getterValue->__toString();
         }
         elseif (!is_scalar($getterValue))
         {
-          throw new sfLuceneIndexerException('Category value returned is not a string (got a ' . gettype($getterValue) . ' ) and could not be transformed into a string.');
+          throw new sfLuceneIndexerException('Category value returned is not a string (got a ' . gettype($getterValue) . ') and could not be transformed into a string.');
         }
 
+        // store value for returning.  as the value comes the model, it is already
+        // configured for i18n
         $retval[] = $getterValue;
       }
       else
       {
+        // value did not come from model, so store it using i18n if possible
+
         if (isset($i18n) && $i18n)
         {
           $retval[] = $i18n->__($category);
@@ -254,6 +243,9 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     return $retval;
   }
 
+  /**
+   * Calculates the GUID for the model
+   */
   public function getModelGuid()
   {
     return self::getGuid($this->getModelName() . '_' . $this->getModel()->hashCode());

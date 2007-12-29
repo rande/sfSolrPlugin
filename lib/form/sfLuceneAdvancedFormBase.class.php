@@ -22,11 +22,18 @@
 
 abstract class sfLuceneAdvancedFormBase extends sfLuceneForm
 {
+  /**
+   * This overriden constructor looks useless, but it is important: it specifies
+   * not to use a CRSF Secret by default!
+   */
   public function __construct($defaults = array(), $options = array(), $CSRFSecret = false)
   {
     parent::__construct($defaults, $options, $CSRFSecret);
   }
 
+  /**
+   * Setup the form.  To overload, you should use ->configure()
+   */
   public function setup()
   {
     $widgetSchema = new sfWidgetFormSchema(
@@ -70,7 +77,6 @@ abstract class sfLuceneAdvancedFormBase extends sfLuceneForm
     if ($this->hasCategories())
     {
       $widgetSchema['category'] = new sfWidgetFormSelect(array('choices' => $this->getCategories(), 'multiple' => false));
-
       $widgetSchema->setLabel('category', 'Must be in category');
 
       $validatorSchema['category'] = new sfValidatorChoice(array('required' => false, 'choices' => $this->getCategories()));

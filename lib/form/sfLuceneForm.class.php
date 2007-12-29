@@ -11,9 +11,6 @@
  * Base class for the simple form.  If you wish to overload this, please use
  * sfLuceneSimpleForm instead.
  *
- * This form represents the simple form that is displayed on the standard search
- * interface.
- *
  * @package    sfLucenePlugin
  * @subpackage Form
  * @author     Carl Vondrick <carlv@carlsoft.net>
@@ -22,24 +19,36 @@
 
 abstract class sfLuceneForm extends sfForm
 {
-  public function setCategories($categories = array())
+  /**
+   * Gives this form these categories
+   * @param array $categories The array of categories to assign to this form
+   */
+  public function setCategories($categories)
   {
     if (!is_array($categories))
     {
       throw new sfLuceneException('Array of categories must be just that: an array (' . gettype($categories) . ' given');
     }
 
+    // set categories
     $this->setOption('categories', $categories);
 
+    // we now must reconfigure the form
     $this->setup();
     $this->configure();
   }
 
+  /**
+   * Returns all the categories configured for this form
+   */
   public function getCategories()
   {
     return $this->getOption('categories', array());
   }
 
+  /**
+   * Returns true if the form has categories, false if not
+   */
   public function hasCategories()
   {
     return count($this->getOption('categories', array())) > 0;

@@ -84,4 +84,37 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
 
     return $categories;
   }
+
+  /**
+   * Configures meta data about the document
+   */
+  protected function configureDocumentMetas(Zend_Search_Lucene_Document $doc)
+  {
+    $doc->addField($this->getLuceneField('unindexed', 'sfl_model', $this->getModelName()));
+    $doc->addField($this->getLuceneField('unindexed', 'sfl_type', 'model'));
+
+    return $doc;
+  }
+
+  /**
+   * Configures categories into the document
+   */
+  protected function configureDocumentCategories(Zend_Search_Lucene_Document $doc)
+  {
+    $categories = $this->getModelCategories();
+
+    if (count($categories) > 0)
+    {
+      foreach ($categories as $category)
+      {
+        $this->addCategory($category);
+      }
+
+      $doc->addField( $this->getLuceneField('text', 'sfl_category', implode(' ', $categories)) );
+    }
+
+    $doc->addField( $this->getLuceneField('unindexed', 'sfl_categories_cache', serialize($categories)) );
+
+    return $doc;
+  }
 }

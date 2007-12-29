@@ -22,11 +22,18 @@
 
 abstract class sfLuceneSimpleFormBase extends sfLuceneForm
 {
+  /**
+   * This overriden constructor looks useless, but it is important: it specifies
+   * not to use a CRSF Secret by default!
+   */
   public function __construct($defaults = array(), $options = array(), $CSRFSecret = false)
   {
     parent::__construct($defaults, $options, $CSRFSecret);
   }
 
+  /**
+   * Setup the form.  To overload, you should use ->configure()
+   */
   public function setup()
   {
     $widgetSchema = new sfWidgetFormSchema(
@@ -70,6 +77,9 @@ abstract class sfLuceneSimpleFormBase extends sfLuceneForm
     $this->setValidatorSchema($validatorSchema);
   }
 
+  /**
+   * Gets the query string for a certain page
+   */
   public function getQueryString($page = null)
   {
     $values = $this->getValues();

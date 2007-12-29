@@ -66,14 +66,20 @@ abstract class sfLuceneIndexer
     return $this->search;
   }
 
+  /**
+   * Return the context that the search is bound to
+   */
   protected function getContext()
   {
     return $this->search->getContext();
   }
 
   /**
-  * Searches the index for anything with that guid and will delete it.
+  * Searches the index for anything with that guid and will delete it, while
+  * taking care to update categories cache.
+  *
   * @param string $guid The guid to search for
+  * @return int The number of documents deleted
   */
   protected function deleteGuid($guid)
   {
@@ -83,33 +89,37 @@ abstract class sfLuceneIndexer
       return 0;
     }
 
-    $term = $this->getLuceneField('index term', 'sfl_guid', $guid );
-
+    $term = $this->getLuceneField('index term', 'sfl_guid', $guid);
     $query = new Zend_Search_Lucene_Search_Query_Term($term);
 
     $hits = $this->getSearch()->find($query);
 
+    // loop through each document that has this guid
     foreach ($hits as $hit)
     {
+      // build categories that this document has
       $categories = unserialize($hit->sfl_categories_cache);
 
+      // delete each category that this document references
       foreach ($categories as $category)
       {
         $this->removeCategory($category);
       }
 
+      // delete item from index
       $this->getSearch()->getLucene()->delete($hit->id);
     }
 
+    // commit changes
     $this->getSearch()->commit();
 
     return count($hits);
   }
 
   /**
-  * Adds a document
+  * Adds a document to the index while attaching a GUID
   */
-  protected function addDocument($document, $guid)
+  protected function addDocument(Zend_Search_Lucene_Document $document, $guid)
   {
     $document->addField($this->getLuceneField('keyword', 'sfl_guid', $guid));
 

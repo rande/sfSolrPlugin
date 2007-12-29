@@ -9,7 +9,7 @@
 
 /**
  * This storage container does not write to the disc, but instead just stores
- * in memory.  This is useful for memory teesting.
+ * in memory.  This is useful for unit testing.
  * @package    sfLucenePlugin
  * @subpackage Storage
  * @author     Carl Vondrick <carlv@carlsoft.net>
