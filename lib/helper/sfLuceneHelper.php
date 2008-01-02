@@ -29,24 +29,33 @@ function include_search_pager($pager, $form, $radius = 5)
   include_partial('sfLucene/pagerNavigation', array('pager' => $pager, 'form' => $form, 'radius' => $radius));
 }
 
-function highlight_result_text($text, $query, $size = 200, $highlighter = '<strong class="highlight">%s</strong>')
+function highlight_result_text($text, $query, $size = 200, $sprint = '<strong class="highlight">%s</strong>')
 {
-  $h = new sfLuceneHighlighter($text);
-  $h->addKeywordSlug($query);
-  $h->addHighlighter($highlighter);
-  $h->hasBody(false);
-  $h->densityCrop($size);
-  return $h->highlight();
+  $highlighter = new sfLuceneHighlighterString($text);
+
+  $marker = new sfLuceneHighlighterMarkerSprint($sprint);
+  $harness = new sfLuceneHighlighterMarkerHarness(array($marker));
+
+  $keywords = sfLuceneHighlighterKeywordNamedInsensitive::explode($harness, $query);
+
+  $highlighter->addKeywords($keywords);
+  $highlighter->strip()->crop($size);
+
+  return $highlighter->highlight()->export();
 }
 
-function highlight_keywords($text, $keywords, $highlighter = '<strong class="highlight">%s</strong>')
+function highlight_keywords($text, $keywords, $sprint = '<strong class="highlight">%s</strong>')
 {
-  $h = new sfLuceneHighlighter($text);
-  $h->addKeywordSlug($keywords);
-  $h->addHighlighter($highlighter);
-  $h->hasBody(false);
+  $highlighter = new sfLuceneHighlighterXHTMLPart($text);
 
-  return $h->highlight();
+  $marker = new sfLuceneHighlighterMarkerSprint($sprint);
+  $harness = new sfLuceneHighlighterMarkerHarness(array($marker));
+
+  $keywords = sfLuceneHighlighterKeywordNamedInsensitive::explode($harness, $keywords);
+
+  $highlighter->addKeywords($keywords);
+
+  return $highlighter->highlight()->export();
 }
 
 function add_highlight_qs($query, $keywords)

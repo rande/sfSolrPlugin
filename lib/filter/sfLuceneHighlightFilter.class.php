@@ -99,11 +99,7 @@ class sfLuceneHighlightFilter extends sfFilter
 
     try
     {
-      if (!$this->highlight())
-      {
-        // highlighting did not occur, so remove notice
-        $this->removeNotice();
-      }
+      $this->highlight();
     }
     catch (Exception $e)
     {
@@ -121,14 +117,15 @@ class sfLuceneHighlightFilter extends sfFilter
   protected function highlight()
   {
     $terms = $this->getContext()->getRequest()->getParameter($this->getParameter('highlight_qs'));
-    $terms = $this->prepareTerms($terms);
 
     // attempt to highlight from sfLucene
-    if (count($terms))
+    if ($terms)
     {
+      $terms = $this->prepareTerms($terms);
+
+      $this->doHighlight($terms);
       $this->addNotice($terms);
       $this->addCss();
-      $this->doHighlight($terms);
 
       return true;
     }
@@ -152,9 +149,9 @@ class sfLuceneHighlightFilter extends sfFilter
 
             $terms = $this->prepareTerms($matches[1]);
 
+            $this->doHighlight($terms);
             $this->addNotice($terms, $value['name']);
             $this->addCss();
-            $this->doHighlight($terms);
 
             // stop looking for referers now.
 
@@ -164,7 +161,7 @@ class sfLuceneHighlightFilter extends sfFilter
       }
     }
 
-    // we failed to do anything, so return false
+    $this->removeNotice();
     return false;
   }
 
@@ -176,12 +173,10 @@ class sfLuceneHighlightFilter extends sfFilter
     $content = $this->getContext()->getResponse()->getContent();
 
     // configure highlighter
-    $lighter = new sfLuceneHighlighter($content);
+    $lighter = new sfLuceneHighlighterXHTML($content);
     $lighter->addKeywords($terms);
-    $lighter->addHighlighters($this->getParameter('highlight_strings'));
-    $lighter->hasBody(true);
 
-    $this->getContext()->getResponse()->setContent($lighter->highlight());
+    $this->getContext()->getResponse()->setContent($lighter->highlight()->export());
   }
 
   /**
@@ -205,18 +200,6 @@ class sfLuceneHighlightFilter extends sfFilter
   }
 
   /**
-   * Prepares terms by exploding them out
-   */
-  protected function prepareTerms($terms)
-  {
-    $terms = preg_split('/\W+/', trim($terms), -1, PREG_SPLIT_NO_EMPTY);
-
-    $terms = array_unique($terms);
-
-    return $terms;
-  }
-
-  /**
    * Removes the notice token from the content because highlighting didn't happen
    */
   protected function removeNotice()
@@ -233,7 +216,14 @@ class sfLuceneHighlightFilter extends sfFilter
   {
     $content = $this->getContext()->getResponse()->getContent();
 
-    $term_string = implode($terms, ', ');
+    $term_string = '';
+
+    foreach ($terms as $term)
+    {
+      $term_string .= $term->getHighlighter()->highlight($term->getName()) . ', ';
+    }
+
+    $term_string = substr($term_string, 0, -2);
 
     $route = $route = $this->getContext()->getRouting()->getCurrentInternalUri();
     $route = preg_replace('/(\?|&)' . $this->getParameter('highlight_qs') . '=.*?(&|$)/', '$1', $route);
@@ -253,6 +243,13 @@ class sfLuceneHighlightFilter extends sfFilter
     $content = str_replace($this->getParameter('notice_tag'), $message, $content);
 
     $this->getContext()->getResponse()->setContent($content);
+  }
+
+  protected function prepareTerms($terms)
+  {
+    $highlighters = sfLuceneHighlighterMarkerSprint::generate($this->getParameter('highlight_strings'));
+
+    return sfLuceneHighlighterKeywordNamedInsensitive::explode($highlighters, mb_strtolower($terms));
   }
 
   /**
