@@ -385,6 +385,8 @@ highlight:
 
 If you need to configure it more, it is possible to extend the highlighting class.  Refer to the API documentation for this.
 
+Note: If you experience extremely slow page response times when using the highlighting filter (300ms to 2000ms), then you are recommended to reconfigure your XML catalog.  For instructions on how to do this, open the tarball XMLCatalog.tar.gz and follow the instructions there.
+
 = Categories =
 Each document in the index can be tied to one or more categories.  It is then possible to limit your search results to that category in the provided interface.  To enable this, you must define a "categories" key to your models or actions.  For instance, an example model:
 
