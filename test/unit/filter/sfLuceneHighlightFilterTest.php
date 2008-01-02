@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(17, new lime_output_color());
+$t = new lime_test(20, new lime_output_color());
 
 $chain = new sfFilterChain();
 
@@ -41,7 +41,33 @@ $highlight = new sfLuceneHighlightFilter($context, array(
 
 $t->diag('testing validation');
 
+function notify($given = null)
+{
+  static $event;
+
+  if ($given)
+  {
+    $event = $given;
+  }
+
+  return $event;
+}
+
 $request->setParameter('h', 'test');
+
+$context->getEventDispatcher()->connect('application.log', 'notify');
+
+$response->setContent('<html><body>&foobar; </foo></body></html>');
+try {
+  $highlight->execute($chain);
+  $t->pass('highlighter accepts content if it is malformed');
+} catch (Exception $e) {
+  $t->fail('highlighter accepts content if it is malformed');
+}
+
+$t->is($response->getContent(), '<html><body>&foobar; </foo></body></html>', 'highlighter does not touch malformed content');
+
+$t->isa_ok(notify(), 'sfEvent', 'highlighter notifies application log of malformed content');
 
 $response->setContent('<html><body>Hello</body></html>');
 try {

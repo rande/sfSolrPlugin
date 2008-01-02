@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(5, new lime_output_color());
+$t = new lime_test(6, new lime_output_color());
 
 $xml = '<?xml version="1.0"?>
 <root>
@@ -102,6 +102,14 @@ $highlighter->addKeywords(array($keyword, $keyword2));
 $highlighter->highlight();
 
 $t->is($highlighter->export(), $expected, '->highlight() handles multiple keywords');
+
+try {
+  $h = new sfLuceneHighlighterXML('<foo>&ddd;<foo></baz></bar>');
+  $h->highlight();
+  $t->fail('->highlight() rejects invalid XML');
+} catch (Exception $e) {
+  $t->pass('->highlight() rejects invalid XML');
+}
 
 $highlighter = new sfLuceneHighlighterXML($xml);
 $t->is($highlighter->__toString(), $xml, 'highlighter implements __toString()');

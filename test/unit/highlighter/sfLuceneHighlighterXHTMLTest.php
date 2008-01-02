@@ -50,10 +50,10 @@ $expected = '<?xml version="1.0"?>
   </head>
   <body>
     <p>I am prety <h>foobar</h></p>
-    <script>
+    <script xml:space="preserve">
       foobar
     </script>
-    <style type="text/stylesheet">
+    <style type="text/stylesheet" xml:space="preserve">
       foobar
     </style>
     <textarea>

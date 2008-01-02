@@ -101,6 +101,17 @@ class sfLuceneHighlightFilter extends sfFilter
     {
       $this->highlight();
     }
+    catch (sfLuceneHighlighterException $e)
+    {
+      $timer->addTime();
+
+      preg_match_all('/\[(.+?)\]/', $e->getMessage(), $errors);
+
+      $errors = $errors[1];
+      $errors['priority'] = sfLogger::ERR;
+
+      $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', $errors));
+    }
     catch (Exception $e)
     {
       $timer->addTime();

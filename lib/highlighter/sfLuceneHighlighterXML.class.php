@@ -42,10 +42,40 @@ class sfLuceneHighlighterXML extends sfLuceneHighlighter
    */
   protected function prepare()
   {
+    libxml_clear_errors();
+    $oldXmlError = libxml_use_internal_errors(true);
+
     $this->document = new DomDocument($this->version, $this->encoding);
     $this->document->resolveExternals = true;
     $this->document->substituteEntities = true;
-    $this->document->loadXML($this->data);
+
+    if (!$this->document->loadXML($this->data))
+    {
+      $errors = libxml_get_errors();
+      $problems = array();
+
+      $highest = 0;
+
+      foreach ($errors as $error)
+      {
+        if ($error->level > $highest)
+        {
+          $highest = $error->level;
+        }
+
+        $problems[] = '[' . trim($error->message, "\r\n") . ', line ' . $error->line . ', col ' . $error->column .']';
+      }
+
+      $problems = implode($problems, ', ');
+
+      libxml_clear_errors(); // free memory
+      libxml_use_internal_errors($oldXmlError); // restore error reporting
+
+      throw new sfLuceneHighlighterException($problems);
+    }
+
+    libxml_clear_errors(); // free memory
+    libxml_use_internal_errors($oldXmlError); // restore error reporting
 
     $this->xpath = new DOMXPath($this->document);
   }
