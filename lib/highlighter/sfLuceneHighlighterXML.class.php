@@ -43,6 +43,8 @@ class sfLuceneHighlighterXML extends sfLuceneHighlighter
   protected function prepare()
   {
     $this->document = new DomDocument($this->version, $this->encoding);
+    $this->document->resolveExternals = true;
+    $this->document->substituteEntities = true;
     $this->document->loadXML($this->data);
 
     $this->xpath = new DOMXPath($this->document);
