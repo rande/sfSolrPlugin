@@ -52,26 +52,11 @@ class sfLuceneHighlighterXML extends sfLuceneHighlighter
     if (!$this->document->loadXML($this->data))
     {
       $errors = libxml_get_errors();
-      $problems = array();
-
-      $highest = 0;
-
-      foreach ($errors as $error)
-      {
-        if ($error->level > $highest)
-        {
-          $highest = $error->level;
-        }
-
-        $problems[] = '[' . trim($error->message, "\r\n") . ', line ' . $error->line . ', col ' . $error->column .']';
-      }
-
-      $problems = implode($problems, ', ');
 
       libxml_clear_errors(); // free memory
       libxml_use_internal_errors($oldXmlError); // restore error reporting
 
-      throw new sfLuceneHighlighterException($problems);
+      throw new sfLuceneHighlighterXMLException('XML document failed to parse correctly, aborting highlighting', $errors);
     }
 
     libxml_clear_errors(); // free memory
