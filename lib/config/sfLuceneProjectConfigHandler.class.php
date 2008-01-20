@@ -119,6 +119,11 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
           $model_config['partial'] = null;
         }
 
+        if (!isset($model_config['route']))
+        {
+          $model_config['route'] = null;
+        }
+
         if (!isset($model_config['indexer']))
         {
           $model_config['indexer'] = null;
