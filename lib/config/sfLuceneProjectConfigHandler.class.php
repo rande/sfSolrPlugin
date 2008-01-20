@@ -146,7 +146,12 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
 
         if (!isset($model_config['validator']))
         {
-          $model_config['validator'] = 'isIndexable';
+          $model_config['validator'] = null;
+        }
+
+        if (!isset($model_config['categories']))
+        {
+          $model_config['categories'] = array();
         }
       }
     }
