@@ -121,12 +121,16 @@ $t->is_deeply($config, array (
         array (
         ),
         'partial' => NULL,
+        'route' => NULL,
         'indexer' => NULL,
         'title' => NULL,
         'description' => NULL,
         'peer' => 'FakeModelPeer',
         'rebuild_limit' => 250,
-        'validator' => 'isIndexable',
+        'validator' => NULL,
+        'categories' =>
+        array (
+        ),
       ),
     ),
     'index' =>
