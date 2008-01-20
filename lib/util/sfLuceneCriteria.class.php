@@ -161,14 +161,18 @@ class sfLuceneCriteria
 
       foreach($values as $value)
       {
+        $value = (string) $value;
+
         $term = new Zend_Search_Lucene_Index_Term($value, $field);
         $qterm = new Zend_Search_Lucene_Search_Query_Term($term);
 
         $query->add($qterm, $matchAll);
       }
     }
-    elseif (is_string($values))
+    elseif (is_scalar($values))
     {
+      $values = (string) $values;
+
       $term = new Zend_Search_Lucene_Index_Term($values, $field);
       $query = new Zend_Search_Lucene_Search_Query_Term($term);
     }
