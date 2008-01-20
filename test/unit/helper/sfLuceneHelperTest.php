@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -15,6 +15,10 @@
   */
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
+
+$t = new limeade_test(16, limeade_output::get());
+$limeade = new limeade_sf($t);
+$app = $limeade->bootstrap();
 
 sfLuceneToolkit::loadZend();
 
@@ -48,8 +52,6 @@ class Bar
 
 $foo = new Foo;
 $bar = new Bar;
-
-$t = new lime_test(16, new lime_output_color());
 
 $t->diag('testing partial dependencies');
 

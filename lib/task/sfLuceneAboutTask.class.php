@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,7 +10,7 @@
 /**
 * Task that dumps information about sfLucene
 *
-* @author Carl Vondrick <carlv@carlsoft.net>
+* @author Carl Vondrick <carl@carlsoft.net>
 * @package sfLucenePlugin
 * @subpackage Tasks
 * @version SVN: $Id$
@@ -45,9 +45,7 @@ EOF;
   {
     $app = $arguments['application'];
 
-    $version = file_get_contents(dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR .'VERSION');
-
-    $this->notifyListRow('Plugin Version', $version);
+    $this->notifyListRow('Plugin Version', 'sfLucene ' . sfLucene::VERSION);
 
     if ($app)
     {

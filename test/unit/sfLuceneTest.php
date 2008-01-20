@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,22 +16,27 @@
 
 require dirname(__FILE__) . '/../bootstrap/unit.php';
 
-$t = new lime_test(91, new lime_output_color());
+$t = new limeade_test(91, limeade_output::get());
+$limeade = new limeade_sf($t);
+$app = $limeade->bootstrap();
+
+$luceneade = new limeade_lucene($limeade);
+$luceneade->configure()->clear_sandbox();
 
 $t->diag('testing ::getInstance()');
 
 $t->ok(!is_dir(sfConfig::get('sf_data_dir') . '/index/testLucene/en'), 'Lucene directory does not initially exist');
 
 try {
+  $e = $t->no_exception('::getInstance() allows valid cultures');
   $lucene = sfLucene::getInstance('testLucene','en');
-  $t->pass('::getInstance() allows valid cultures');
-  $t->ok(is_dir(sfConfig::get('sf_data_dir') . '/index/testLucene/en'), '::getInstance() creates the index');
-
-  $stat = stat(sfConfig::get('sf_data_dir') . '/index/testLucene/en/segments.gen');
-} catch (Exception $e) {
-  $t->fail('::getInstance() allows valid cultures');
-  $t->skip('::getInstance() creates the index');
+  $e->no();
+} catch (Exception $ex) {
+  $e->caught($ex);
 }
+
+$t->ok(is_dir(sfConfig::get('sf_data_dir') . '/index/testLucene/en'), '::getInstance() creates the index');
+$stat = stat(sfConfig::get('sf_data_dir') . '/index/testLucene/en/segments.gen');
 
 $lucene->unlatch();
 unset($lucene);
@@ -45,17 +50,19 @@ try {
 }
 
 try {
+  $e = $t->exception('::getInstance() rejects invalid cultures');
   sfLucene::getInstance('testLucene', 'piglatin');
-  $t->fail('::getInstance() rejects invalid cultures');
-} catch (Exception $e) {
-  $t->pass('::getInstance() rejects invalid cultures');
+  $e->no();
+} catch (Exception $ex) {
+  $e->caught($ex);
 }
 
 try {
+  $e = $t->exception('::getInstance() rejects invalid names');
   sfLucene::getInstance('badname', 'en');
-  $t->fail('::getInstance() rejects invalid names');
-} catch (Exception $e) {
-  $t->pass('::getInstance() rejects invalid names');
+  $e->no();
+} catch (Exception $ex) {
+  $e->caught($ex);
 }
 
 try {
@@ -66,10 +73,11 @@ try {
 }
 
 try {
+  $e = $t->no_exception('::getInstance() allows to rebuild index if closed');
   $new = sfLucene::getInstance('testLucene', 'fr', true);
-  $t->pass('::getInstance() allows to rebuild index if closed');
-} catch (Exception $e) {
-  $t->fail('::getInstance() allows to rebuild index if closed');
+  $e->no();
+} catch (Exception $ex) {
+  $e->caught($ex);
 }
 
 try {
@@ -90,11 +98,12 @@ if ($new) {
 $t->diag('testing ::getAllInstances()');
 
 try {
+  $t->no_exception('::getAllInstance() executes without exception');
   $instances = sfLucene::getAllInstances();
-  $t->pass('::getAllInstance() executes without exception');
-} catch (Exception $e) {
+  $e->no();
+} catch (Exception $ex) {
   $instances = array();
-  $t->fail('::getAllInstances() executes without exception');
+  $e->caught($ex);
 }
 
 $t->is_deeply($instances, array(sfLucene::getInstance('testLucene','en'), sfLucene::getInstance('testLucene','fr'), sfLucene::getInstance('fooLucene','en')), '::getAllInstances() returns all instances');
@@ -137,18 +146,17 @@ $t->is($f->get('id')->get('boost'), 1, 'field property "boost" is the boost');
 
 $t->diag('testing ::getConfig()');
 
-$cache = sfConfigCache::getInstance()->getCacheName(sfConfig::get('sf_config_dir_name').DIRECTORY_SEPARATOR.'search.yml');
-rename($cache, $cache . '~real');
-file_put_contents($cache, '<?php $foo = 42;');
+$cswap = $app->cswap($luceneade->config_dir . '/search.yml')->write('<?php $foo = 42;');
 
 try {
+  $e = $t->exception('::getConfig() fails if search.yml is corrupt');
   sfLucene::getConfig();
-  $t->fail('::getConfig() fails if search.yml is corrupt');
-} catch (Exception $e) {
-  $t->pass('::getConfig() fails if search.yml is corrupt');
+  $e->no();
+} catch (Exception $ex) {
+  $e->caught($ex);
 }
 
-file_put_contents($cache, '<?php $config = array(1, 2, 3);');
+$cswap->write('<?php $config = array(1, 2, 3);');
 
 try {
   $t->is(sfLucene::getConfig(), array(1, 2, 3), '::getConfig() returns the $config variable in the search.yml file');
@@ -156,17 +164,16 @@ try {
   $t->fail('::getConfig() returns the $config variable in the search.yml file');
 }
 
-unlink($cache);
-rename($cache . '~real', $cache);
+$cswap->restore();
 
-$t->diag('testing ->getCategories()');
-$cats = $lucene->getCategories();
+$t->diag('testing ->getCategoriesHarness()');
+$cats = $lucene->getCategoriesHarness();
 
 $t->isa_ok($cats, 'sfLuceneCategories', '->getCategories() returns an instance of sfLuceneCategories');
-$t->ok($lucene->getCategories() === $cats, '->getCategories() is a singleton');
+$t->ok($lucene->getCategoriesHarness() === $cats, '->getCategories() is a singleton');
 
-$t->diag('testing ->getIndexer()');
-$indexer = $lucene->getIndexer();
+$t->diag('testing ->getIndexerFactory()');
+$indexer = $lucene->getIndexerFactory();
 $t->isa_ok($indexer, 'sfLuceneIndexerFactory', '->getIndexer() returns an instance of sfLuceneIndexerFactory');
 
 $t->diag('testing ->getContext()');
@@ -228,8 +235,8 @@ class MockScoring extends Zend_Search_Lucene_Search_Similarity_Default {}
 
 $mock = new MockLucene;
 
-$originalLucene = $lucene->getParameter('lucene');
-$lucene->setParameter('lucene', $mock);
+$originalLucene = $lucene->getLucene();
+$lucene->forceLucene($mock);
 
 $t->is($lucene->find('foo'), range(1, 100), '->find() returns what ZSL returns');
 $t->ok(sfLuceneCriteria::newInstance($lucene)->add('foo')->getQuery() == $mock->args[0], '->find() parses string queries');
@@ -269,7 +276,7 @@ try {
   $t->isa_ok(Zend_Search_Lucene_Search_Similarity::getDefault(), 'Zend_Search_Lucene_Search_Similarity_Default', 'if ZSL throws exception, ->find() stills resets the scoring algorithm');
 }
 
-$lucene->setParameter('lucene', $originalLucene);
+$lucene->forceLucene($originalLucene);
 
 $t->diag('testing ->rebuildIndex()');
 
@@ -303,20 +310,20 @@ class MockIndexerHandler
 $handlers = array(new MockIndexerHandler, new MockIndexerHandler);
 $factory = new MockIndexerFactory($handlers, $lucene);
 
-$originalFactory = $lucene->getParameter('indexer_factory');
-$lucene->setParameter('indexer_factory', $factory);
+$originalFactory = $lucene->getIndexerFactory();
+$lucene->forceIndexerFactory($factory);
 
-$lucene->getCategories()->getCategory('foo');
-$lucene->getCategories()->save();
+$lucene->getCategoriesHarness()->getCategory('foo');
+$lucene->getCategoriesHarness()->save();
 
 $lucene->rebuildIndex();
 
 $t->is($factory->deleteLock, true, '->rebuildIndex() enables the delete lock');
 $t->ok($handlers[0]->count == 1 && $handlers[0]->count == 1, '->rebuildIndex() calls each handler\'s ->rebuild() only once');
 
-$t->is($lucene->getCategories()->getAllCategories(), array(), '->rebuildIndex() clears the category list');
+$t->is($lucene->getCategoriesHarness()->getAllCategories(), array(), '->rebuildIndex() clears the category list');
 
-$lucene->setParameter('indexer_factory', $originalFactory);
+$lucene->forceIndexerFactory($originalFactory);
 
 $t->diag('testing wrappers');
 
@@ -354,7 +361,7 @@ $t->diag('testing statistics');
 
 $originalLocation = $lucene->getParameter('index_location');
 
-$lucene->setParameter('index_location', DATA_DIR . '/foo');
+$lucene->setParameter('index_location', $luceneade->data_dir . '/foo');
 
 $t->is($lucene->byteSize(), 8222, '->byteSize() returns the correct size in bytes');
 $t->is($lucene->segmentCount(), 2, '->segmentCount() returns the correct segment count');

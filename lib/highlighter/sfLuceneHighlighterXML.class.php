@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,7 +12,7 @@
  *
  * @package    sfLucenePlugin
  * @subpackage Highlighter
- * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @author     Carl Vondrick <carl@carlsoft.net>
  * @version SVN: $Id$
  */
 class sfLuceneHighlighterXML extends sfLuceneHighlighter
@@ -47,7 +47,7 @@ class sfLuceneHighlighterXML extends sfLuceneHighlighter
 
     $this->document = new DomDocument($this->version, $this->encoding);
     $this->document->resolveExternals = true;
-    $this->document->substituteEntities = true;
+    $this->document->substituteEntities = false;
 
     if (!$this->document->loadXML($this->data))
     {
@@ -91,12 +91,12 @@ class sfLuceneHighlighterXML extends sfLuceneHighlighter
    */
   protected function doHighlightNode(DOMNode $node)
   {
-    $texts = array();
-
-    if (!$node->hasChildNodes())
+    if ($this->ignoreNode($node))
     {
       return;
     }
+
+    $texts = array();
 
     foreach ($node->childNodes as $child)
     {
@@ -117,13 +117,40 @@ class sfLuceneHighlighterXML extends sfLuceneHighlighter
   }
 
   /**
+   * Determines if the node should be ignored.  If this returns true, then
+   * it and all children are ignored.  If false, then it is highlighted.
+   */
+  protected function ignoreNode(DOMNode $node)
+  {
+    switch ($node->nodeType)
+    {
+      case XML_ATTRIBUTE_NODE:
+      case XML_ENTITY_REF_NODE:
+      case XML_ENTITY_NODE:
+      case XML_PI_NODE:
+      case XML_COMMENT_NODE:
+      case XML_DOCUMENT_TYPE_NODE:
+      case XML_DOCUMENT_FRAG_NODE:
+      case XML_NOTATION_NODE:
+        return true;
+    }
+
+    if (!$node->hasChildNodes())
+    {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Highlights a text node
    *
    * @param DOMNode $node The text node to highlight
    */
   protected function doHighlightTextNode(DOMNode $node)
   {
-    foreach ($this->tokenize($node->nodeValue) as $token)
+    foreach ($this->tokenize($node->textContent) as $token)
     {
       $node->splitText($token->getEnd());
       $matched = $node->splitText($token->getStart());

@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,7 +11,7 @@
  * Responsible for handling Propel's behaviors.
  * @package    sfLucenePlugin
  * @subpackage Behavior
- * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @author     Carl Vondrick <carl@carlsoft.net>
  * @version SVN: $Id$
  */
 class sfLucenePropelBehavior
@@ -27,6 +27,11 @@ class sfLucenePropelBehavior
   protected $deleteQueue = array();
 
   /**
+   * If true, then nothing can be added to the queues.
+   */
+  static protected $locked = false;
+
+  /**
    * Adds the node to the queue if is modified or is new.
    *
    * The presave logic prevents infinite loops when dealing with circular references
@@ -35,6 +40,11 @@ class sfLucenePropelBehavior
    */
   public function preSave($node)
   {
+    if (self::$locked)
+    {
+      return;
+    }
+
     if ($node->isModified() || $node->isNew())
     {
       foreach ($this->saveQueue as $item)
@@ -76,6 +86,11 @@ class sfLucenePropelBehavior
    */
   public function preDelete($node)
   {
+    if (self::$locked)
+    {
+      return;
+    }
+
     if (!$node->isNew())
     {
       foreach ($this->deleteQueue as $item)
@@ -125,7 +140,7 @@ class sfLucenePropelBehavior
   {
     foreach ($this->getSearchInstances($node) as $instance)
     {
-      $instance->getIndexer()->getModel($node)->delete();
+      $instance->getIndexerFactory()->getModel($node)->delete();
     }
   }
 
@@ -136,7 +151,7 @@ class sfLucenePropelBehavior
   {
     foreach ($this->getSearchInstances($node) as $instance)
     {
-      $instance->getIndexer()->getModel($node)->insert();
+      $instance->getIndexerFactory()->getModel($node)->insert();
     }
   }
 
@@ -190,5 +205,14 @@ class sfLucenePropelBehavior
   static public function getInitializer()
   {
     return sfLucenePropelInitializer::getInstance();
+  }
+
+  /**
+   * Locks the Propel behavior, so nothing can be queued.
+   * @param bool $to If true, the behavior is locked.  If false, the behavior is unlocked.
+   */
+  static public function setLock($to)
+  {
+    self::$locked = (bool) $to;
   }
 }

@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,7 +16,9 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(6, new lime_output_color());
+$t = new limeade_test(8, limeade_output::get());
+$limeade = new limeade_sf($t);
+$app = $limeade->bootstrap();
 
 $xml = '<?xml version="1.0"?>
 <root>
@@ -102,6 +104,49 @@ $highlighter->addKeywords(array($keyword, $keyword2));
 $highlighter->highlight();
 
 $t->is($highlighter->export(), $expected, '->highlight() handles multiple keywords');
+
+$xml = '<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/2000/REC-xhtml1-200000126/DTD/xhtml1-transitional.dtd">
+<root>
+  <child>hello &amp; baz&oacute;</child>
+  <child>i&nbsp;am foobar</child>
+</root>
+';
+
+$expected = '<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/2000/REC-xhtml1-200000126/DTD/xhtml1-transitional.dtd">
+<root>
+  <child>hello &amp; <s>baz</s>&oacute;</child>
+  <child>i&nbsp;am <h>foobar</h></child>
+</root>
+';
+
+$highlighter = new sfLuceneHighlighterXML($xml);
+$highlighter->addKeywords(array($keyword, $keyword2));
+$highlighter->highlight();
+
+$t->is($highlighter->export(), $expected, '->highlight() handles entities correctly');
+
+$xml = '<?xml version="1.0"?>
+<root>
+  <child>hellÆ bäz</child>
+  <child>i am fööbär</child>
+</root>
+';
+
+$expected = '<?xml version="1.0"?>
+<root>
+  <child>hellÆ <s>bäz</s></child>
+  <child>i am <h>fööbär</h></child>
+</root>
+';
+
+$highlighter = new sfLuceneHighlighterXML($xml);
+$highlighter->addKeywords(array($keyword, $keyword2));
+$highlighter->highlight();
+
+//$t->is($highlighter->export(), $expected, '->highlight() handles UTF8 characters correctly');
+$t->todo('->highlight() handles UTF8 characters correctly (pending elegant solution)');
 
 try {
   $h = new sfLuceneHighlighterXML('<foo>&ddd;<foo></baz></bar>');

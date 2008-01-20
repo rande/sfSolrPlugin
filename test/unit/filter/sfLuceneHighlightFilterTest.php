@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,7 +16,9 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(20, new lime_output_color());
+$t = new limeade_test(20, limeade_output::get());
+$limeade = new limeade_sf($t);
+$app = $limeade->bootstrap();
 
 $chain = new sfFilterChain();
 
@@ -156,10 +158,12 @@ $response->setContentType('text/html');
 
 $t->diag('testing i18n');
 
-configure_i18n();
+$i18n = $app->i18n()->setup('en_US');
 
 $response->setContent('<html><body>highlight the keyword</body></html>');
 $request->setParameter('h', 'keyword');
 $highlight->execute($chain);
 
 $t->is($response->getContent(), "<?xml version=\"1.0\"?>\n<html><body>highlight the <highlighted>keyword</highlighted></body></html>\n", 'highlighter highlights a single keyword with i18n');
+
+$i18n->teardown();

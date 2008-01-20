@@ -19,6 +19,7 @@ Trunk
   * Added own sfEventDispatcher to each sfLucene instance
   * BC: sfLuceneCriteria constructor now requires sfLucene instance
   * Refactored highlighting system
+  * Added ability to lock the Propel behavior.
 
 Version 0.1.1 Beta
   * Fixed i18n category "All" value

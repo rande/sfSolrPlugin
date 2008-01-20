@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -18,9 +18,14 @@ require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
 clearstatcache(); // for some reason this unit test will go crazy without this...
 
-$t = new lime_test(12, new lime_output_color());
+$t = new limeade_test(12, limeade_output::get());
+$limeade = new limeade_sf($t);
+$app = $limeade->bootstrap();
 
-$file = SANDBOX_DIR . '/storage/long/folder/tree';
+$luceneade = new limeade_lucene($limeade);
+$luceneade->configure()->clear_sandbox();
+
+$file = $luceneade->sandbox_dir . '/storage/long/folder/tree';
 
 $t->ok(!file_exists($file), 'target file does not exist initially');
 
@@ -33,7 +38,7 @@ try {
   die;
 }
 
-$t->ok($bh instanceof sfLuceneStorage, 'sfLuceneStorageFilesystem implements sfLuceneStorage interface');
+$t->instanceof_ok($bh, 'sfLuceneStorage', 'sfLuceneStorageFilesystem implements sfLuceneStorage interface');
 
 $t->is($bh->read(), null, '->read() is null initially');
 
@@ -50,17 +55,19 @@ $t->ok(file_exists($file), '->write() creates the file');
 $t->is(file_get_contents($file), 'foobar', '->write() writes the data to the file');
 
 try {
-  $bh2 = new sfLuceneStorageFileSystem(SANDBOX_DIR . '/storage/long/folder/flower');
-  $t->pass('__construct() functions if the directory tree already exists');
+  $ex = $t->no_exception('__construct() functions if the directory tree already exists');
+  $bh2 = new sfLuceneStorageFileSystem($luceneade->sandbox_dir . '/storage/long/folder/flower');
+  $ex->no();
 } catch (Exception $e) {
-  $t->fail('__construct() functions if the directory tree already exists');
+  $ex->caught($e);
 }
 
 try {
+  $ex = $t->no_exception('->write() functions if the directory tree already exists');
   $bh2->write('foobar');
-  $t->pass('->write() functions if the directory tree already exists');
+  $ex->no();
 } catch (Exception $e) {
-  $t->fail('->write() functions if the directory tree already exists');
+  $ex->caught($e);
 }
 
 $bh->delete();

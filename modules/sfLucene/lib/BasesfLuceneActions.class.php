@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePLugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,7 +12,7 @@
  *
  * @package    sfLucenePlugin
  * @subpackage Module
- * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @author     Carl Vondrick <carl@carlsoft.net>
  * @version SVN: $Id$
  */
 abstract class BasesfLuceneActions extends sfActions
@@ -199,7 +199,7 @@ abstract class BasesfLuceneActions extends sfActions
    */
   protected function configureCategories($form)
   {
-    $categories = $this->getLuceneInstance()->getCategories()->getAllCategories();
+    $categories = $this->getLuceneInstance()->getCategoriesHarness()->getAllCategories();
 
     if (!sfConfig::get('app_lucene_categories', true) || count($categories) == 0)
     {

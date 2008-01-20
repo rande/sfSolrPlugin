@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,9 +16,14 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$lucene = sfLucene::getInstance('testLucene', 'en');
+$t = new limeade_test(13, limeade_output::get());
+$limeade = new limeade_sf($t);
+$app = $limeade->bootstrap();
 
-$t = new lime_test(13, new lime_output_color());
+$luceneade = new limeade_lucene($limeade);
+$luceneade->configure()->clear_sandbox();
+
+$lucene = sfLucene::getInstance('testLucene', 'en');
 
 class MockResult extends Zend_Search_Lucene_Search_QueryHit
 {

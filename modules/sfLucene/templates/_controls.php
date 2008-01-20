@@ -2,7 +2,7 @@
 /**
  * @package sfLucenePlugin
  * @subpackage Module
- * @author Carl Vondrick <carlv@carlsoft.net>
+ * @author Carl Vondrick <carl@carlsoft.net>
  * @version SVN: $Id$
  */
 ?>

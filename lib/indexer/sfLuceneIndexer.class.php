@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -135,7 +135,7 @@ abstract class sfLuceneIndexer
    */
   protected function addCategory($category, $c = 1)
   {
-    $this->getSearch()->getCategories()->getCategory($category)->add($c)->getHolder()->save();
+    $this->getSearch()->getCategoriesHarness()->getCategory($category)->add($c);
   }
 
   /**
@@ -145,7 +145,7 @@ abstract class sfLuceneIndexer
    */
   protected function removeCategory($category, $c = 1)
   {
-    $this->getSearch()->getCategories()->getCategory($category)->subtract($c)->getHolder()->save();
+    $this->getSearch()->getCategoriesHarness()->getCategory($category)->subtract($c);
   }
 
   /**

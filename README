@@ -153,6 +153,14 @@ sfLucenePropelBehavior::getInitializer()->setup('MyModel');
 }}}
 after the class declaration.  So, for a blog, you would open project/lib/model/BlogPost.php and append the above, replacing "!MyModel" with "!BlogPost".
 
+If you wish to disable the Propel behavior so that no indexing can occur, you can simply do:
+{{{
+sfLucenePropelBehavior::setLock(true); // disables Propel behavior, no indexing
+sfLucenePropelBehavior::setLock(false); // enables Propel behavior, does index
+}}}
+
+By default, the behavior is not locked so indexing does occur.
+
 == Advanced Model Settings ==
 You can configure the model even more.  If the peer does not follow symfony's naming conventions, you can specify a new one with in the project level search.yml:
 {{{

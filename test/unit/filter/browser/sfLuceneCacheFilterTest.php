@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,7 +16,9 @@
 
 require dirname(__FILE__) . '/../../../bootstrap/unit.php';
 
-$t = new lime_test(2, new lime_output_color());
+$t = new limeade_test(2, limeade_output::get());
+$limeade = new limeade_sf($t);
+$app = $limeade->bootstrap();
 
 class Foo
 {
@@ -32,10 +34,11 @@ $filter = new sfLuceneCacheFilter(sfContext::getInstance());
 $chain = new Foo;
 
 try {
+  $ex = $t->no_exception('->execute() runs without an exception');
   $filter->execute($chain);
-  $t->pass('->execute() runs without an exception');
+  $ex->no();
 } catch (Exception $e) {
-  $t->fail('->execute() runs without an exception');
+  $ex->caught($e);
 }
 
 $t->ok($chain->executed, '->execute() runs ->execute() on the chain');

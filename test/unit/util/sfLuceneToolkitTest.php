@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,58 +16,39 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-function filter_callback($input)
-{
-  return preg_match('#/Zend/Search/Lucene/#', $input);
-}
-function zend_loaded()
-{
-  $files = get_included_files();
-  $files = array_filter($files, 'filter_callback');
+$t = new limeade_test(14, limeade_output::get());
+$limeade = new limeade_sf($t);
+$app = $limeade->bootstrap();
 
-  return count($files) != 0;
-}
-function zend_in_include_path()
-{
-  $paths = explode(PATH_SEPARATOR, get_include_path());
-
-  foreach ($paths as $path)
-  {
-    if (file_exists($path . '/Zend/Search/Lucene.php'))
-    {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-$t = new lime_test(14, new lime_output_color());
+$luceneade = new limeade_lucene($limeade);
+$luceneade->configure()->clear_sandbox();
 
 $t->diag('testing ::loadZend()');
 
 sfConfig::set('app_lucene_zend_location', '/tmp');
 
 try {
+  $e = $t->exception('::loadZend() fails with non-existant Zend path');
   sfLuceneToolkit::loadZend();
-  $t->fail('::loadZend() fails with non-existant Zend path');
-} catch (Exception $e) {
-  $t->pass('::loadZend() fails with non-existant Zend path');
+  $e->no();
+} catch (Exception $ex) {
+  $e->caught($ex);
 }
 
-remove_from_sfconfig('app_lucene_zend_location');
+$limeade->config()->remove('app_lucene_zend_location');
 
-$t->ok(!zend_loaded(), 'Zend Search Lucene is not loaded after failed run');
-$t->ok(!zend_in_include_path(), 'Zend Search Lucene is not in the include path after failed run');
+$t->not_like_included('#/Zend/Search/Lucene/#', 'Zend Search Lucene is not loaded after failed run');
+$t->not_in_include_path('Zend/Search/Lucene.php', 'Zend Search Lucene is not in the include path after failed run');
 
 sfLuceneToolkit::loadZend();
 
-$t->ok(zend_loaded(), '::loadZend() loads Zend Search Lucene');
-$t->ok(zend_in_include_path(), '::loadZend() configures include path');
+$t->like_included('#/Zend/Search/Lucene/#','::loadZend() loads Zend Search Lucene');
+$t->in_include_path('Zend/Search/Lucene.php', '::loadZend() configures include path');
 
 $t->diag('testing ::getDirtyIndexRemains()');
 
-clear_sandbox();
+$luceneade->clear_sandbox();
+
 $root = sfConfig::get('sf_data_dir') . '/index/';
 
 // build valid indexes structure
@@ -98,21 +79,15 @@ sfConfig::set('app_lucene_index', 'fooLucene');
 
 $t->ok(sfLuceneToolkit::getApplicationInstance('en') === sfLucene::getInstance('fooLucene', 'en'), '::getApplicationInstance() acknowledges manual override from app.yml');
 
-remove_from_sfconfig('app_lucene_index');
-
-$cache = sfConfigCache::getInstance()->getCacheName(sfConfig::get('sf_config_dir_name').DIRECTORY_SEPARATOR.'search.yml');
-
-rename($cache, $cache . '~real');
-
-file_put_contents($cache, '<?php $config = array();');
+$limeade->config()->remove('app_lucene_index');
+$cswap = $app->cswap($luceneade->config_dir . '/search.yml')->write('<?php $config = array();');
 
 try {
+  $e = $t->exception('::getApplicationInstance() fails if search.yml is empty');
   sfLuceneToolkit::getApplicationInstance();
-  $t->fail('::getApplicationInstance() fails if search.yml is empty');
-} catch (Exception $e) {
-  $t->pass('::getApplicationInstance() fails if search.yml is empty');
+  $e->no();
+} catch (Exception $ex) {
+  $e->caught($ex);
 }
 
-unlink($cache);
-
-rename($cache . '~real', $cache);
+$cswap->restore();

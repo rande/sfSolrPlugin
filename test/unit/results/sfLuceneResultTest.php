@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,7 +16,12 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new lime_test(23, new lime_output_color());
+$t = new limeade_test(24, limeade_output::get());
+$limeade = new limeade_sf($t);
+$app = $limeade->bootstrap();
+
+$luceneade = new limeade_lucene($limeade);
+$luceneade->configure()->clear_sandbox();
 
 $lucene = sfLucene::getInstance('testLucene');
 
@@ -51,10 +56,11 @@ $mockresult->doc = $doc;
 $t->diag('testing constructor');
 
 try {
+  $ex = $t->no_exception('__construct() accepts a valid result and valid sfLucene instance');
   new sfLuceneResult($mockresult, $lucene);
-  $t->pass('__construct() accepts a valid result and valid sfLucene instance');
+  $ex->no();
 } catch (Exception $e) {
-  $t->fail('__construct() accepts a valid result and valid sfLucene instance');
+  $ex->caught($e);
 }
 
 $doc->sfl_type = 'action';
@@ -86,10 +92,11 @@ $t->is($result->getSuperDuperMan(), 'Fabien Potencier', '->getXXX() returns prop
 $t->ok($result->hasSuperDuperMan(), '->hasXXX() returns if document has property XXX for camel case');
 
 try {
+  $ex = $t->exception('->getXXX() fails if the property does not exist');
   $result->getSomethingReallyBad();
-  $t->fail('->getXXX() fails if the property does not exist');
+  $ex->no();
 } catch (Exception $e) {
-  $t->pass('->getXXX() fails if the property does not exist');
+  $ex->caught($e);
 }
 
 $t->ok(!$result->hasSomethingReallyBad(), '->hasXXX() returns false if the document does not have property XXX');
@@ -101,10 +108,11 @@ $t->ok($result->hasInternalField(), '->hasInternalXXX() returns true if internal
 $t->diag('testing ->getInternalDescription()');
 
 try {
+  $ex = $t->no_exception('->getInternalDescription() executes even if there is no description');
   $result->getInternalDescription();
-  $t->pass('->getInternalDescription() executes even if there is no description');
+  $ex->no();
 } catch (Exception $e) {
-  $t->fail('->getInternalDescription() executes even if there is no description');
+  $ex->caught($e);
 }
 
 $doc->sfl_description = 'foo bar <b>baz</b>';
@@ -122,37 +130,38 @@ $doc->sfl_title = 'foo bar <b>baz</b>';
 $t->is($result->getInternalTitle(), 'foo bar <b>baz</b>', '->getInternalTitle() does not strip out HTML tags');
 
 $t->diag('testing mixins');
-function callListener($event)
+
+function mixin_listener(sfEvent $event)
 {
   if ($event['method'] == 'goodMethod')
   {
     $args = $event['arguments'];
-
     $event->setReturnValue($args[0] + 1);
-
     return true;
   }
-
-  return false;
 }
 
-$lucene->getEventDispatcher()->connect('result.method_not_found', 'callListener');
+$event = new limeade_sf_event($limeade, $lucene->getEventDispatcher(), 'result.method_not_found', '__call() to undefined methods invokes mixins', 2);
+$event->callback('mixin_listener')->connect();
 
 try {
+  $ex = $t->exception('__call() rejects bad methods');
   $result->someBadMethod();
-  $t->fail('__call() rejects bad methods');
+  $ex->no();
 } catch (Exception $e) {
-  $t->pass('__call() rejects bad methods');
+  $ex->caught($e);
 }
 
 try {
+  $ex = $t->no_exception('__call() accepts good methods');
   $return = $result->goodMethod(2);
-  $t->pass('__call() accepts good methods');
+  $ex->no();
+
   $t->is($return, 3, '__call() passes arguments');
 } catch (Exception $e) {
-  $t->fail('__call() accepts good methods and passes arguments');
-
-  $e->printStackTrace();
+  $ex->caught($e);
 
   $t->skip('__call() passes arguments');
 }
+
+$event->done();
