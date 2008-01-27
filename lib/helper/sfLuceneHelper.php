@@ -47,6 +47,7 @@ function highlight_result_text($text, $query, $size = 200, $sprint = '<strong cl
 function highlight_keywords($text, $keywords, $sprint = '<strong class="highlight">%s</strong>')
 {
   $highlighter = new sfLuceneHighlighterXHTMLPart($text);
+  $highlighter->setMasterDtd(sfConfig::get('app_lucene_xhtml_dtd', 'http://www.w3.org/TR/2000/REC-xhtml1-200000126/DTD/xhtml1-transitional.dtd'));
 
   $marker = new sfLuceneHighlighterMarkerSprint($sprint);
   $harness = new sfLuceneHighlighterMarkerHarness(array($marker));
