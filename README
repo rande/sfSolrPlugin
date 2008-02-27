@@ -2,7 +2,7 @@
 sfLucenePlugin integrates symfony and Zend Search Lucene to instantly add a search engine to your application.  The plugin will auto-detect your ORM layer, but currently only supports Propel.
 
 = Requirements =
-  * symfony SVN 1.1 branch checkout (latest revision only!)
+  * symfony 1.1 Beta 1 (update for sfConfiguration coming with major overhaul) 
   * Propel 1.2 / 1.3
   * PHP 5.2.x+
 
