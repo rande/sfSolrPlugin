@@ -17,7 +17,7 @@
  */
 class sfLuceneHighlighterXHTMLPart extends sfLuceneHighlighterXHTML
 {
-  protected $dtd = 'http://www.w3.org/TR/2000/REC-xhtml1-200000126/DTD/xhtml1-transitional.dtd';
+  protected $dtd = 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd';
 
   public function setMasterDtd($dtd)
   {
