@@ -443,6 +443,24 @@ The conditional lets your plugin function should the user not have this plugin i
 
 Then, you must configure sfLucene with your plugin.  In project/plugins/sfMyPlugin/config/search.yml, you can define the settings for your models.  You can also create a search.yml file in your modules file.  But, be warned that these files can be overloaded by the user.
 
+= Updating a model's index when a related model changes =
+If a model's index should be updated based on the modification of a related model, you can override the save method of the related objects to directly call the sfLucene saveIndex and/or deleteIndex methods as in the example below:
+
+{{{
+class Bicycle extends BaseBicycle
+{
+  public function save()
+  {
+    parent::save();
+    
+    foreach ($this->getWheels() as $wheel)
+    {
+      $wheel->saveIndex();
+    }
+  }
+}
+}}}
+
 = Custom Indexers =
 
 == For Individual Models ==
