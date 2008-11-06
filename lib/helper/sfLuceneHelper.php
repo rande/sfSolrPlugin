@@ -31,6 +31,7 @@ function include_search_pager($pager, $form, $radius = 5)
 
 function highlight_result_text($text, $query, $size = 200, $sprint = '<strong class="highlight">%s</strong>')
 {
+
   $highlighter = new sfLuceneHighlighterString($text);
 
   $marker = new sfLuceneHighlighterMarkerSprint($sprint);
@@ -46,6 +47,11 @@ function highlight_result_text($text, $query, $size = 200, $sprint = '<strong cl
 
 function highlight_keywords($text, $keywords, $sprint = '<strong class="highlight">%s</strong>')
 {
+  // the sfLuceneHighlighterXHTMLPart seriously slowdown the code 
+  // (+9seconds on my machine - 2.4Ghz Core 2 Duo + 4Go of RAM)
+  return $text;
+  
+  
   $highlighter = new sfLuceneHighlighterXHTMLPart($text);
   $highlighter->setMasterDtd(sfConfig::get('app_lucene_xhtml_dtd', 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'));
 
@@ -53,7 +59,7 @@ function highlight_keywords($text, $keywords, $sprint = '<strong class="highligh
   $harness = new sfLuceneHighlighterMarkerHarness(array($marker));
 
   $keywords = sfLuceneHighlighterKeywordNamedInsensitive::explode($harness, $keywords);
-
+  
   $highlighter->addKeywords($keywords);
 
   return $highlighter->highlight()->export();

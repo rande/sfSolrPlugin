@@ -13,6 +13,7 @@ require_once(dirname(__FILE__).'/sfLuceneBaseTask.class.php');
 * Task that initializes all the configuration files.
 *
 * @author Carl Vondrick <carl@carlsoft.net>
+* @author Thomas Rabaix <thomas.rabaix@soleoweb.com>
 * @package sfLucenePlugin
 * @subpackage Tasks
 * @version SVN: $Id$
@@ -56,7 +57,7 @@ EOF;
     $projectConfig = sfConfig::get('sf_config_dir') . DIRECTORY_SEPARATOR . 'search.yml';
     $appConfig = sfConfig::get('sf_app_config_dir') . DIRECTORY_SEPARATOR .'search.yml';
 
-    $this->filesystem->copy($skeletonDir.DIRECTORY_SEPARATOR.'project'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'search.yml', $projectConfig);
-    $this->filesystem->copy($skeletonDir.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'search.yml', $appConfig);
+    $this->getFilesystem()->copy($skeletonDir.DIRECTORY_SEPARATOR.'project'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'search.yml', $projectConfig);
+    $this->getFilesystem()->copy($skeletonDir.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'search.yml', $appConfig);
   }
 }

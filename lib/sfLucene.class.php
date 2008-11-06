@@ -151,7 +151,9 @@ class sfLucene
   */
   static public function getConfig()
   {
-    require(sfConfigCache::getInstance()->checkConfig(sfConfig::get('sf_config_dir_name').DIRECTORY_SEPARATOR.'search.yml'));
+    $context = sfContext::getInstance();
+    
+    require($context->getConfiguration()->getConfigCache()->checkConfig('config/search.yml'));
 
     if (!isset($config))
     {

@@ -12,6 +12,7 @@
  * @package    sfLucenePlugin
  * @subpackage Results
  * @author     Carl Vondrick <carl@carlsoft.net>
+ * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version SVN: $Id$
  */
 class sfLuceneModelResult extends sfLuceneResult
@@ -23,7 +24,7 @@ class sfLuceneModelResult extends sfLuceneResult
   {
     $model = $this->retrieveModel();
 
-    if ($model->has('title'))
+    if ($model->has('title') && !is_null($model->get('title')))
     {
       return $this->result->getDocument()->getFieldValue($model->get('title'));
     }
@@ -31,7 +32,7 @@ class sfLuceneModelResult extends sfLuceneResult
     {
       foreach (array('title', 'subject') as $check)
       {
-        if ($model->get('fields')->has($check))
+        if ($model->get('fields')->has($check) && !is_null($model->get($check)))
         {
           return strip_tags($this->result->getDocument()->getFieldValue($check));
         }
@@ -75,14 +76,14 @@ class sfLuceneModelResult extends sfLuceneResult
   {
     $model = $this->retrieveModel();
 
-    if ($model->has('description'))
+    if ($model->has('description') && !is_null($model->get('description')))
     {
       return strip_tags($this->result->getDocument()->getFieldValue($model->get('description')));
     }
 
     foreach (array('description','summary','about') as $check)
     {
-      if ($model->get('fields')->has($check))
+      if ($model->get('fields')->has($check) && !is_null($model->get($check)))
       {
         return strip_tags($this->result->getDocument()->getFieldValue($check));
       }

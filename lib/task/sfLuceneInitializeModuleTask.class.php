@@ -13,6 +13,7 @@ require_once(dirname(__FILE__).'/sfLuceneBaseTask.class.php');
 * Task that initializes a skeleton module to customize.
 *
 * @author Carl Vondrick <carl@carlsoft.net>
+* @author Thomas Rabaix <thomas.rabaix@soleoweb.com>
 * @package sfLucenePlugin
 * @subpackage Tasks
 * @version SVN: $Id$
@@ -70,13 +71,13 @@ EOF;
 
     if (is_dir($moduleDir))
     {
-      throw new sfCommandExceptin(sprintf('The module "%s" already exists in the "%s" application.', $moduleDir, $app));
+      throw new sfCommandException(sprintf('The module "%s" already exists in the "%s" application.', $moduleDir, $app));
     }
 
     $mirrorDir = $skeletonDir . DIRECTORY_SEPARATOR . 'module';
 
     $finder = sfFinder::type('any')->ignore_version_control()->discard('.sf');
-    $this->filesystem->mirror($mirrorDir, $moduleDir, $finder);
+    $this->getFilesystem()->mirror($mirrorDir, $moduleDir, $finder);
 
     $constants = array('MODULE_NAME' => $arguments['module']);
 
@@ -90,6 +91,6 @@ EOF;
     }
 
     $finder = sfFinder::type('file')->ignore_version_control()->discard('.sf');
-    $this->filesystem->replaceTokens($finder->in($moduleDir), '##', '##', $constants);
+    $this->getFilesystem()->replaceTokens($finder->in($moduleDir), '##', '##', $constants);
   }
 }

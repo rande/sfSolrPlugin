@@ -57,7 +57,7 @@ abstract class sfLuceneAdvancedFormBase extends sfLuceneForm
     )
     );
 
-    $widgetSchema->addFormFormatter('sfLuceneAdvanced', new sfLuceneWidgetFormatterAdvanced());
+    $widgetSchema->addFormFormatter('sfLuceneAdvanced', new sfLuceneWidgetFormatterAdvanced($widgetSchema));
     $widgetSchema->setFormFormatterName('sfLuceneAdvanced');
     $widgetSchema->setNameFormat('form[%s]');
 

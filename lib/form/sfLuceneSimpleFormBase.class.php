@@ -17,6 +17,7 @@
  * @package    sfLucenePlugin
  * @subpackage Form
  * @author     Carl Vondrick <carl@carlsoft.net>
+ * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version SVN: $Id$
  */
 
@@ -50,7 +51,7 @@ abstract class sfLuceneSimpleFormBase extends sfLuceneForm
     )
     );
 
-    $widgetSchema->addFormFormatter('sfLuceneSimple', new sfLuceneWidgetFormatterSimple());
+    $widgetSchema->addFormFormatter('sfLuceneSimple', new sfLuceneWidgetFormatterSimple($widgetSchema));
     $widgetSchema->setFormFormatterName('sfLuceneSimple');
     $widgetSchema->setNameFormat('form[%s]');
 

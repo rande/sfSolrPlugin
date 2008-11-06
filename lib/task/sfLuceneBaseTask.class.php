@@ -7,10 +7,14 @@
  * file that was distributed with this source code.
  */
 
+require_once(dirname(__FILE__).'/../sfLucene.class.php');
+require_once(dirname(__FILE__).'/../../../../config/ProjectConfiguration.class.php');
+
 /**
 * This class represents a base task for all sfLucene tasks.
 *
 * @author Carl Vondrick <carl@carlsoft.net>
+* @author Thomas Rabaix <thomas.rabaix@soleoweb.com>
 * @package sfLucenePlugin
 * @subpackage Tasks
 * @version SVN: $Id$
@@ -18,6 +22,13 @@
 
 abstract class sfLuceneBaseTask extends sfBaseTask
 {
+  protected function bootstrapSymfony($app, $env, $debug = true)
+  {
+    $configuration = ProjectConfiguration::getApplicationConfiguration($app, $env, $debug);
+
+    sfContext::createInstance($configuration);
+  }
+  
   protected function standardBootstrap($app, $env = 'search')
   {
     $this->bootstrapSymfony($app, $env, true);
