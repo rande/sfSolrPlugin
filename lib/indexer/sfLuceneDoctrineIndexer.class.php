@@ -67,13 +67,6 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
     if ($this->deleteGuid( $this->getModelGuid() ))
     {
       $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Deleted model "%s" from index with primary key = %s', $this->getModelName(), current($this->getModel()->getPrimaryKey()))));
-    
-      $categories = $this->getModelCategories();
-
-      foreach ($categories as $category)
-      {
-        $this->removeCategory($category);
-      }
     }
 
     return $this;
