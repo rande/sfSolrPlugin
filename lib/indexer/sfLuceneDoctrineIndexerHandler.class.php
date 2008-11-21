@@ -43,6 +43,7 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
       }
       unset($collection);
       $query->free();
+      $query->from($table->getComponentName());
     }
   }
 }
