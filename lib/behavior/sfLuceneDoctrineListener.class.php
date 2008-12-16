@@ -56,7 +56,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
   public function deleteIndex($node)
   {
     
-    sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->indentifier()))));
+    sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->identifier()))));
 
     foreach ($this->getSearchInstances($node) as $instance)
     {
@@ -70,7 +70,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
   public function insertIndex($node)
   {
     
-    sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->indentifier()))));
+    sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->identifier()))));
   
     foreach ($this->getSearchInstances($node) as $instance)
     {
