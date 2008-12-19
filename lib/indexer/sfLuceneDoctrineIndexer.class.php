@@ -30,12 +30,12 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
     }
 
     $old_culture = null;
-
+    
     // automatic symfony i18n detection
     if ($this->getModel()->getTable()->hasRelation('Translation'))
     {
-      $old_culture = call_user_func(array(get_class($this->getModel()), 'getDefaultCulture'));
-      call_user_func(array(get_class($this->getModel()), 'setDefaultCulture'), $this->getSearch()->getParameter('culture'));
+      $old_culture = sfDoctrineRecord::getDefaultCulture();
+      sfDoctrineRecord::setDefaultCulture($this->getSearch()->getParameter('culture'));
     }
 
     // build document
@@ -43,18 +43,16 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
     $doc = $this->configureDocumentFields($doc);
     $doc = $this->configureDocumentCategories($doc);
     $doc = $this->configureDocumentMetas($doc);
-
     // add document
     $this->addDocument($doc, $this->getModelGuid());
-
+    
     $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Inserted model "%s" from index with primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));
 
     // restore culture in symfony i18n detection
     if ($old_culture)
     {
-      call_user_func(array(get_class($this->getModel()), 'setDefaultCulture'), $old_culture);
+      sfDoctrineRecord::setDefaultCulture($old_culture);
     }
-
     return $this;
   }
 
