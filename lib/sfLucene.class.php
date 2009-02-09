@@ -261,6 +261,21 @@ class sfLucene
   }
 
   /**
+   * Create index structure is needed
+   */
+  static function initIndex($name, $culture)
+  {
+    sfLuceneToolkit::loadZend();
+    $location = sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR . $name . DIRECTORY_SEPARATOR . $culture;
+     
+    if(!file_exists($location))
+    {
+      
+      Zend_Search_Lucene::create( new sfLuceneDirectoryStorage($location) );
+    }
+  }
+  
+  /**
   * Returns the lucene object
   * @return Zend_Search_Lucene
   */
@@ -408,6 +423,39 @@ class sfLucene
     }
 
     $this->setParameter('delete_lock', $original);
+
+    $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Index rebuilt.')));
+
+    $timer->addTime();
+
+    return $this;
+  }
+  
+  /**
+  * Update only the index for one model
+  *
+  * if $offset and $limit are numeric then only the portion between
+  * the offset and the limit are updated
+  */
+  public function rebuildIndexModel($model, $offset = null, $limit = null)
+  {
+    $this->setBatchMode();
+
+    $timer = sfTimerManager::getTimer('Zend Search Lucene Rebuild');
+
+    $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Rebuilding index...')));
+
+    foreach ($this->getIndexerFactory()->getHandlers() as $handler)
+    {
+      
+      if(!$handler instanceof sfLuceneModelIndexerHandler)
+      {
+        
+        continue;
+      }
+      
+      $handler->rebuildModel($model, $offset, $limit);
+    }
 
     $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Index rebuilt.')));
 
