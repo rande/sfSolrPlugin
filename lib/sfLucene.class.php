@@ -86,6 +86,8 @@ class sfLucene
   * @param string $name The name of the index
   * @param string $culture The culture of the index
   * @param bool $rebuild If true, the index is erased before opening it.
+  * 
+  * @return sfLucene
   */
   static public function getInstance($name, $culture = null, $rebuild = false)
   {

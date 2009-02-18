@@ -44,6 +44,8 @@ class sfLuceneCriteria
 
   /**
    * Simply provides a way to do one line method chaining
+   * 
+   * @return sfLuceneCriteria
    */
   static public function newInstance(sfLucene $search)
   {
@@ -53,6 +55,8 @@ class sfLuceneCriteria
   /**
    * Adds a subquery to the query itself.  It accepts either a string which will
    * be parsed or a Zend query.
+   * 
+   * @return sfLuceneCriteria
    */
   public function add($query, $type = true)
   {
@@ -87,6 +91,8 @@ class sfLuceneCriteria
    * Adds a string that is parsed into Zend API queries
    * @param string $query The query to parse
    * @param string $encoding The encoding to parse query as
+   * 
+   * @return sfLuceneCriteria
    */
   public function addString($query, $encoding = null, $type = true)
   {
@@ -101,6 +107,8 @@ class sfLuceneCriteria
   * This does a sane add on the current query.  The query parser tends to throw a lot
   * of exceptions even in normal conditions, so we need to intercept them and then fall back
   * into a reduced state mode should the user have entered invalid syntax.
+  * 
+  * @return sfLuceneCriteria
   */
   public function addSane($query, $type = true, $fatal = false)
   {
@@ -152,6 +160,8 @@ class sfLuceneCriteria
    * @param string $field The field to search under (null for all)
    * @param bool $matchAll If true, it will match all.  False will match none.  Null is neutral.
    * @param bool $type The type of subquery to add.
+   * 
+   * @return sfLuceneCriteria
    */
   public function addField($values, $field = null, $matchAll = null, $type = true)
   {
@@ -186,6 +196,8 @@ class sfLuceneCriteria
 
   /**
   * Adds a multiterm query.
+  * 
+  * @return sfLuceneCriteria
   */
   public function addMultiTerm($values, $field = null, $matchType = null, $type = true)
   {
@@ -209,6 +221,8 @@ class sfLuceneCriteria
   * Adds a wildcard field.
   *   ? is used as single character wildcard
   *   * is used as a multi character wildcard.
+  * 
+  * @return sfLuceneCriteria
   */
   public function addWildcard($value, $field = null, $type = true)
   {
@@ -220,6 +234,8 @@ class sfLuceneCriteria
 
   /**
   * Adds a phrase query
+  * 
+  * @return sfLuceneCriteria
   */
   public function addPhrase($keywords, $field = null, $slop = 0, $type = true)
   {
@@ -231,6 +247,8 @@ class sfLuceneCriteria
 
   /**
    * Adds a range subquery
+   * 
+   * @return sfLuceneCriteria
    */
   public function addRange($start = null, $stop = null, $field = null, $inclusive = true, $type = true)
   {
@@ -281,6 +299,8 @@ class sfLuceneCriteria
    * @param string $latitudeField The field to search under for latitudes.
    * @param string $longitudeField The field to search under for longitude.
    * @param mixed $type The type of restraint
+   * 
+   * @return sfLuceneCriteria
    */
   public function addProximity($latitude, $longitude, $proximity, $radius = 6378.1, $latitudeField = 'latitude', $longitudeField = 'longitude', $type = true)
   {
@@ -316,16 +336,37 @@ class sfLuceneCriteria
     return $this->add($subquery, $type);
   }
 
+  /**
+   * 
+   * @param string $field
+   * @param interger $type
+   * 
+   * @return sfLuceneCriteria
+   */
   public function addAscendingSortBy($field, $type = SORT_REGULAR)
   {
     return $this->addSortBy($field, SORT_ASC, $type);
   }
 
+  /**
+   * 
+   * @param string $field
+   * @param interger $type
+   * 
+   * @return sfLuceneCriteria
+   */
   public function addDescendingSortBy($field, $type = SORT_REGULAR)
   {
     return $this->addSortBy($field, SORT_DESC, $type);
   }
 
+  /**
+   * 
+   * @param string $field
+   * @param interger $type
+   * 
+   * @return sfLuceneCriteria
+   */  
   public function addSortBy($field, $order = SORT_ASC, $type = SORT_REGULAR)
   {
     $this->sorts[] = array('field' => $field, 'order' => $order, 'type' => $type);
@@ -336,6 +377,8 @@ class sfLuceneCriteria
   /**
    * Sets the scoring algorithm for this query.
    * @param null|Zend_Search_Lucene_Search_Similarity $algorithm An instance of the algorithm to use (null for default)
+   * 
+   * @return sfLuceneCriteria
    */
   public function setScoringAlgorithm($algorithm)
   {
@@ -367,6 +410,11 @@ class sfLuceneCriteria
     return $this->scoring;
   }
 
+  /**
+   * .
+   *
+   * @return sfLuceneCriteria
+   */
   public function getNewCriteria()
   {
     return new self($this->search);
