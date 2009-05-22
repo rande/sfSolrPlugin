@@ -2,6 +2,7 @@
 /*
  * This file is part of the sfLucenePlugin package
  * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2009 - Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * 
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -41,9 +42,11 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
     // build document
     $doc = $this->getBaseDocument();
     $doc = $this->configureDocumentFields($doc);
-    $doc = $this->configureDocumentCategories($doc);
+    //$doc = $this->configureDocumentCategories($doc);
     $doc = $this->configureDocumentMetas($doc);
+    
     // add document
+
     $this->addDocument($doc, $this->getModelGuid());
     
     $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Inserted model "%s" from index with primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));
@@ -76,6 +79,7 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
   protected function shouldIndex()
   {
     $properties = $this->getModelProperties();
+
     $method = $properties->get('validator');
 
     if (method_exists($this->getModel(), $method))

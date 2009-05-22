@@ -2,6 +2,7 @@
 /*
  * This file is part of the sfLucenePlugin package
  * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
+ * (c) 2009 - Thomas Rabaix <thomas.rabaix@soleoweb.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -86,6 +87,9 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
             if (is_array($field))
             {
               $type = isset($field['type']) ? $field['type'] : null;
+              $stored = isset($field['stored']) ? $field['stored'] : null;
+              $multi_valued = isset($field['multiValued']) ? $field['multiValued'] : null;
+              $required = isset($field['required']) ? $field['required'] : null;
               $boost = isset($field['boost']) ? $field['boost'] : null;
               $transform = isset($field['transform']) ? $field['transform'] : null;
             }
@@ -101,11 +105,17 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
             $type = $type ? $type : 'text';
             $boost = $boost ? $boost : 1.0;
             $transform = $transform || count($transform) ? $transform : null;
-
+            $multi_valued = $multi_valued ? $multi_valued : false;
+            $stored = $stored ? $stored : false;
+            $required = $required ? $required : false;
+            
             $field = array(
               'type' => $type,
               'boost' => $boost,
-              'transform' => $transform
+              'transform' => $transform,
+              'multiValued' => $multi_valued,
+              'required' => $required,
+              'stored' => $stored 
             );
           }
         }
@@ -173,6 +183,10 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
     $case_sensitive = isset($config['index']['case_sensitive']) ? $config['index']['case_sensitive'] : false;
     $mb_string = isset($config['index']['mb_string']) ? $config['index']['mb_string'] : false;
     $param = isset($config['index']['param']) ? $config['index']['param'] : array();
+    
+    $host = isset($config['index']['host']) ? $config['index']['host'] : 'localhost';
+    $port = isset($config['index']['port']) ? $config['index']['port'] : '8983';
+    $base_url = isset($config['index']['base_url']) ? $config['index']['base_url'] : '/solr';
 
     $config['index'] = array(
       'encoding' => $encoding,
@@ -182,7 +196,10 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
       'analyzer' => $analyzer,
       'case_sensitive' => (bool) $case_sensitive,
       'mb_string' => (bool) $mb_string,
-      'param' => $param
+      'param' => $param,
+      'host' => $host,
+      'port' => $port,
+      'base_url' => $base_url
     );
 
     // process factories...

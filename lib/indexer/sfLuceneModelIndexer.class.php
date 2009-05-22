@@ -2,6 +2,7 @@
 /*
  * This file is part of the sfLucenePlugin package
  * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
+ * (c) 2009 - Thomas Rabaix <thomas.rabaix@soleoweb.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,7 +18,9 @@
 
 abstract class sfLuceneModelIndexer extends sfLuceneIndexer
 {
-  private $instance;
+  private 
+    $instance,
+    $model_name; // model name used in the search.yml file
 
   /**
    * Constructs a new instance for a model
@@ -26,7 +29,21 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   {
     parent::__construct($search);
 
-    if ($search->getParameter('models')->get(get_class($instance), null) == null)
+    $models = $search->getParameter('models')->getAll();
+    $this->model_name = false;
+
+    // fix class inheritance
+    foreach(array_keys($models) as $model)
+    {
+      if($instance instanceof $model)
+      {
+        
+        $this->model_name = $model;
+        break;
+      }
+    }
+    
+    if (!$this->model_name)
     {
       throw new sfLuceneIndexerException(sprintf('Model "%s" is not registered.', get_class($instance)));
     }
@@ -52,7 +69,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
    */
   protected function getModelName()
   {
-    return get_class($this->getModel());
+    return $this->model_name;
   }
 
   /**
@@ -60,6 +77,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   */
   protected function getModelProperties()
   {
+
     return $this->getSearch()->getParameter('models')->get($this->getModelName());
   }
 
@@ -88,10 +106,10 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   /**
    * Configures meta data about the document
    */
-  protected function configureDocumentMetas(Zend_Search_Lucene_Document $doc)
+  protected function configureDocumentMetas(Apache_Solr_Document $doc)
   {
-    $doc->addField($this->getLuceneField('unindexed', 'sfl_model', $this->getModelName()));
-    $doc->addField($this->getLuceneField('unindexed', 'sfl_type', 'model'));
+    $doc->addField('sfl_model', $this->getModelName());
+    $doc->addField('sfl_type', 'model');
 
     return $doc;
   }
@@ -99,7 +117,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   /**
    * Configures categories into the document
    */
-  protected function configureDocumentCategories(Zend_Search_Lucene_Document $doc)
+  protected function configureDocumentCategories(Apache_Solr_Document $doc)
   {
     $categories = $this->getModelCategories();
 
@@ -110,10 +128,10 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
         $this->addCategory($category);
       }
 
-      $doc->addField( $this->getLuceneField('text', 'sfl_category', implode(' ', $categories)) );
+      $doc->addField('sfl_category', implode(' ', $categories));
     }
     
-    $doc->addField( $this->getLuceneField('unindexed', 'sfl_categories_cache', serialize($categories)) );
+    $doc->addField('sfl_categories_cache', serialize($categories));
 
     return $doc;
   }
@@ -121,7 +139,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
 
   /**
    * Returns the base document to work with.  Most of the time this will just
-   * return an empty Zend_Search_Lucene_Document, but if a callback is specified
+   * return an empty Apache_Solr_Document, but if a callback is specified
    * it will return that.
    */
   protected function getBaseDocument()
@@ -140,14 +158,14 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
       
       $doc = $this->getModel()->$cb();
 
-      if (!($doc instanceof Zend_Search_Lucene_Document))
+      if (!($doc instanceof Apache_Solr_Document))
       {
-        throw new sfLuceneIndexerException(sprintf('"%s::%s()" did not return a valid document (must be an instance of Zend_Search_Lucene_Document)', $this->getModelName(), $cb));
+        throw new sfLuceneIndexerException(sprintf('"%s::%s()" did not return a valid document (must be an instance of Apache_Solr_Document)', $this->getModelName(), $cb));
       }
     }
     else
     {
-      $doc = new Zend_Search_Lucene_Document();
+      $doc = new Apache_Solr_Document();
     }
 
     return $doc;
@@ -157,7 +175,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   /**
    * Builds the fields into the document as configured by the parameters.
    */
-  protected function configureDocumentFields(Zend_Search_Lucene_Document $doc)
+  protected function configureDocumentFields(Apache_Solr_Document $doc)
   {
     $properties = $this->getModelProperties();
 
@@ -198,10 +216,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
         $value = call_user_func($transform, $value);
       }
 
-      $zsl_field = $this->getLuceneField($type, strtolower($field), $value);
-      $zsl_field->boost = $boost;
-
-      $doc->addField($zsl_field);
+      $doc->addField($field, $value, $boost);
     }
 
     return $doc;

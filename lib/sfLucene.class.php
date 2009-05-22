@@ -8,14 +8,15 @@
  */
 
 /**
-* sfLucene bridges symfony and Zend_Search_Lucene together to instantly
+* sfLucene bridges symfony and Solr together to instantly
 * add a search engine to your application. Please see the README file for more.
 *
 * This class represents a Lucene index.  It is responsible for managing all the
 * configurations for the index.  This is the primary means of communicating with
-* the Zend Search Lucene library.
+* the Sorl search engine.
 *
 * @author Carl Vondrick <carl@carlsoft.net>
+* @author Thomas Rabaix <thomas.rabaix@soleoweb.com>
 * @package sfLucenePlugin
 * @version SVN: $Id$
 */
@@ -60,16 +61,13 @@ class sfLucene
   * @param string $culture The culture of the index
   * @param bool $rebuild If true, the index is erased before opening it.
   */
-  protected function __construct($name, $culture, $rebuild = false)
+  protected function __construct($name, $culture)
   {
     $this->parameters = new sfParameterHolder();
 
     $this->setParameter('name', $name);
-    $this->setParameter('rebuild', $rebuild);
     $this->setParameter('culture', $culture);
-    $this->setParameter('is_new', false);
-
-    $this->setParameter('index_location', sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR . $name . DIRECTORY_SEPARATOR . $culture);
+    $this->setParameter('index_location', $name.'_'.$culture);
 
     $this->dispatcher = new sfEventDispatcher;
 
@@ -85,11 +83,10 @@ class sfLucene
   *
   * @param string $name The name of the index
   * @param string $culture The culture of the index
-  * @param bool $rebuild If true, the index is erased before opening it.
   * 
   * @return sfLucene
   */
-  static public function getInstance($name, $culture = null, $rebuild = false)
+  static public function getInstance($name, $culture = null)
   {
     // attempt to guess the culture
     if (is_null($culture))
@@ -104,11 +101,7 @@ class sfLucene
         self::$instances[$name] = array();
       }
 
-      self::$instances[$name][$culture] = new self($name, $culture, $rebuild);
-    }
-    elseif ($rebuild)
-    {
-      throw new sfLuceneException('Cannot rebuild index because index is already open.');
+      self::$instances[$name][$culture] = new self($name, $culture);
     }
 
     return self::$instances[$name][$culture];
@@ -116,9 +109,8 @@ class sfLucene
 
   /**
    * Returns all the instances
-   * @param bool $rebuild If true, every instance is rebuilt.
    */
-  static public function getAllInstances($rebuild = false)
+  static public function getAllInstances()
   {
     static $instances;
 
@@ -132,7 +124,7 @@ class sfLucene
       {
         foreach ($item['index']['cultures'] as $culture)
         {
-          $instances[] = self::getInstance($name, $culture, $rebuild);
+          $instances[] = self::getInstance($name, $culture);
         }
       }
     }
@@ -176,23 +168,25 @@ class sfLucene
 
     if (!isset($config[$holder->get('name')]))
     {
-      throw new sfLuceneException('The name of this index is invalid.');
+      throw new sfLuceneException('The name of this index is invalid : '. $holder->get('name'));
     }
 
     $config = $config[$holder->get('name')];
 
-    foreach (array('encoding', 'cultures' => 'enabled_cultures', 'stop_words', 'short_words', 'analyzer', 'case_sensitive', 'mb_string') as $key => $param)
+    foreach (array('encoding', 'cultures' => 'enabled_cultures', 'stop_words', 'short_words', 'analyzer', 'case_sensitive', 'mb_string', 'host', 'port', 'base_url') as $key => $param)
     {
+      
       if (is_int($key))
       {
         $holder->set($param, $config['index'][$param]);
       }
       else
       {
+        
         $holder->set($param, $config['index'][$key]);
       }
     }
-
+    
     $models = new sfParameterHolder();
 
     foreach ($config['models'] as $name => $model)
@@ -261,21 +255,6 @@ class sfLucene
 
     return $this->categoriesHarness;
   }
-
-  /**
-   * Create index structure is needed
-   */
-  static function initIndex($name, $culture)
-  {
-    sfLuceneToolkit::loadZend();
-    $location = sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR . $name . DIRECTORY_SEPARATOR . $culture;
-     
-    if(!file_exists($location))
-    {
-      
-      Zend_Search_Lucene::create( new sfLuceneDirectoryStorage($location) );
-    }
-  }
   
   /**
   * Returns the lucene object
@@ -283,37 +262,22 @@ class sfLucene
   */
   public function getLucene()
   {
-    $location = $this->getParameter('index_location');
 
     if ($this->lucene == null)
     {
-      sfLuceneToolkit::loadZend();
-
-      if (file_exists($location) && !$this->getParameter('rebuild'))
+      $solr = new Apache_Solr_Service(
+        $this->getParameter('host'),
+        $this->getParameter('port'),
+        $this->getParameter('base_url').'/'.$this->getParameter('index_location')
+      );
+ 
+      if(!$solr->ping())
       {
-        $lucene = Zend_Search_Lucene::open( new sfLuceneDirectoryStorage($location) );
-        $this->setParameter('is_new', false);
+        //throw new Exception('Search is not available right now.');
       }
-      else
-      {
-        if (sfConfig::get('sf_logging_enabled'))
-        {
-          if ($this->getParameter('rebuild') && file_exists($location))
-          {
-            $this->getContext()->getLogger()->info(sprintf('erased index "%s"', $location));
-          }
-
-          $this->getContext()->getLogger()->info(sprintf('created index "%s"', $location));
-        }
-
-        $this->setParameter('rebuild', false);
-        $this->setParameter('is_new', true);
-
-        $lucene = Zend_Search_Lucene::create( new sfLuceneDirectoryStorage($location) );
-      }
-
-      $this->lucene = $lucene;
-   }
+      
+      $this->lucene =  $solr;
+    }
 
     return $this->lucene;
   }
@@ -357,32 +321,9 @@ class sfLucene
    */
   public function configure()
   {
-    sfLuceneToolkit::loadZend();
 
-    $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.configure.pre'));
-
-    Zend_Search_Lucene_Search_QueryParser::setDefaultEncoding($this->getParameter('encoding'));
-
-    switch (strtolower($this->getParameter('analyzer')))
-    {
-      default:
-        throw new sfLuceneException('Unknown analyzer: ' . $this->getParameter('analzyer'));
-      case 'text':
-        $analyzer = new Zend_Search_Lucene_Analysis_Analyzer_Common_Text();
-        break;
-      case 'textnum':
-        $analyzer = new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum();
-        break;
-      case 'utf8':
-      case 'utf-8':
-        $analyzer = new Zend_Search_Lucene_Analysis_Analyzer_Common_Utf8();
-        break;
-      case 'utf8num':
-      case 'utf-8num':
-        $analyzer = new Zend_Search_Lucene_Analysis_Analyzer_Common_Utf8Num();
-        break;
-    }
-
+    return;
+    
     if (!$this->getParameter('case_sensitive', false))
     {
       $analyzer->addFilter(new sfLuceneLowerCaseFilter($this->getParameter('mb_string', false)));
@@ -410,7 +351,7 @@ class sfLucene
   {
     $this->setBatchMode();
 
-    $timer = sfTimerManager::getTimer('Zend Search Lucene Rebuild');
+    $timer = sfTimerManager::getTimer('Solr Search Lucene Rebuild');
 
     $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Rebuilding index...')));
 
@@ -443,7 +384,7 @@ class sfLucene
   {
     $this->setBatchMode();
 
-    $timer = sfTimerManager::getTimer('Zend Search Lucene Rebuild');
+    $timer = sfTimerManager::getTimer('Solr Search Lucene Rebuild');
 
     $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Rebuilding index...')));
 
@@ -489,9 +430,9 @@ class sfLucene
   */
   public function setBatchMode()
   {
-    $this->getLucene()->setMaxBufferedDocs(500);
-    $this->getLucene()->setMaxMergeDocs(PHP_INT_MAX);
-    $this->getLucene()->setMergeFactor(50);
+    //$this->getLucene()->setMaxBufferedDocs(500);
+    //$this->getLucene()->setMaxMergeDocs(PHP_INT_MAX);
+    //$this->getLucene()->setMergeFactor(50);
 
     return $this;
   }
@@ -502,9 +443,9 @@ class sfLucene
   */
   public function setInteractiveMode()
   {
-    $this->getLucene()->setMaxBufferedDocs(10);
-    $this->getLucene()->setMaxMergeDocs(PHP_INT_MAX);
-    $this->getLucene()->setMergeFactor(10);
+    //$this->getLucene()->setMaxBufferedDocs(10);
+    //$this->getLucene()->setMaxMergeDocs(PHP_INT_MAX);
+    //$this->getLucene()->setMergeFactor(10);
 
     return $this;
   }
@@ -516,7 +457,7 @@ class sfLucene
   {
     $this->configure();
 
-    $timer = sfTimerManager::getTimer('Zend Search Lucene Optimize');
+    $timer = sfTimerManager::getTimer('Solr Search Lucene Optimize');
 
     $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Optimizing index...')));
 
@@ -537,10 +478,14 @@ class sfLucene
 
   /**
   * Wrapper for Lucene's numDocs()
+  *
+  * @TODO : get the num of documents
   */
   public function numDocs()
   {
-    return $this->getLucene()->numDocs();
+    
+    return 'TODO';
+    //return $this->getLucene()->numDocs();
   }
 
   /**
@@ -550,7 +495,7 @@ class sfLucene
   {
     $this->configure();
 
-    $timer = sfTimerManager::getTimer('Zend Search Lucene Commit');
+    $timer = sfTimerManager::getTimer('Solr Search Lucene Commit');
 
     $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Committing changes...')));
 
@@ -596,7 +541,7 @@ class sfLucene
   {
     $this->configure();
 
-    $timer = sfTimerManager::getTimer('Zend Search Lucene Find');
+    $timer = sfTimerManager::getTimer('Solr Search Lucene Find');
 
     $sort = array();
     $scoring = null;
@@ -618,37 +563,17 @@ class sfLucene
       $query = sfLuceneCriteria::newInstance($this)->addString($query)->getQuery();
     }
 
-
-    $defaultScoring = Zend_Search_Lucene_Search_Similarity::getDefault();
-
-    if ($scoring)
-    {
-      Zend_Search_Lucene_Search_Similarity::setDefault($scoring);
-    }
-
     try
     {
-      // as we rarely sort, we can avoid the overhead of call_user_func() with this conditional
-      if (count($sort))
-      {
-        $args = array_merge(array($query), $sort);
-
-        $results = call_user_func_array(array($this->getLucene(), 'find'), $args);
-      }
-      else
-      {
-        $results = $this->getLucene()->find($query);
-      }
+      $results = $this->getLucene()->search($query);
     }
     catch (Exception $e)
     {
-      Zend_Search_Lucene_Search_Similarity::setDefault($defaultScoring);
       $timer->addTime();
 
       throw $e;
     }
 
-    Zend_Search_Lucene_Search_Similarity::setDefault($defaultScoring);
     $timer->addTime();
 
     return $results;

@@ -2,7 +2,8 @@
 /*
  * This file is part of the sfLucenePlugin package
  * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
- *
+ * (c) 2009 Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ 
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -13,6 +14,7 @@ require_once(dirname(__FILE__).'/sfLuceneBaseTask.class.php');
 * Task that dumps information about sfLucene
 *
 * @author Carl Vondrick <carl@carlsoft.net>
+* @author Thomas Rabaix <thomas.rabaix@soleoweb.com>
 * @package sfLucenePlugin
 * @subpackage Tasks
 * @version SVN: $Id$

@@ -2,7 +2,8 @@
 /*
  * This file is part of the sfLucenePlugin package
  * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
- *
+ * (c) 2009 - Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ * 
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -12,13 +13,22 @@
  * @package    sfLucenePlugin
  * @subpackage Utilities
  * @author     Carl Vondrick <carl@carlsoft.net>
+ * @author Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version SVN: $Id$
  */
 class sfLuceneBrowser
 {
-  protected $module, $action;
+  protected 
+    $module, 
+    $action;
 
-  protected $requestVars = array(), $method = 'GET', $authentication = false, $credentials = array(), $layout = false, $culture = null;
+  protected 
+    $requestVars = array(), 
+    $method = 'GET', 
+    $authentication = false, 
+    $credentials = array(), 
+    $layout = false, 
+    $culture = null;
 
   /**
   * Consturctor.

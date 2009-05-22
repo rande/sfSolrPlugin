@@ -2,7 +2,8 @@
 /*
  * This file is part of the sfLucenePlugin package
  * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
- *
+ * (c) 2009 - Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ * 
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -66,6 +67,8 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
     {
       return;
     }
+    
+    throw new sfException(__CLASS__.' not implemented');
 
     extract($this->getActionProperties());
 
@@ -75,13 +78,10 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
 
     $doc = Zend_Search_Lucene_Document_Html::loadHtml($content);
 
-    $title_field = $this->getLuceneField('text', 'sfl_title', $output->getLastTitle());
-    $title_field->boost = 2;
-
-    $doc->addField($title_field);
-    $doc->addField($this->getLuceneField('unindexed', 'sfl_uri', $this->getUri($params) ));
-    $doc->addField($this->getLuceneField('unindexed', 'sfl_description', $content));
-    $doc->addField($this->getLuceneField('unindexed', 'sfl_type', 'action'));
+    $doc->addField('sfl_title', $output->getLastTitle(), 2);
+    $doc->addField('sfl_uri', $this->getUri($params));
+    $doc->addField('sfl_description', $content);
+    $doc->addField('sfl_type', 'action');
 
     $categories = $this->getActionCategories();
 
@@ -92,10 +92,10 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
         $this->addCategory($category);
       }
 
-      $doc->addField( $this->getLuceneField('text', 'sfl_category', implode(', ', $categories)) );
+      $doc->addField('sfl_category', implode(', ', $categories));
     }
 
-    $doc->addField( $this->getLuceneField('unindexed', 'sfl_categories_cache', serialize($categories)) );
+    $doc->addField('sfl_categories_cache', serialize($categories));
 
     $guid = $this->getGuid($params);
 

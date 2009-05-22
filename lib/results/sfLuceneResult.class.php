@@ -23,7 +23,7 @@ class sfLuceneResult
   /**
   * Consturctor, but consider using factor method ::getInstance()
   */
-  public function __construct(Zend_Search_Lucene_Search_QueryHit $result, sfLucene $search)
+  public function __construct(Apache_Solr_Document $result, sfLucene $search)
   {
     $this->result = $result;
     $this->search = $search;
@@ -44,7 +44,12 @@ class sfLuceneResult
   */
   public function getScore()
   {
-    return ((int) ($this->result->score * 100 + .5)); // round to nearest integer
+    if($this->result->__isset('score'))
+    {
+      return ((int) ($this->result->score * 100 + .5)); // round to nearest integer
+    }
+    
+    return '-';
   }
 
   /**
@@ -55,11 +60,17 @@ class sfLuceneResult
     return $module . '/' . $this->getInternalType() . 'Result';
   }
 
+  public function getInternalType()
+  {
+    return $this->result->sfl_type;
+  }
+  
+  
   public function getInternalDescription()
   {
     try
     {
-      return strip_tags($this->result->getDocument()->getFieldValue('sfl_description'));
+      return strip_tags($this->result->sfl_description);
     }
     catch (Exception $e)
     {
@@ -71,7 +82,7 @@ class sfLuceneResult
   {
     try
     {
-      return $this->result->getDocument()->getFieldValue('sfl_title');
+      return $this->result->sfl_title;
     }
     catch (Exception $e)
     {
@@ -84,7 +95,7 @@ class sfLuceneResult
   */
   static public function getInstance($result, $search)
   {
-    switch ($result->getDocument()->getFieldValue('sfl_type'))
+    switch ($result->sfl_type)
     {
       case 'action':
         $c = 'sfLuceneActionResult';
@@ -106,13 +117,15 @@ class sfLuceneResult
   {
     if (substr($method, 0, 3) == 'get')
     {
-      return $this->result->getDocument()->getFieldValue($this->getProperty($method, 'get'));
+      $field = sfInflector::underscore(substr($method, 3));
+      
+      return $this->result->__get($field);
     }
     elseif (substr($method, 0, 3) == 'has')
     {
       try
       {
-        $this->result->getDocument()->getFieldValue($this->getProperty($method, 'has'));
+        $this->result->__isset($field);
 
         return true;
       }

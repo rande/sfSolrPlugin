@@ -1,8 +1,8 @@
 <?php
 /*
  * This file is part of the sfLucenePlugin package
- * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
- *
+ * (c) 2009 - Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ * 
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -13,6 +13,7 @@ require_once(dirname(__FILE__).'/sfLuceneBaseTask.class.php');
 * This task rebuilds the entire index.
 *
 * @author Carl Vondrick <carl@carlsoft.net>
+* @author Thomas Rabaix <thomas.rabaix@soleoweb.com>
 * @package sfLucenePlugin
 * @subpackage Tasks
 * @version SVN: $Id: sfLuceneRebuildTask.class.php 7466 2008-02-12 05:34:08Z dwhittle $
@@ -77,9 +78,6 @@ EOF;
       
       throw new LogicException('This feature is only implemented for Doctrine ORM');
     }
-    
-    
-    sfLucene::initIndex($index, $culture);
     
     $instance = sfLucene::getInstance($index, $culture, false);
     

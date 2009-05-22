@@ -2,6 +2,7 @@
 /*
  * This file is part of the sfLucenePlugin package
  * (c) 2007 Carl Vondrick <carlv@carlsoft.net>
+ * (c) 2009 - Thomas Rabaix <thomas.rabaix@soleoweb.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -81,7 +82,6 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
 
     foreach($collection as $record)
     {
-       
       $this->getFactory()->getModel($record)->save();
       unset($record);
     }

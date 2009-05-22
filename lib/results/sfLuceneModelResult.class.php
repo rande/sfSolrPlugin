@@ -26,7 +26,7 @@ class sfLuceneModelResult extends sfLuceneResult
 
     if ($model->has('title') && !is_null($model->get('title')))
     {
-      return $this->result->getDocument()->getFieldValue($model->get('title'));
+      return $this->result->__get($model->get('title'));
     }
     else
     {
@@ -34,7 +34,7 @@ class sfLuceneModelResult extends sfLuceneResult
       {
         if ($model->get('fields')->has($check) && !is_null($model->get($check)))
         {
-          return strip_tags($this->result->getDocument()->getFieldValue($check));
+          return strip_tags($this->result->__get($check));
         }
       }
     }
@@ -54,7 +54,7 @@ class sfLuceneModelResult extends sfLuceneResult
       throw new sfLuceneIndexerException(sprintf('A route for model "%s" was not defined.', $this->getInternalModel()));
     }
 
-    return preg_replace('/%(\w+?)%/e', '$this->result->getDocument()->getFieldValue("$1")', $model->get('route'));
+    return preg_replace('/%(\w+?)%/e', '$this->result->__get("$1")', $model->get('route'));
   }
 
   /**
@@ -78,14 +78,14 @@ class sfLuceneModelResult extends sfLuceneResult
 
     if ($model->has('description') && !is_null($model->get('description')))
     {
-      return strip_tags($this->result->getDocument()->getFieldValue($model->get('description')));
+      return strip_tags($this->result->__get($model->get('description')));
     }
 
     foreach (array('description','summary','about') as $check)
     {
       if ($model->get('fields')->has($check) && !is_null($model->get($check)))
       {
-        return strip_tags($this->result->getDocument()->getFieldValue($check));
+        return strip_tags($this->result->__get($check));
       }
     }
 
@@ -97,6 +97,6 @@ class sfLuceneModelResult extends sfLuceneResult
   */
   protected function retrieveModel()
   {
-    return $this->search->getParameter('models')->get($this->getInternalModel());
+    return $this->search->getParameter('models')->get($this->getSflModel());
   }
 }

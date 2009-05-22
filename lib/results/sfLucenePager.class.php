@@ -2,7 +2,8 @@
 /*
  * This file is part of the sfLucenePlugin package
  * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
- *
+ * (c) 2009 - Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ * 
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -21,16 +22,22 @@
  */
 class sfLucenePager
 {
-  protected $results = array();
-  protected $search = null;
-  protected $page = 1, $perPage = 5;
+  protected 
+    $results = array(),
+    $search = null,
+    $page = 1, 
+    $perPage = 5,
+    $lucene_results;
 
-  public function __construct($results, $search = null)
+  public function __construct($lucene_results, $search = null)
   {
-    if ($results instanceof sfLuceneResults)
+
+    if ($lucene_results instanceof sfLuceneResults)
     {
-      $search = $results->getSearch();
-      $results = $results->toArray();
+      $search = $lucene_results->getSearch();
+      $this->lucene_results = $lucene_results;
+      
+      $lucene_results = $lucene_results->toArray();
     }
 
     if (!($search instanceof sfLucene))
@@ -38,12 +45,12 @@ class sfLucenePager
       throw new sfLuceneResultsException('Pager constructor expects to somehow receive the search instance');
     }
 
-    if (!is_array($results))
+    if (!is_array($lucene_results))
     {
       throw new sfLuceneResultsException('Pager constructor expects the results to be an array, ' . gettype($results) . ' given');
     }
 
-    $this->results = $results;
+    $this->results = $lucene_results;
     $this->search = $search;
   }
 
@@ -120,19 +127,8 @@ class sfLucenePager
 
   public function getResults()
   {
-    $offset = ($this->getPage() - 1) * $this->getMaxPerPage();
-    $limit = $this->getMaxPerPage();
-
-    if ($limit == 0)
-    {
-      $results = $this->results;
-    }
-    else
-    {
-      $results = array_slice($this->results, $offset, $limit);
-    }
-
-    return new sfLuceneResults($results, $this->getSearch());
+    
+    return $this->lucene_results ? $this->lucene_results : new sfLuceneResults($results, $this->getSearch());
   }
 
   public function getNbResults()

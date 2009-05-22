@@ -2,7 +2,8 @@
 /*
  * This file is part of the sfLucenePlugin package
  * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
- *
+ * (c) 2009 - Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ * 
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -29,7 +30,7 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
   /**
   * Constructor.  Weeds through the results.
   */
-  public function __construct($results, $search)
+  public function __construct(Apache_Solr_Response $results, $search)
   {
     $this->results = $results;
     $this->search = $search;
@@ -40,6 +41,7 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
   */
   protected function getInstance($result)
   {
+    
     return sfLuceneResult::getInstance($result, $this->search);
   }
 
@@ -60,16 +62,19 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
 
   public function getSearch()
   {
+    
     return $this->search;
   }
 
   public function current()
   {
-    return $this->getInstance($this->results[$this->pointer]);
+    
+    return $this->getInstance($this->results->response->docs[$this->pointer]);
   }
 
   public function key()
   {
+    
     return $this->pointer;
   }
 
@@ -85,21 +90,25 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
 
   public function valid()
   {
-    return isset($this->results[$this->pointer]);
+    
+    return isset($this->results->response->docs[$this->pointer]);
   }
 
   public function count()
   {
-    return count($this->results);
+    
+    return $this->results->response->numFound;
   }
 
   public function offsetExists($offset)
   {
+    
     return isset($this->results[$offset]);
   }
 
   public function offsetGet($offset)
   {
+    
     return $this->getInstance($this->results[$offset]);
   }
 
@@ -115,6 +124,13 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
 
   public function toArray()
   {
-    return $this->results;
+    if(!isset($this->results->response))
+    {
+      
+      return array();
+    }
+    
+    return $this->results->response->docs;
   }
+  
 }
