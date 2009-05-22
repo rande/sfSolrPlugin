@@ -29,19 +29,39 @@ class sfLuceneCriteria
     $query = null,
     $sorts = array(),
     $scoring = null,
-    $search = null;
+    $limit = 10,
+    $offset = 0;
 
   const 
     TYPE_AND = 'AND',
     TYPE_OR  = 'OR';
   
-  public function __construct(sfLucene $search)
+  public function __construct()
   {
     
     $this->query = '';
-    $this->search = $search;
   }
 
+  public function setLimit($limit)
+  {
+    $this->limit = $limit;
+  }
+  
+  public function getLimit()
+  {
+    return $this->limit;
+  }
+  
+  public function setOffset($offset)
+  {
+    $this->offset = $offset;
+  }
+  
+  public function getOffset()
+  {
+    return $this->offset;
+  }
+  
   /**
    * Simply provides a way to do one line method chaining
    * 

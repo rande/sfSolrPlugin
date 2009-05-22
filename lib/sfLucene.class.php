@@ -554,9 +554,6 @@ class sfLucene
         $sort[] = $sortable['type'];
         $sort[] = $sortable['order'];
       }
-
-      $scoring = $query->getScoringAlgorithm();
-      $query = $query->getQuery();
     }
     elseif (is_string($query))
     {
@@ -565,7 +562,7 @@ class sfLucene
 
     try
     {
-      $results = $this->getLucene()->search($query);
+      $results = $this->getLucene()->search($query->getQuery(), $query->getOffset(), $query->getLimit());
     }
     catch (Exception $e)
     {
