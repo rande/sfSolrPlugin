@@ -157,6 +157,12 @@ class sfLucene
     return $config;
   }
 
+  public function getPublicName()
+  {
+    
+    return $this->getParameter('name').' ('.$this->getParameter('culture').')'; 
+  }
+  
   /**
   * Loads the config for the search engine.
   */
@@ -321,27 +327,7 @@ class sfLucene
    */
   public function configure()
   {
-
-    return;
     
-    if (!$this->getParameter('case_sensitive', false))
-    {
-      $analyzer->addFilter(new sfLuceneLowerCaseFilter($this->getParameter('mb_string', false)));
-    }
-
-    if (count($this->getParameter('stop_words')))
-    {
-      $analyzer->addFilter(new Zend_Search_Lucene_Analysis_TokenFilter_StopWords($this->getParameter('stop_words')));
-    }
-
-    if ($this->getParameter('short_words') > 0)
-    {
-      $analyzer->addFilter(new Zend_Search_Lucene_Analysis_TokenFilter_ShortWords($this->getParameter('short_words')));
-    }
-
-    Zend_Search_Lucene_Analysis_Analyzer::setDefault($analyzer);
-
-    $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.configure.post'));
   }
 
 /**
@@ -511,17 +497,8 @@ class sfLucene
   */
   public function byteSize()
   {
-    $size = 0;
-
-    foreach ( new DirectoryIterator($this->getParameter('index_location')) as $node)
-    {
-      if (!in_array($node->getFilename(), array('CVS', '.svn')))
-      {
-        $size += $node->getSize();
-      }
-    }
-
-    return $size;
+    
+    throw new sfException('not implemented');
   }
 
   /**
@@ -529,7 +506,9 @@ class sfLucene
   */
   public function segmentCount()
   {
-    return count(glob($this->getParameter('index_location') . DIRECTORY_SEPARATOR.'_*.cfs'));
+    
+    
+    throw new sfException('not implemented');
   }
 
   /**
