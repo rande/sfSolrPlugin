@@ -536,9 +536,10 @@ class sfLucene
     }
     elseif (is_string($query))
     {
-      $query = sfLuceneCriteria::newInstance($this)->addString($query)->getQuery();
+      $query = sfLuceneCriteria::newInstance($this)->addString($query);
     }
 
+    
     try
     {
       $results = $this->getLucene()->search($query->getQuery(), $query->getOffset(), $query->getLimit());
