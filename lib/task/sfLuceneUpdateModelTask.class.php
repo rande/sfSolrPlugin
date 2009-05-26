@@ -34,7 +34,7 @@ class sfLuceneUpdateModelTask extends sfLuceneBaseTask
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'search'),
       new sfCommandOption('offset', null, sfCommandOption::PARAMETER_REQUIRED, 'The offset were the index should start', null),
       new sfCommandOption('limit', null, sfCommandOption::PARAMETER_REQUIRED, 'The number number max of record to index from the offset', null),
-      
+      new sfCommandOption('delete', null, sfCommandOption::PARAMETER_OPTIONAL, 'set to true to delete all related index', false),
     ));
 
     $this->aliases = array('lucene-update-model');
@@ -69,6 +69,8 @@ EOF;
     
     $offset  = $options['offset'];
     $limit   = $options['limit'];
+    $delete  = $options['delete'];
+    
 
     $this->checkAppExists($app);
     $this->standardBootstrap($app, $options['env']);
@@ -79,9 +81,16 @@ EOF;
       throw new LogicException('This feature is only implemented for Doctrine ORM');
     }
     
-    $instance = sfLucene::getInstance($index, $culture, false);
+    $instance = sfLucene::getInstance($index, $culture);
     
     $this->setupEventDispatcher($instance);
+    
+    if($delete)
+    {
+      $query = 'sfl_model:'.$model;
+      $instance->getLucene()->deleteByQuery($query);
+      $instance->getLucene()->commit();
+    }
     
     $this->rebuild($instance, $model, $offset, $limit);
 

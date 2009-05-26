@@ -55,41 +55,18 @@ EOF;
   {
     $this->standardBootstrap($arguments['application'], $options['env']);
 
-    $remove = sfLuceneToolkit::getDirtyIndexRemains();
-
-    if (count($remove) == 0)
+    if ($arguments['confirmation'] == 'delete')
     {
-      $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->format('Nothing to do!', 'INFO'))));
-    }
-    elseif ($arguments['confirmation'] == 'delete')
-    {
-      $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->format('Delete confirmation provided.  Deleting directories now...' , array('fg' => 'red', 'bold' => true)))));
+      $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->format('Delete confirmation provided.  Deleting index now...' , array('fg' => 'red', 'bold' => true)))));
 
-      foreach ($remove as $dir)
+      $instances = sfLucene::getAllInstances();
+
+      foreach ($instances as $instance)
       {
-        sfToolkit::clearDirectory($dir);
-        rmdir($dir);
-
-        $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('dir-', $dir))));
+        $query = '*:*';
+        $instance->getLucene()->deleteByQuery($query);
+        $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->format('Delete '.$instance->getPublicName() , array('fg' => 'red', 'bold' => true)))));
       }
-    }
-    else
-    {
-      $messages = array($this->formatter->format('The following directories are alien and not referenced by your configuration:', 'INFO'));
-
-      for ($c = count($remove), $x = 0; $x < $c; $x++)
-      {
-        $messages[] = '  ' . ($x + 1) . ') ' . $remove[$x];
-      }
-
-      $messages[] = '';
-
-      $messages[] = 'These directories were ' . $this->formatter->format('not', array('fg' => 'red', 'bold' => true)) . ' deleted.  To delete these directories, please run:';
-      $messages[] = '';
-      $messages[] = '     ' . $this->formatter->format('symfony lucene:clean ' . $arguments['application'] . ' delete', 'INFO');
-      $messages[] = '';
-
-      $this->dispatcher->notify(new sfEvent($this, 'command.log', $messages));
     }
   }
 }

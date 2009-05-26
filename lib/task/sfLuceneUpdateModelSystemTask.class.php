@@ -32,6 +32,8 @@ class sfLuceneUpdateModelSystemTask extends sfLuceneBaseTask
     new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'search'),
     new sfCommandOption('model', null, sfCommandOption::PARAMETER_OPTIONAL, 'The model to reindex', null),
     new sfCommandOption('limit', null, sfCommandOption::PARAMETER_OPTIONAL, 'The environment', 50),
+    new sfCommandOption('delete', null, sfCommandOption::PARAMETER_OPTIONAL, 'set to true to delete all related record', false),
+    
     ));
 
     $this->aliases = array('lucene-rebuild-system');
@@ -65,6 +67,7 @@ EOF;
 
     $limit   = $options['limit'];
     $model   = $options['model'];
+    $delete  = $options['delete'];
 
     $this->checkAppExists($app);
     $this->standardBootstrap($app, $options['env']);
@@ -75,10 +78,9 @@ EOF;
       throw new LogicException('This feature is only implemented for Doctrine ORM');
     }
     
-    
     $start = microtime(true);
 
-    $search = sfLucene::getInstance($index, $culture, is_null($model));
+    $search = sfLucene::getInstance($index, $culture);
     $search->optimize();
     
     $this->setupEventDispatcher($search);
@@ -102,12 +104,21 @@ EOF;
 
     if($model)
     {
+      if($delete)
+      {
+        $this->deleteModel($search, $model);
+      }
       $this->update($handler, $app, $index, $culture, $model, $limit);
     }
     else
     {
       foreach($models as $model => $params)
       {
+        if($delete)
+        {
+          $this->deleteModel($search, $model);
+        }
+        
         $this->update($handler, $app, $index, $culture, $model, $limit);
       }
     }
@@ -120,10 +131,17 @@ EOF;
    $this->dispatcher->notify(new sfEvent($this, 'command.log', array('', $final)));
   }
 
+  public function deleteModel(sfLucene $lucene, $model)
+  {
+    $query = 'sfl_model:'.$model;
+    $lucene->getLucene()->deleteByQuery($query);
+    $lucene->getLucene()->commit();
+  }
+  
   public function update($handler, $app, $index, $culture, $model, $limit)
   {
-    $page   = 0;
-    $count    = $handler->getCount($model);
+    $page      = 0;
+    $count     = $handler->getCount($model);
     $num_pages = ceil($count / $limit);
 
     do
