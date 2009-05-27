@@ -83,7 +83,7 @@ EOF;
         $fs->mkdirs($config_dir);
         
         // options required in solr.xml file
-        $core_options[] = sprintf("<core name='%s' instanceDir='%s'><property name='dataDir' value='%s' /></core>", 
+        $core_options[] = sprintf("<core name='%s' instanceDir='%s'></core>", 
           $name, 
           $name, 
           $data_dir 
@@ -232,8 +232,10 @@ XML;
   <!-- config for the admin interface --> 
   <admin>
     <defaultQuery>solr</defaultQuery>
+    <pingQuery>q=solr&amp;version=2.0&amp;start=0&amp;rows=0</pingQuery>
   </admin>
 
+  <dataDir>\${solr.data.dir}/$name</dataDir>
 </config>
 XML;
 
