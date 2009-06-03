@@ -27,6 +27,8 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
   {
     if (!$this->shouldIndex())
     {
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('model "%s" cancelled indexation - primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));
+      
       return $this;
     }
 

@@ -25,6 +25,7 @@ abstract class sfLuceneBaseTask extends sfBaseTask
 {
   protected function bootstrapSymfony($app, $env, $debug = true)
   {
+
     $configuration = ProjectConfiguration::getApplicationConfiguration($app, $env, $debug);
 
     sfContext::createInstance($configuration);
