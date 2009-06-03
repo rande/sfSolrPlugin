@@ -91,7 +91,15 @@ class sfLucene
     // attempt to guess the culture
     if (is_null($culture))
     {
-      $culture = sfContext::getInstance()->getUser()->getCulture();
+      if(sfContext::hasInstance())
+      {
+        $culture = sfContext::getInstance()->getUser()->getCulture();
+      }
+      else
+      {
+        $culture = 'en';
+      }
+      
     }
 
     if (!isset(self::$instances[$name][$culture]))
