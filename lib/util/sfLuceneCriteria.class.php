@@ -269,4 +269,17 @@ class sfLuceneCriteria
   {
     return new self($this->search);
   }
+  
+  public static function sanitize($keyword)
+  {
+    $keyword = trim($keyword);
+    if(strlen($keyword) == 0)
+    {
+      return false;
+    }
+    
+    $keyword = str_replace('"', '\"', $keyword);
+
+    return '"'.$keyword.'"';
+  }
 }
