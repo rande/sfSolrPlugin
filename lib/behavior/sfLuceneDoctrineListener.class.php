@@ -24,7 +24,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
     try {
       $this->saveIndex($event->getInvoker());
     } catch(sfException $e) {
-      // no context define, cannot do anything, 
+      // no context define, cannot do anything,
     }
   }
 
@@ -78,12 +78,27 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
     }
   }
 
+  public function getInheritanceClass($node, $conf_index)
+  {
+    
+    foreach(array_keys($conf_index['models']) as $model)
+    {
+      if($instance instanceof $node)
+      {
+
+        return $model;
+      }
+    }
+
+    return null;
+  }
+
   protected function getSearchInstances($node)
   {
     static $instances;
 
     $class = get_class($node);
-
+    
     if (!isset($instances))
     {
       $instances = array();
@@ -95,7 +110,13 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
 
       foreach ($config as $name => $item)
       {
-        if (isset($item['models'][$class]))
+        $inheritance_class = $this->getInheritanceClass($node, $item);
+        if(!$inheritance_class)
+        {
+          throw new sfException('Cannot find the correct inheritance class for the object type : '.get_class($node));
+        }
+
+        if (isset($item['models'][$inheritance_class]))
         {
           foreach ($item['index']['cultures'] as $culture)
           {
