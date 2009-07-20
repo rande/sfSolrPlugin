@@ -66,6 +66,11 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
     return $this->search;
   }
 
+  public function getRawResult()
+  {
+    return $this->results;
+  }
+  
   public function current()
   {
     

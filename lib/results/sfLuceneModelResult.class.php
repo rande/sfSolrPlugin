@@ -99,4 +99,5 @@ class sfLuceneModelResult extends sfLuceneResult
   {
     return $this->search->getParameter('models')->get($this->getSflModel());
   }
+  
 }

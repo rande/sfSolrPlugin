@@ -29,29 +29,12 @@ class sfLucenePager
     $perPage = 5,
     $lucene_results;
 
-  public function __construct($lucene_results, $search = null)
+  public function __construct(sfLuceneResults $lucene_results, $search = null)
   {
 
-    if ($lucene_results instanceof sfLuceneResults)
-    {
-      $search = $lucene_results->getSearch();
-      $this->lucene_results = $lucene_results;
-      
-      $lucene_results = $lucene_results->toArray();
-    }
-
-    if (!($search instanceof sfLucene))
-    {
-      throw new sfLuceneResultsException('Pager constructor expects to somehow receive the search instance');
-    }
-
-    if (!is_array($lucene_results))
-    {
-      throw new sfLuceneResultsException('Pager constructor expects the results to be an array, ' . gettype($results) . ' given');
-    }
-
-    $this->results = $lucene_results;
-    $this->search = $search;
+    $this->lucene_results = $lucene_results;
+    $this->results = $lucene_results->toArray();
+    $this->search = $search ? $search : $lucene_results->getSearch();
   }
 
   /**
@@ -93,6 +76,7 @@ class sfLucenePager
 
   public function haveToPaginate()
   {
+
     return (($this->getPage() != 0) && ($this->getNbResults() > $this->getMaxPerPage()));
   }
 
@@ -128,12 +112,13 @@ class sfLucenePager
   public function getResults()
   {
     
-    return $this->lucene_results ? $this->lucene_results : new sfLuceneResults($results, $this->getSearch());
+    return $this->lucene_results;
   }
 
   public function getNbResults()
   {
-    return count($this->results);
+
+    return $this->lucene_results->getRawResult()->response->numFound;
   }
 
   public function getFirstPage()

@@ -36,9 +36,9 @@ class sfLuceneCriteria
     TYPE_AND = 'AND',
     TYPE_OR  = 'OR';
   
-  public function __construct()
+  public function __construct($search)
   {
-    
+    $this->search = $search;
     $this->query = '';
   }
 
@@ -151,7 +151,7 @@ class sfLuceneCriteria
    * 
    * @return sfLuceneCriteria
    */
-  public function addProximity($latitude, $longitude, $proximity, $radius = 6378.1, $latitudeField = 'latitude', $longitudeField = 'longitude', $type = true)
+  public function addProximity($latitude, $longitude, $proximity, $radius = 6378.1, $latitudeField = 'latitude', $longitudeField = 'longitude')
   {
     if ($radius <= 0)
     {
@@ -179,10 +179,11 @@ class sfLuceneCriteria
     $longitudeUpper = max($east, $west);
 
     $subquery = $this->getNewCriteria();
-    $subquery->addRange($latitudeLower, $latitudeUpper, $latitudeField, true, true);
-    $subquery->addRange($longitudeLower, $longitudeUpper, $longitudeField, true, true);
+    
+    $subquery->addRange($latitudeLower, $latitudeUpper, $latitudeField, true);
+    $subquery->addRange($longitudeLower, $longitudeUpper, $longitudeField, true);
 
-    return $this->add($subquery, $type);
+    return $this->add($subquery);
   }
 
   /**
