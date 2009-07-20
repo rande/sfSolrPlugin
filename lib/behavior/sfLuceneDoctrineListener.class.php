@@ -80,10 +80,9 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
 
   public function getInheritanceClass($node, $conf_index)
   {
-    
     foreach(array_keys($conf_index['models']) as $model)
     {
-      if($instance instanceof $node)
+      if($node instanceof $model)
       {
 
         return $model;
@@ -111,6 +110,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
       foreach ($config as $name => $item)
       {
         $inheritance_class = $this->getInheritanceClass($node, $item);
+        
         if(!$inheritance_class)
         {
           throw new sfException('Cannot find the correct inheritance class for the object type : '.get_class($node));

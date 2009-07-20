@@ -90,7 +90,8 @@ abstract class sfLuceneIndexer
     // commit changes
     $this->getSearch()->commit();
 
-    return count($hits);
+    // TODO  : return the correct number of hits
+    return 1;
   }
 
   /**
