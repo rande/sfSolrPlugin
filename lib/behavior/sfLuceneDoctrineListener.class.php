@@ -21,6 +21,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
    */
   public function postSave(Doctrine_Event $event)
   {
+
     try {
       $this->saveIndex($event->getInvoker());
     } catch(sfException $e) {
@@ -55,6 +56,11 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
   */
   public function deleteIndex($node)
   {
+    if(sfConfig::get('app_sfLucene_disable_listener', false))
+    {
+
+      return;
+    }
     
     sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->identifier()))));
 
@@ -69,7 +75,12 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
   */
   public function insertIndex($node)
   {
-    
+    if(sfConfig::get('app_sfLucene_disable_listener', false))
+    {
+
+      return;
+    }
+
     sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->identifier()))));
   
     foreach ($this->getSearchInstances($node) as $instance)
@@ -102,6 +113,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
     {
       $instances = array();
     }
+
 
     if (!isset($instances[$class]))
     {
