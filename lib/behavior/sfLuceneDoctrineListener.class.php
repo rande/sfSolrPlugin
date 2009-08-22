@@ -24,9 +24,15 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
 
     try {
       $this->saveIndex($event->getInvoker());
-    } catch(sfException $e) {
-      // no context define, cannot do anything,
     }
+    catch(Exception $e) {
+      // no context define, cannot do anything,
+      if(sfContext::hasInstance())
+      {
+        sfContext::getInstance()->getLogger()->crit('{sfLuceneDoctrineListener::postSave} Error while saving document to solr : '.$e->getMessage());
+      }
+    }
+
   }
 
   /**
@@ -36,8 +42,12 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
   {
     try {
       $this->deleteIndex($event->getInvoker());
-    } catch(sfException $e) {
+    } catch(Exception $e) {
       // no context define, cannot do anything
+      if(sfContext::hasInstance())
+      {
+        sfContext::getInstance()->getLogger()->crit('{sfLuceneDoctrineListener::postSave} Error while deleting document to solr : '.$e->getMessage());
+      }
     }
     
   }
