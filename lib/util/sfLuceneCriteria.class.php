@@ -119,11 +119,11 @@ class sfLuceneCriteria
 
     if($inclusive)
     {
-      $query = $field . '['.$start.' TO '.$stop.']';
+      $query = $field . ':['.$start.' TO '.$stop.']';
     }
     else
     {
-      $query = $field . '{'.$start.' TO '.$stop.'}';
+      $query = $field . ':{'.$start.' TO '.$stop.'}';
     }
     
     return $this->add($query, $type);
