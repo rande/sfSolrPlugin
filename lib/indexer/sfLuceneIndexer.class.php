@@ -144,9 +144,6 @@ abstract class sfLuceneIndexer
   protected function getLuceneField($field, $name, $contents)
   {
     
-    $d = debug_backtrace();
-    
-    var_dump($d[1]);
     throw new sfException('sfLuceneIndexer::getLuceneField : not available anymore');
   }
 }
