@@ -74,7 +74,7 @@ class sfLuceneCriteria
 
   /**
    * Adds a subquery to the query itself.  It accepts either a string which will
-   * be parsed or a Zend query.
+   * be parsed or a sfLuceneCriteria object.
    * 
    * @return sfLuceneCriteria
    */
@@ -104,6 +104,19 @@ class sfLuceneCriteria
     return $this->add($query, $type);
   }
 
+  /**
+   * Add a subquery to the query itself. The phrase will be automatically sanitized
+   *
+   * @param string $phrase
+   * @return sfLuceneCriteria
+   *
+   */
+  public function addSane($phrase)
+  {
+
+    return $this->add(self::sanitize($phrase));
+  }
+  
   /**
    * Adds a range subquery
    * 
@@ -229,7 +242,6 @@ class sfLuceneCriteria
 
   /**
    * Sets the scoring algorithm for this query.
-   * @param null|Zend_Search_Lucene_Search_Similarity $algorithm An instance of the algorithm to use (null for default)
    * 
    * @return sfLuceneCriteria
    */
@@ -244,7 +256,9 @@ class sfLuceneCriteria
   }
 
   /**
-   * Returns a Zend_Search_Lucene query that can be fed directly to Lucene
+   * Returns a string query that can be fed directly to Lucene
+   *
+   * @return string 
    */
   public function getQuery()
   {
@@ -273,14 +287,7 @@ class sfLuceneCriteria
   
   public static function sanitize($keyword)
   {
-    $keyword = trim($keyword);
-    if(strlen($keyword) == 0)
-    {
-      return false;
-    }
-    
-    $keyword = str_replace('"', '\"', $keyword);
 
-    return '"'.$keyword.'"';
+    return Apache_Solr_Service::phrase($keyword);
   }
 }
