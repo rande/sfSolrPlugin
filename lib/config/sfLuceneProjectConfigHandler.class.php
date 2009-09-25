@@ -129,6 +129,11 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
           $model_config['partial'] = null;
         }
 
+        if (!isset($model_config['callback']))
+        {
+          $model_config['callback'] = null;
+        }
+
         if (!isset($model_config['route']))
         {
           $model_config['route'] = null;
@@ -151,7 +156,7 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
 
         if (!isset($model_config['peer']))
         {
-          $model_config['peer'] = $model . 'Peer';
+          $model_config['peer'] = $model . 'Table';
         }
 
         if (!isset($model_config['rebuild_limit']))

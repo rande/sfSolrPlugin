@@ -156,7 +156,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
         throw new sfLuceneIndexerException(sprintf('Callback "%s::%s()" does not exist', $this->getModelName(), $cb));
       }
       
-      $doc = $this->getModel()->$cb();
+      $doc = $this->getModel()->$cb($this->getSearch());
 
       if (!($doc instanceof Apache_Solr_Document))
       {
@@ -186,8 +186,25 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
 
       // build getter by converting from underscore case to camel case
       $getter = 'get' . sfInflector::camelize($field);
-      $value = $this->getModel()->$getter();
-
+      try
+      {
+        $value = $this->getModel()->$getter();
+      }
+      catch(Doctrine_Record_Exception $e)
+      {
+      
+        // some fields can be only used as a definition
+        // and used in the callback method
+        if(!$properties->get('callback'))
+        {
+          throw $e;
+        }
+        else
+        {
+          continue;
+        }
+      }
+     
       $type = $field_properties->get('type');
       $boost = $field_properties->get('boost');
 

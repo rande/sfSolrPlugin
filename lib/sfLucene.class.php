@@ -226,6 +226,7 @@ class sfLucene
       $data->set('validator', $model['validator']);
       $data->set('categories', $model['categories']);
       $data->set('route', $model['route']);
+      $data->set('callback', $model['callback']);
 
       $models->set($name, $data);
     }
