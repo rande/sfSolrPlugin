@@ -92,6 +92,7 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
               $required = isset($field['required']) ? $field['required'] : null;
               $boost = isset($field['boost']) ? $field['boost'] : null;
               $transform = isset($field['transform']) ? $field['transform'] : null;
+              $default = isset($field['default']) ? $field['default'] : null;
             }
             elseif (empty($field))
             {
@@ -115,7 +116,8 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
               'transform' => $transform,
               'multiValued' => $multi_valued,
               'required' => $required,
-              'stored' => $stored 
+              'stored' => $stored,
+              'default' => $default
             );
           }
         }

@@ -101,7 +101,7 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
 
   public function count()
   {
-    
+
     return $this->results->response->numFound;
   }
 
