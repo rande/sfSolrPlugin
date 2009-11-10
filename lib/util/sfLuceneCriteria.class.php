@@ -14,7 +14,7 @@
  * Usage example: <code>
  * $c = sfLuceneCriteria::newInstance()->add('the cool dude')->addField('sfl_category', array('Forum', 'Blog'));
  * </code>
-
+ *
  *
  * @package    sfLucenePlugin
  * @subpackage Utilities
@@ -233,7 +233,7 @@ class sfLuceneCriteria
   public function addSortBy($field, $order = SORT_ASC, $type = SORT_REGULAR)
   {
     
-    throw new sfEception(__CLASS__.'::'.__FUNCTION__.' not implemented');
+    throw new sfException(__CLASS__.'::'.__FUNCTION__.' not implemented');
     
     //$this->sorts[] = array('field' => $field, 'order' => $order, 'type' => $type);
 
@@ -248,7 +248,7 @@ class sfLuceneCriteria
   public function setScoringAlgorithm($algorithm)
   {
     
-    throw new sfEception(__CLASS__.'::'.__FUNCTION__.' not implemented');
+    throw new sfException(__CLASS__.'::'.__FUNCTION__.' not implemented');
     
     $this->scoring = $algorithm;
 
