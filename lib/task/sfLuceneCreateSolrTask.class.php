@@ -113,7 +113,7 @@ EOF;
           }
         }
         
-        $this->createSchemaFile($name, $config_dir, $schema_options, $copy_fields);
+        $this->createSchemaFile($name, $config_dir, $schema_options, $copy_fields, $culture);
         $this->createSolrConfigFile($name, $config_dir);
         $this->createSolrTxtFiles($config_dir, $fs);
       }
@@ -122,9 +122,28 @@ EOF;
     $this->createSolrFile($base_solr_config_dir, $core_options);
   }
   
-  public function createSchemaFile($name, $data_dir, $schema_options, $copy_fields)
+  public function createSchemaFile($name, $data_dir, $schema_options, $copy_fields, $culture)
   {
-    
+    // TODO : refactor this into a more clever way. maybe set tokeniser and filter into a yml file ...
+    // or add the ability to include a file
+    $culture_codes = array(
+      'da' => 'Danish',
+      'nl' => 'Dutch',
+      'en' => 'English',
+      'fi' => 'Finnish',
+      'fr' => 'French',
+      'de' => 'German',
+      'it' => 'Italian',
+      'kp' => 'Kp',
+      'no' => 'Norwegian',
+      'pt' => 'Portuguese',
+      'ru' => 'Russian',
+      'es' => 'Spanish',
+      'se' => 'Swedish',
+    );
+
+    $snowball_language = array_key_exists($culture, $culture_codes) ? $culture_codes[$culture] : 'English';
+
     $field = implode("\n  ", $schema_options);
     $copy_fields = implode("\n  ", $copy_fields);
     
@@ -136,7 +155,10 @@ EOF;
    
    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
-        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+        <!-- Documentation references : http://wiki.apache.org/solr/AnalyzersTokenizersTokenFilters -->
+        
+        <tokenizer class="solr.WhitespaceTokenizerFactory"
+                   />
         <!-- in this example, we will only use synonyms at query time
         <filter class="solr.SynonymFilterFactory" synonyms="index_synonyms.txt" ignoreCase="true" expand="false"/>
         -->
@@ -144,27 +166,63 @@ EOF;
           add enablePositionIncrements=true in both the index and query
           analyzers to leave a 'gap' for more accurate phrase queries.
         -->
+        <filter class="solr.ISOLatin1AccentFilterFactory"
+                />
+              
         <filter class="solr.StopFilterFactory"
                 ignoreCase="true"
                 words="stopwords.txt"
                 enablePositionIncrements="true"
                 />
-        <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
+        <filter class="solr.WordDelimiterFilterFactory" 
+                generateWordParts="1" 
+                generateNumberParts="1" 
+                splitOnNumerics="0"
+                catenateWords="1" 
+                catenateNumbers="1" 
+                catenateAll="0" 
+                splitOnCaseChange="1"
+                preserveOriginal="1"
+                />
+
         <filter class="solr.LowerCaseFilterFactory"/>
-        <filter class="solr.SnowballPorterFilterFactory" language="English" protected="protwords.txt"/>
-        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+        <filter class="solr.SnowballPorterFilterFactory" 
+                language="$snowball_language" 
+                protected="protwords.txt"
+                />
+        <filter class="solr.RemoveDuplicatesTokenFilterFactory"
+                />
       </analyzer>
       <analyzer type="query">
-        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
-        <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+        <tokenizer class="solr.WhitespaceTokenizerFactory"
+                />
+        <filter class="solr.ISOLatin1AccentFilterFactory"
+                />
+        <filter class="solr.SynonymFilterFactory" 
+                synonyms="synonyms.txt" 
+                ignoreCase="true" 
+                expand="true"
+                />
         <filter class="solr.StopFilterFactory"
                 ignoreCase="true"
                 words="stopwords.txt"
                 enablePositionIncrements="true"
                 />
-        <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="1"/>
+        <filter class="solr.WordDelimiterFilterFactory" 
+                generateWordParts="1" 
+                generateNumberParts="1" 
+                splitOnNumerics="0"
+                catenateWords="1" 
+                catenateNumbers="1" 
+                catenateAll="0" 
+                splitOnCaseChange="1"
+                preserveOriginal="1"
+                />
         <filter class="solr.LowerCaseFilterFactory"/>
-        <filter class="solr.SnowballPorterFilterFactory" language="English" protected="protwords.txt"/>
+        <filter class="solr.SnowballPorterFilterFactory" 
+                language="$snowball_language" 
+                protected="protwords.txt"
+                />
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
