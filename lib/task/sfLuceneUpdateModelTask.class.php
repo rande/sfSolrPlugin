@@ -81,7 +81,7 @@ EOF;
       throw new LogicException('This feature is only implemented for Doctrine ORM');
     }
     
-    $instance = sfLucene::getInstance($index, $culture);
+    $instance = sfLucene::getInstance($index, $culture, $this->configuration);
     
     $this->setupEventDispatcher($instance);
     

@@ -80,7 +80,7 @@ EOF;
     
     $start = microtime(true);
 
-    $search = sfLucene::getInstance($index, $culture);
+    $search = sfLucene::getInstance($index, $culture, $this->configuration);
     $search->optimize();
     
     $this->setupEventDispatcher($search);
