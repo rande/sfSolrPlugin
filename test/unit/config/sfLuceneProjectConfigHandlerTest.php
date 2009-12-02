@@ -22,9 +22,9 @@ $config = new sfLuceneProjectConfigHandler();
 
 $response = $config->execute(array( dirname(__FILE__) . '/../../data/configTest/project.yml'));
 
-file_put_contents(lime_test::get_temp_directory() . '/search.yml.php', $response);
-require lime_test::get_temp_directory() . '/search.yml.php';
-unlink(lime_test::get_temp_directory() . '/search.yml.php');
+file_put_contents(sys_get_temp_dir()  . '/search.yml.php', $response);
+require sys_get_temp_dir()  . '/search.yml.php';
+unlink(sys_get_temp_dir()  . '/search.yml.php');
 
 $t->ok(isset($config), '->execute() creates a $config variable');
 

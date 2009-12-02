@@ -21,9 +21,9 @@ $t = new limeade_test(2, limeade_output::get());
 $config = new sfLuceneModuleConfigHandler();
 $response = $config->execute(array( dirname(__FILE__) . '/../../data/configTest/module.yml'));
 
-file_put_contents(lime_test::get_temp_directory() . '/search.yml.php', $response);
-require lime_test::get_temp_directory() . '/search.yml.php';
-unlink(lime_test::get_temp_directory() . '/search.yml.php');
+file_put_contents(sys_get_temp_dir()  . '/search.yml.php', $response);
+require sys_get_temp_dir()  . '/search.yml.php';
+unlink(sys_get_temp_dir()  . '/search.yml.php');
 
 $t->ok(isset($actions), '->execute() creates a $actions variable');
 
