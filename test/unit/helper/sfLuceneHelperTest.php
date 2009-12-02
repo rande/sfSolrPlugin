@@ -17,10 +17,6 @@
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
 $t = new limeade_test(16, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
-
-sfLuceneToolkit::loadZend();
 
 sfLoader::loadHelpers(array('sfLucene'));
 

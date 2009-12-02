@@ -1,0 +1,11 @@
+http://localhost:8983/solr/rest_of_the_world_en/select?indent=on&version=2.2&q=sugar&start=0&rows=10&fl=id%2Cscore&qt=standard&wt=standard&debugQuery=on&explainOther=&hl.fl=
+
+Select a limited number of fields :
+fl=id, score
+
+Select all field and score :
+fl=*,score
+
+
+Access to luke statistique :
+http://localhost:8983/solr/rest_of_the_world_en/admin/luke

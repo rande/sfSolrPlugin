@@ -17,8 +17,6 @@
 require dirname(__FILE__) . '/../../../bootstrap/unit.php';
 
 $t = new limeade_test(2, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
 
 class Foo
 {
@@ -30,7 +28,9 @@ class Foo
   }
 }
 
-$filter = new sfLuceneCacheFilter(sfContext::getInstance());
+$context = sf_lucene_get_fake_context($app_configuration);
+
+$filter = new sfLuceneCacheFilter($context);
 $chain = new Foo;
 
 try {
@@ -42,3 +42,4 @@ try {
 }
 
 $t->ok($chain->executed, '->execute() runs ->execute() on the chain');
+

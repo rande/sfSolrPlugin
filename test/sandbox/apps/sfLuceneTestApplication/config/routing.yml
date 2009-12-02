@@ -1,0 +1,3 @@
+current_route:
+  url: /lucene/search
+  param: {module: sfLucene, action: search }

@@ -17,8 +17,6 @@
 require dirname(__FILE__) . '/../../../bootstrap/unit.php';
 
 $t = new limeade_test(6, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
 
 $lighters = array(
   new sfLuceneHighlighterMarkerDry(),

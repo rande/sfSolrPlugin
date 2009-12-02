@@ -1,0 +1,31 @@
+<add>
+
+  <doc>
+    <field name="sfl_guid">GUID_1</field>
+    <field name="id">1</field>
+    <field name="name">rande</field>
+    <field name="skills">symfony</field>
+    <field name="skills">php</field>
+    <field name="skills">objective-c</field>
+    <field name="description">symfony fan boy</field>
+  </doc>
+
+  <doc>
+    <field name="sfl_guid">GUID_2</field>
+    <field name="id">2</field>
+    <field name="name">rande2</field>
+    <field name="skills">django</field>
+    <field name="skills">python</field>
+    <field name="description">django fan boy</field>
+  </doc>
+
+  <doc>
+    <field name="sfl_guid">GUID_3</field>
+    <field name="id">3</field>
+    <field name="name">rande3</field>
+    <field name="skills">rails</field>
+    <field name="skills">ruby</field>
+    <field name="description">rails fan boy</field>
+  </doc>
+
+</add>

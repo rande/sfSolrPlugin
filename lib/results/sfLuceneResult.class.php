@@ -16,9 +16,9 @@
  */
 class sfLuceneResult
 {
-  protected $result;
-
-  protected $search;
+  protected 
+    $result,
+    $search;
 
   /**
   * Consturctor, but consider using factor method ::getInstance()
@@ -95,6 +95,7 @@ class sfLuceneResult
   */
   static public function getInstance($result, $search)
   {
+
     switch ($result->sfl_type)
     {
       case 'action':
@@ -119,23 +120,30 @@ class sfLuceneResult
     {
       $field = sfInflector::underscore(substr($method, 3));
       
-      return $this->result->__get($field);
+      
+      if(substr($field, 0, 8) == 'internal')
+      {
+        $field = 'sfl_'.substr($field, 9);
+      }
+      
+      if($this->result->__isset($field))
+      {
+        return $this->result->__get($field);
+      }
     }
     elseif (substr($method, 0, 3) == 'has')
     {
-      try
+      $field = sfInflector::underscore(substr($method, 3));
+      
+      if(substr($field, 0, 8) == 'internal')
       {
-        $this->result->__isset($field);
-
-        return true;
+        $field = 'sfl_'.substr($field, 9);
       }
-      catch (Exception $e)
-      {
-        return false;
-      }
+      
+      return $this->result->__isset($field);
     }
 
-    $event = $this->getSearch()->getEventDispatcher()->notifyUntil(new sfEvent($this, 'result.method_not_found', array('method' => $method, 'arguments' => $args)));
+    $event = $this->getSearch()->getEventDispatcher()->notifyUntil(new sfEvent($this, 'sf_lucene_result.method_not_found', array('method' => $method, 'arguments' => $args)));
 
     if (!$event->isProcessed())
     {

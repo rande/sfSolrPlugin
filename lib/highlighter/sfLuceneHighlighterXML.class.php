@@ -33,7 +33,7 @@ class sfLuceneHighlighterXML extends sfLuceneHighlighter
   {
     $this->version = $version;
     $this->encoding = $encoding;
-
+    
     parent::__construct($data);
   }
 
@@ -156,7 +156,6 @@ class sfLuceneHighlighterXML extends sfLuceneHighlighter
       $matched = $node->splitText($token->getStart());
 
       $highlighted = $this->document->createDocumentFragment();
-
       $highlighted->appendXML($token->getKeyword()->getHighlighter()->highlight($token->getText()));
 
       $node->parentNode->replaceChild($highlighted, $matched);

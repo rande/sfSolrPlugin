@@ -17,13 +17,8 @@
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
 $t = new limeade_test(20, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
 
-$luceneade = new limeade_lucene($limeade);
-$luceneade->configure()->clear_sandbox();
-
-$lucene = sfLucene::getInstance('testLucene', 'en');
+$lucene = sfLucene::getInstance('index', 'en', $app_configuration);
 
 $writer = new sfLuceneStorageBlackhole('foo');
 

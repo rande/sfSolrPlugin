@@ -191,7 +191,8 @@ abstract class BasesfLuceneActions extends sfActions
    */
   protected function getLuceneInstance()
   {
-    return sfLuceneToolkit::getApplicationInstance();
+    
+    throw new sfException('Implement this feature with an event dispatcher');
   }
 
   /**

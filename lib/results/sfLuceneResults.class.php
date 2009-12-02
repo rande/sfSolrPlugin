@@ -21,18 +21,17 @@
  */
 class sfLuceneResults implements Iterator, Countable, ArrayAccess
 {
-  protected $results = array();
-
-  protected $pointer = 0;
-
-  protected $search;
+  protected
+    $results = array(),
+    $pointer = 0,
+    $search;
 
   /**
   * Constructor.  Weeds through the results.
   */
-  public function __construct(Apache_Solr_Response $results, $search)
+  public function __construct(Apache_Solr_Response $response, $search)
   {
-    $this->results = $results;
+    $this->results = $response;
     $this->search = $search;
   }
 
@@ -50,11 +49,11 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
    */
   public function __call($method, $arguments)
   {
-    $event = $this->search->getEventDispatcher()->notifyUntil(new sfEvent($this, 'results.method_not_found', array('method' => $method, 'arguments' => $arguments)));
+    $event = $this->search->getEventDispatcher()->notifyUntil(new sfEvent($this, 'sf_lucene_results.method_not_found', array('method' => $method, 'arguments' => $arguments)));
 
     if (!$event->isProcessed())
     {
-      throw new sfException(sprintf('Call to undefined method %s::%s.', __CLASS__, $method));
+      throw new sfLuceneResultsException(sprintf('Call to undefined method %s::%s.', __CLASS__, $method));
     }
 
     return $event->getReturnValue();
@@ -74,7 +73,7 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
   public function current()
   {
     
-    return $this->getInstance($this->results->response->docs[$this->pointer]);
+    return $this->getInstance($this->getRawResult()->response->docs[$this->pointer]);
   }
 
   public function key()
@@ -96,46 +95,48 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
   public function valid()
   {
     
-    return isset($this->results->response->docs[$this->pointer]);
+    return isset($this->getRawResult()->response->docs[$this->pointer]);
   }
 
   public function count()
   {
 
-    return $this->results->response->numFound;
+    return $this->getRawResult()->response->numFound;
   }
 
   public function offsetExists($offset)
   {
     
-    return isset($this->results[$offset]);
+    return isset($this->getRawResult()->response->docs[$offset]);
   }
 
   public function offsetGet($offset)
   {
     
-    return $this->getInstance($this->results[$offset]);
+    return $this->getInstance($this->getRawResult()->response->docs[$offset]);
   }
 
   public function offsetSet($offset, $set)
   {
-    $this->results[$offset] = $set;
+    $this->getRawResult()->response->docs[$offset] = $set;
   }
 
   public function offsetUnset($offset)
   {
-    unset($this->results[$offset]);
+    unset($this->getRawResult()->response->docs[$offset]);
   }
 
   public function toArray()
   {
-    if(!isset($this->results->response))
+    $response = $this->getRawResult()->response;
+    
+    if(!$response)
     {
       
       return array();
     }
     
-    return $this->results->response->docs;
+    return $this->getRawResult()->response->docs;
   }
   
 }

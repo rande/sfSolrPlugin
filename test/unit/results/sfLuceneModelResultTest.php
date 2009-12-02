@@ -17,28 +17,16 @@
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
 $t = new limeade_test(12, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
 
-$luceneade = new limeade_lucene($limeade);
-$luceneade->configure()->clear_sandbox();
+$lucene = sfLucene::getInstance('index', 'en', $app_configuration);
 
-$lucene = sfLucene::getInstance('testLucene');
-
-class MockResult extends Zend_Search_Lucene_Search_QueryHit
+class MockDocument extends Apache_Solr_Document
 {
-  public function __construct($a)
+  public function setFields($fields)
   {
+    $this->_fields = $fields;
   }
-
-  public function getDocument()
-  {
-    return $this->doc;
-  }
-}
-
-class MockDocument
-{
+  
   public function getFieldValue($field)
   {
     if (!isset($this->$field)) throw new Exception('You said to');
@@ -47,21 +35,20 @@ class MockDocument
   }
 }
 
-$mockresult = new MockResult($lucene->getLucene());
-$mockresult->score = .425;
-$mockresult->id = 1;
+
 $doc = new MockDocument;
-$doc->sfl_type = 'model';
-$doc->sfl_model = 'FakeForum';
-$doc->title = 'Registered title';
-$doc->description = 'Registered <b>description</b>';
-$doc->id = 42;
-$mockresult->doc = $doc;
+$doc->setFields(array(
+  'sfl_type' => 'model',
+  'sfl_model' => 'FakeForum',
+  'title' => 'Registered title',
+  'description' => 'Registered <b>description</b>',
+  'id' => 42
+));
 
 $t->diag('testing constructor');
 
 try {
-  $result = new sfLuceneModelResult($mockresult, $lucene);
+  $result = new sfLuceneModelResult($doc, $lucene);
   $t->pass('__construct() accepts a valid result and valid sfLucene instance');
 } catch (Exception $e) {
   $t->fail('__construct() accepts a valid result and valid sfLucene instance');
@@ -76,7 +63,7 @@ $t->diag('testing ->getInternalTitle()');
 $t->is($result->getInternalTitle(), 'Registered title', '->getInternalTitle() returns the title registered in the document');
 
 $h->remove('title');
-$t->is($result->getInternalTitle(), 'Registered title', '->getInternalTitle() can guess the title');
+$t->is($result->getInternalTitle(), 'No title available.', '->getInternalTitle() can guess the title');
 
 $fields = clone $h->get('fields');
 $h->get('fields')->clear();
@@ -113,7 +100,7 @@ $t->diag('testing ->getInternalDescription()');
 $t->is($result->getInternalDescription(), 'Registered description', '->getInternalDescription() returns the description registered in the document and strips HTML');
 
 $h->remove('description');
-$t->is($result->getInternalDescription(), 'Registered description', '->getInternalDescription() can guess the description');
+$t->is($result->getInternalDescription(), 'No description available.', '->getInternalDescription() can guess the description');
 
 $fields = clone $h->get('fields');
 $h->get('fields')->clear();

@@ -16,49 +16,76 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new limeade_test(13, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
+$t = new limeade_test(18, limeade_output::get());
 
-$luceneade = new limeade_lucene($limeade);
-$luceneade->configure()->clear_sandbox();
 
-$lucene = sfLucene::getInstance('testLucene', 'en');
-
-class MockResult extends Zend_Search_Lucene_Search_QueryHit
+class MockResult extends Apache_Solr_Document
 {
   public $name;
+
   public function __construct($a)
   {
     $this->name = $a;
   }
-
-  public function getDocument()
-  {
-    return new MockDocument;
-  }
 }
 
-class MockDocument
+// create fake response
+$standard_response = '{"responseHeader":{"status":0,"QTime":0},"response":{"numFound":3,"start":%s,"docs":[%s]}}';
+$expected_objects = array();
+$results = array();
+
+foreach(range(1, 3) as $num)
 {
-  public function getFieldValue($field)
-  {
-    if ($field == 'sfl_type')
-    {
-      return 'regular';
-    }
-
-    throw new Exception('d');
-  }
+  $results[] = sprintf(
+    '{"description":"symfony fan boy","id":%d,"name":"rande","sfl_guid":"GUID_%d","skills":["symfony","php","objective-c"]}',
+    $num,
+    $num
+  );
+  
+  $expected_objects[] =<<<VAR_DUMP
+Apache_Solr_Document::__set_state(array(
+   '_documentBoost' => false,
+   '_fields' => 
+  array (
+    'description' => 'symfony fan boy',
+    'id' => $num,
+    'name' => 'rande',
+    'sfl_guid' => 'GUID_$num',
+    'skills' => 
+    array (
+      0 => 'symfony',
+      1 => 'php',
+      2 => 'objective-c',
+    ),
+  ),
+   '_fieldBoosts' => 
+  array (
+    'description' => false,
+    'id' => false,
+    'name' => false,
+    'sfl_guid' => false,
+    'skills' => false,
+  ),
+))
+VAR_DUMP;
 }
-$data = array(new MockResult('foo'), new MockResult('bar'), new MockResult('baz'));
-$search = sfLucene::getInstance('testLucene');
+$standard_response = sprintf($standard_response, 3, implode(", ", $results));
 
-$results = new sfLuceneResults($data, $search);
+
+$response = new Apache_Solr_Response($standard_response);
+
+$search = sfLucene::getInstance('index', 'en', $app_configuration);
+
+$results = new sfLuceneResults($response, $search);
+
 
 $t->diag('testing ->getSearch(), ->toArray()');
 $t->is($results->getSearch(), $search, '->getSearch() returns the same search instance');
-$t->is($results->toArray(), $data, '->toArray() returns the same search data');
+
+foreach($results->toArray() as $pos => $result)
+{
+  $t->is(var_export($result, 1 ), $expected_objects[$pos], '->toArray() pos #'.$pos);
+}
 
 $t->diag('testing Iterator interface');
 
@@ -72,13 +99,13 @@ foreach ($results as $key => $value)
     $once = true;
   }
 
-  $got[$key] = $value->getResult();
+  $t->is(var_export($value->getResult(), 1 ), $expected_objects[$key], '->getResult() pos #'.$key);
 }
 
 $t->is($got, $data, 'sfLuceneResults implements the Iterator interface');
 
 $t->diag('testing Countable interface');
-$t->is(count($results), count($data), 'sfLuceneResults implements the Countable interface');
+$t->is(count($results), 3, 'sfLuceneResults implements the Countable interface');
 
 $t->diag('testing ArrayAccess interface');
 
@@ -86,7 +113,8 @@ $t->ok(isset($results[1]), 'sfLuceneResults implements the ArrayAccess isset() i
 $t->ok($results[1] instanceof sfLuceneResult, 'sfLuceneResults ArrayAccess interface getter returns instances of sfLuceneResult');
 $t->ok($results[1]->getResult(), 'sfLuceneResults implements the ArrayAccess getter interface');
 
-$nresult = new MockResult('foobar');
+
+$nresult = new MockResult();
 $results[3] = $nresult;
 $t->is($results[3]->getResult(), $nresult, 'sfLuceneResults implements the ArrayAccess setter interface');
 
@@ -108,7 +136,7 @@ function callListener($event)
   return false;
 }
 
-$search->getEventDispatcher()->connect('results.method_not_found', 'callListener');
+$search->getEventDispatcher()->connect('sf_lucene_results.method_not_found', 'callListener');
 
 try {
   $results->someBadMethod();

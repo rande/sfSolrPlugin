@@ -16,14 +16,43 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new limeade_test(30, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
+$t = new limeade_test(45, limeade_output::get());
 
-$luceneade = new limeade_lucene($limeade);
-$luceneade->configure()->clear_sandbox();
 
-$lucene = sfLucene::getInstance('testLucene', 'en');
+class sfMockApacheService
+{
+  public function search($query, $offset = 0, $limit = 10, $params = array(), $method = 'GET')
+  {
+    
+    $standard_response = '{"responseHeader":{"status":0,"QTime":0},"response":{"numFound":1001,"start":%s,"docs":[%s]}}';
+    $results = array();
+    
+    foreach(range($offset, $offset + $limit - 1) as $num)
+    {
+      $results[] = sprintf(
+        '{"description":"symfony fan boy","id":%d,"name":"rande","sfl_guid":"GUID_%d","skills":["symfony","php","objective-c"]}',
+        $num,
+        $num
+      );
+    }
+    $standard_response = sprintf($standard_response, $offset, implode(", ", $results));
+    
+    $response = new Apache_Solr_Response($standard_response);
+    
+    $response->sf_lucene_search = array(
+      'query'   => $query,
+      'offset'  => $offset,
+      'limit'   => $limit,
+      'params'  => $params,
+      'method'  => $method
+    );
+
+    return $response;
+  }
+}
+
+$lucene = sfLucene::getInstance('index', 'en', $app_configuration);
+$lucene->setLucene(new sfMockApacheService);
 
 $t->diag('testing constructor');
 
@@ -34,102 +63,98 @@ try {
   $t->pass('__construct() rejects a non-array');
 }
 
+$response = $lucene->find('dummy search');
+
 try {
-  new sfLucenePager(new sfLuceneResults(array(), $lucene));
+  $pager = new sfLucenePager(new sfLuceneResults($response, $lucene));
   $t->pass('__construct() accepts sfLuceneResults');
 } catch (Exception $e) {
   $t->fail('__construct() accepts sfLuceneResults');
 }
 
-try {
-  new sfLucenePager(array(), null);
-  $t->fail('__construct() must have a search instance');
-} catch (Exception $e) {
-  $t->pass('__construct() must have a search instance');
-}
-
-try {
-  $results = new sfLucenePager(range(0, 1000), $lucene);
-  $t->pass('__construct() accepts an array');
-} catch (Exception $e) {
-  $t->fail('__construct() accepts an array');
-}
-
 $t->diag('testing basic pagination functions');
 
 try {
-  $results->setPage(2);
+  $pager->setPage(2);
   $t->pass('->setPage() accepts a integer page');
 } catch (Exception $e) {
   $t->fail('->setPage() accepts a integer page');
 }
 
 try {
-  $results->setMaxPerPage(10);
+  $pager->setMaxPerPage(10);
   $t->pass('->setMaxPerPage() accepts an integer per page');
 } catch (Exception $e) {
   $t->fail('->setMaxPerPage() accepts an integer per page');
 }
 
-$t->is($results->getPage(), 2, '->getPage() returns current page');
-$t->is($results->getMaxPerPage(), 10, '->getMaxPerPage() returns the max per page');
-$t->is($results->getNbResults(), 1001, '->getNbResults() returns the total number of results');
-$t->ok($results->haveToPaginate(), '->haveToPaginate() returns correct value');
+$t->is($pager->getPage(), 2, '->getPage() returns current page');
+$t->is($pager->getMaxPerPage(), 10, '->getMaxPerPage() returns the max per page');
+$t->is($pager->getNbResults(), 1001, '->getNbResults() returns the total number of results');
+$t->ok($pager->haveToPaginate(), '->haveToPaginate() returns correct value');
 
-$results->setPage(0);
-$t->is($results->getPage(), 1, '->setPage() to 0 sets the page to 1');
+$pager->setPage(0);
+$t->is($pager->getPage(), 1, '->setPage() to 0 sets the page to 1');
 
-$results->setPage(100000);
-$t->is($results->getPage(), 101, '->setPage() above to upper bound resets to last page');
+$pager->setPage(100000);
+$t->is($pager->getPage(), 101, '->setPage() above to upper bound resets to last page');
 
-$results->setPage(2);
-
+$pager->setPage(2);
 $t->diag('testing ->getResults()');
 
-$t->is_deeply($results->getResults()->toArray(), range(10, 20), '->getResults() returns the correct range');
-$results->setPage(3);
-$t->is_deeply($results->getResults()->toArray(), range(20, 30), '->getResults() returns the correct range after page change');
+$results = $pager->getResults()->toArray();
+foreach(range(10, 19) as $id)
+{
+  $guid = 'GUID_'.$id;
+  $t->cmp_ok($results[$id - 10]->sfl_guid, '==', $guid, '->getResults() returns the correct range, sfl_guid:'.$guid);
+}
 
-$results->setMaxPerPage(0);
-$t->is_deeply($results->getResults()->toArray(), range(0, 1000), '->getResults() returns all results if the max per page is 0');
-$results->setMaxPerPage(10);
+$pager->setPage(3);
+$results = $pager->getResults()->toArray();
+foreach(range(20, 29) as $id)
+{
+  $guid = 'GUID_'.$id;
+  $t->cmp_ok($results[$id - 20]->sfl_guid, '==', $guid, '->getResults() returns the correct range after page change, sfl_guid:'.$guid);
+}
+
+$pager->setMaxPerPage(20);
 
 $t->diag('testing page numbers');
 
-$t->is($results->getFirstPage(), 1, '->getFirstPage() returns 1 as first page');
-$t->is($results->getLastPage(), 101, '->getLastPage() returns the last page in the range');
+$t->is($pager->getFirstPage(), 1, '->getFirstPage() returns 1 as first page');
+$t->is($pager->getLastPage(), 51, '->getLastPage() returns the last page in the range');
 
-$t->is($results->getNextPage(), 4, '->getNextPage() returns the next page');
-$results->setPage(101);
-$t->is($results->getNextPage(), 101, '->getNextPage() returns last page if at end');
-$results->setPage(4);
+$t->is($pager->getNextPage(), 4, '->getNextPage() returns the next page');
+$pager->setPage(101);
+$t->is($pager->getNextPage(), 51, '->getNextPage() returns last page if at end');
+$pager->setPage(4);
 
-$t->is($results->getPreviousPage(), 3, '->getPreviousPage() returns the previous page');
-$results->setPage(1);
-$t->is($results->getPreviousPage(), 1, '->getPreviousPage() returns the first page if at start');
-$results->setPage(4);
+$t->is($pager->getPreviousPage(), 3, '->getPreviousPage() returns the previous page');
+$pager->setPage(1);
+$t->is($pager->getPreviousPage(), 1, '->getPreviousPage() returns the first page if at start');
+$pager->setPage(4);
 
 $t->diag('testing page indices');
-$results->setPage(4);
-$t->is($results->getFirstIndice(), 31, '->getFirstIndice() returns correct first indice in results');
-$t->is($results->getLastIndice(), 40, '->getLastIndice() returns correct last indice in result');
+$pager->setPage(4);
+$t->is($pager->getFirstIndice(), 61, '->getFirstIndice() returns correct first indice in results');
+$t->is($pager->getLastIndice(), 80, '->getLastIndice() returns correct last indice in result');
 
-$results->setMaxPerPage(8);
-$results->setPage($results->getLastPage());
+$pager->setMaxPerPage(8);
+$pager->setPage($pager->getLastPage());
 
-$t->is($results->getLastIndice(), 1001, '->getLastIndice() returns correct last indice if more can fit on the page');
+$t->is($pager->getLastIndice(), 1001, '->getLastIndice() returns correct last indice if more can fit on the page');
 
 
 $t->diag('testing link generator');
-$results->setMaxPerPage(10);
-$results->setPage(4);
-$t->is($results->getLinks(5), range(2, 6), '->getLinks() returns the correct link range');
+$pager->setMaxPerPage(10);
+$pager->setPage(4);
+$t->is($pager->getLinks(5), range(2, 6), '->getLinks() returns the correct link range');
 
-$results->setPage(1);
-$t->is($results->getLinks(5), range(1, 5), '->getLinks() returns correct link range when at start of index');
+$pager->setPage(1);
+$t->is($pager->getLinks(5), range(1, 5), '->getLinks() returns correct link range when at start of index');
 
-$results->setPage(101);
-$t->is($results->getLinks(5), range(97, 101), '->getLinks() returns link range when at end of index');
+$pager->setPage(101);
+$t->is($pager->getLinks(5), range(97, 101), '->getLinks() returns link range when at end of index');
 
 $t->diag('testing mixins');
 
@@ -150,14 +175,14 @@ function callListener($event)
 $lucene->getEventDispatcher()->connect('pager.method_not_found', 'callListener');
 
 try {
-  $results->someBadMethod();
+  $pager->someBadMethod();
   $t->fail('__call() rejects bad methods');
 } catch (Exception $e) {
   $t->pass('__call() rejects bad methods');
 }
 
 try {
-  $return = $results->goodMethod(2);
+  $return = $pager->goodMethod(2);
   $t->pass('__call() accepts good methods');
   $t->is($return, 3, '__call() passes arguments');
 } catch (Exception $e) {

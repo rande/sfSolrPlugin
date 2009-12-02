@@ -17,8 +17,6 @@
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
 $t = new limeade_test(6, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
 
 class FooListener
 {
@@ -54,4 +52,4 @@ $t->is($listener->event->getParameters(), array('What is down dude?  I am 5 year
 $connector = new sfLuceneEventConnectorLogger($source, 'foo', $target, 'bar', $formatter, 'Section');
 $source->notify(new sfEvent($subject, 'foo', $params));
 
-$t->is($listener->event->getParameters(), array('>> Section What is down dude?  I am 5 years young now'), 'calling a linked logged event parses message correctly');
+$t->is($listener->event->getParameters(), array('>> Section   What is down dude?  I am 5 years young now'), 'calling a linked logged event parses message correctly');

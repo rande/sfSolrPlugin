@@ -35,6 +35,11 @@ class sfLucene
   protected $lucene = null;
 
   /**
+   * Holds the sfApplicationConfiguration object
+   */
+  protected $configuration = null;
+
+  /**
    * Holds the indexer factory singleton
    */
   protected $indexerFactory = null;
@@ -50,6 +55,12 @@ class sfLucene
   protected $parameters = null;
 
   /**
+   * Holds luke object (retrieve statistics information)
+   */
+  protected $luke = null;
+
+
+  /**
   * Holder for the instances
   */
   static protected $instances = array();
@@ -57,11 +68,12 @@ class sfLucene
   /**
   * Constructor, but seriously use getInstance as the constructor
   * because that maintains singletons
+   *
   * @param string $name The name of the index
   * @param string $culture The culture of the index
   * @param bool $rebuild If true, the index is erased before opening it.
   */
-  protected function __construct($name, $culture)
+  protected function __construct($name, $culture, sfApplicationConfiguration $configuration)
   {
     $this->parameters = new sfParameterHolder();
 
@@ -71,6 +83,8 @@ class sfLucene
 
     $this->dispatcher = new sfEventDispatcher;
 
+    $this->configuration = $configuration;
+    
     $this->initialize();
 
     $this->setAutomaticMode();
@@ -83,24 +97,11 @@ class sfLucene
   *
   * @param string $name The name of the index
   * @param string $culture The culture of the index
-  * 
+  *
   * @return sfLucene
   */
-  static public function getInstance($name, $culture = null)
+  static public function getInstance($name, $culture, sfApplicationConfiguration $configuration)
   {
-    // attempt to guess the culture
-    if (is_null($culture))
-    {
-      if(sfContext::hasInstance())
-      {
-        $culture = sfContext::getInstance()->getUser()->getCulture();
-      }
-      else
-      {
-        $culture = 'en';
-      }
-      
-    }
 
     if (!isset(self::$instances[$name][$culture]))
     {
@@ -109,7 +110,7 @@ class sfLucene
         self::$instances[$name] = array();
       }
 
-      self::$instances[$name][$culture] = new self($name, $culture);
+      self::$instances[$name][$culture] = new self($name, $culture, $configuration);
     }
 
     return self::$instances[$name][$culture];
@@ -118,13 +119,13 @@ class sfLucene
   /**
    * Returns all the instances
    */
-  static public function getAllInstances()
+  static public function getAllInstances(sfApplicationConfiguration $configuration)
   {
     static $instances;
 
     if (!$instances)
     {
-      $config = self::getConfig();
+      require($configuration->getConfigCache()->checkConfig('config/search.yml'));
 
       $instances = array();
 
@@ -132,7 +133,7 @@ class sfLucene
       {
         foreach ($item['index']['cultures'] as $culture)
         {
-          $instances[] = self::getInstance($name, $culture);
+          $instances[] = self::getInstance($name, $culture, $configuration);
         }
       }
     }
@@ -143,40 +144,28 @@ class sfLucene
   /**
   * Returns the name of every registered index.
   */
-  static public function getAllNames()
+  static public function getAllNames(sfApplicationConfiguration $configuration)
   {
-    return array_keys(self::getConfig());
-  }
+    require($configuration->getConfigCache()->checkConfig('config/search.yml'));
 
-  /**
-  * Returns all of the config.
-  */
-  static public function getConfig()
-  {
-    $context = sfContext::getInstance();
-    
-    require($context->getConfiguration()->getConfigCache()->checkConfig('config/search.yml'));
 
-    if (!isset($config))
-    {
-      throw new sfLuceneException('Error loading configuration');
-    }
-
-    return $config;
+    return array_keys($config);
   }
 
   public function getPublicName()
   {
-    
-    return $this->getParameter('name').' ('.$this->getParameter('culture').')'; 
+
+    return $this->getParameter('name').' ('.$this->getParameter('culture').')';
   }
-  
+
   /**
   * Loads the config for the search engine.
   */
   protected function initialize()
   {
-    $config = self::getConfig();
+
+    // set a global configuration variable ...
+    require($this->configuration->getConfigCache()->checkConfig('config/search.yml'));
 
     $holder = $this->getParameterHolder();
 
@@ -189,18 +178,18 @@ class sfLucene
 
     foreach (array('encoding', 'cultures' => 'enabled_cultures', 'stop_words', 'short_words', 'analyzer', 'case_sensitive', 'mb_string', 'host', 'port', 'base_url') as $key => $param)
     {
-      
+
       if (is_int($key))
       {
         $holder->set($param, $config['index'][$param]);
       }
       else
       {
-        
+
         $holder->set($param, $config['index'][$key]);
       }
     }
-    
+
     $models = new sfParameterHolder();
 
     foreach ($config['models'] as $name => $model)
@@ -250,11 +239,13 @@ class sfLucene
 
   public function getParameter($key, $default = null)
   {
+    
     return $this->parameters->get($key, $default);
   }
 
   public function getParameterHolder()
   {
+    
     return $this->parameters;
   }
 
@@ -270,7 +261,7 @@ class sfLucene
 
     return $this->categoriesHarness;
   }
-  
+
   /**
   * Returns the lucene object
   * @return Zend_Search_Lucene
@@ -280,21 +271,30 @@ class sfLucene
 
     if ($this->lucene == null)
     {
-      $solr = new Apache_Solr_Service(
+      $solr = new sfLuceneApacheSolrService(
         $this->getParameter('host'),
         $this->getParameter('port'),
         $this->getParameter('base_url').'/'.$this->getParameter('index_location')
       );
- 
+
       if(!$solr->ping())
       {
         //throw new Exception('Search is not available right now.');
       }
-      
+
       $this->lucene =  $solr;
     }
 
     return $this->lucene;
+  }
+  
+  /**
+   * define the solr engine, use this only for testing
+   */
+  public function setLucene($solr)
+  {
+    
+    $this->lucene = $solr;
   }
 
   /**
@@ -316,18 +316,9 @@ class sfLucene
    */
   public function getEventDispatcher()
   {
+    
     return $this->dispatcher;
   }
-
-  /**
-  * Gets the context.  Right now, this exists for forward-compatability.
-  * TODO: Remove singleton (depends on sfConfiguration)
-  */
-  public function getContext()
-  {
-    return sfContext::getInstance();
-  }
-
 
   /**
    * Zend Search Lucene makes it awfully hard to have multiple Lucene indexes
@@ -336,7 +327,7 @@ class sfLucene
    */
   public function configure()
   {
-    
+
   }
 
 /**
@@ -368,7 +359,7 @@ class sfLucene
 
     return $this;
   }
-  
+
   /**
   * Update only the index for one model
   *
@@ -385,13 +376,13 @@ class sfLucene
 
     foreach ($this->getIndexerFactory()->getHandlers() as $handler)
     {
-      
+
       if(!$handler instanceof sfLuceneModelIndexerHandler)
       {
-        
+
         continue;
       }
-      
+
       $handler->rebuildModel($model, $offset, $limit);
     }
 
@@ -402,12 +393,18 @@ class sfLucene
     return $this;
   }
 
+  public function inCLI()
+  {
+    
+    return 0 == strncasecmp(PHP_SAPI, 'cli', 3);
+  }
+
   /**
   * Determines the best mode to use
   */
   public function setAutomaticMode()
   {
-    if ($this->getContext()->getController()->inCLI())
+    if ($this->inCLI())
     {
       $this->setBatchMode();
     }
@@ -468,19 +465,28 @@ class sfLucene
   */
   public function count()
   {
-    return $this->getLucene()->count();
+    
+    return $this->getLuke()->getMaxDoc();
   }
 
+  public function getLuke($reload = true)
+  {
+    if($this->luke == null || $reload)
+    {
+      $this->luke = new sfLuceneLuke($this);
+    }
+    
+    return $this->luke;
+  }
+  
   /**
   * Wrapper for Lucene's numDocs()
   *
-  * @TODO : get the num of documents
   */
   public function numDocs()
   {
-    
-    return 'TODO';
-    //return $this->getLucene()->numDocs();
+
+    return $this->getLuke()->getNumDocs();
   }
 
   /**
@@ -502,21 +508,11 @@ class sfLucene
   }
 
   /**
-  * Returns the size of the index, in bytes.
-  */
-  public function byteSize()
-  {
-    
-    throw new sfException('not implemented');
-  }
-
-  /**
   * Returns the number of segments that the index is in.
   */
   public function segmentCount()
   {
-    
-    
+
     throw new sfException('not implemented');
   }
 
@@ -548,10 +544,14 @@ class sfLucene
       $query = sfLuceneCriteria::newInstance($this)->addString($query);
     }
 
-    
     try
     {
-      $results = $this->getLucene()->search($query->getQuery(), $query->getOffset(), $query->getLimit());
+      $results = $this->getLucene()->search(
+        $query->getQuery(),
+        $query->getOffset(),
+        $query->getLimit(),
+        $query->getParams()
+      );
     }
     catch (Exception $e)
     {

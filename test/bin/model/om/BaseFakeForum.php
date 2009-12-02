@@ -88,7 +88,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 	}
 
 	
-	public function delete($con = null)
+	public function delete(PropelPDO $con = null)
 	{
 
     foreach (sfMixer::getCallables('BaseFakeForum:delete:pre') as $callable)
@@ -127,7 +127,7 @@ abstract class BaseFakeForum extends BaseObject  implements Persistent {
 
   }
 	
-	public function save($con = null)
+	public function save(PropelPDO $con = null)
 	{
 
     foreach (sfMixer::getCallables('BaseFakeForum:save:pre') as $callable)

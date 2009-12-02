@@ -41,6 +41,22 @@ class sfLuceneModelResult extends sfLuceneResult
 
     return 'No title available.';
   }
+  
+  /**
+  * Deduces the title to be displayed in search results.
+  */
+  public function getInternalModel()
+  {
+    $model = $this->retrieveModel();
+
+    if (!$this->result->__isset('sfl_model'))
+    {
+      
+      throw new sfLuceneException('no sfl_model value set for a sfLuceneModelResult instance');
+    }
+    
+    return $this->result->__get('sfl_model');
+  }
 
   /**
   * Gets the URI that this model links to

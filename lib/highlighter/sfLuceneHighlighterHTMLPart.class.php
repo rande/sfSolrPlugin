@@ -24,7 +24,7 @@ class sfLuceneHighlighterHTMLPart extends sfLuceneHighlighterHTML
     $this->partToken = '<!--[[' . md5(__FILE__) . ']]-->';
 
     // convert the data to a full document and we'll remove this part later
-    $this->data = '<html><body>' . $this->partToken . $this->data . $this->partToken . '</body></html>';
+    $this->data = '<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"></head><body>' . $this->partToken . $this->data . $this->partToken . '</body></html>';
 
     parent::prepare();
   }

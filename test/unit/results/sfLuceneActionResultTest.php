@@ -17,15 +17,10 @@
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
 $t = new limeade_test(1, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
 
-$luceneade = new limeade_lucene($limeade);
-$luceneade->configure()->clear_sandbox();
+$lucene = sfLucene::getInstance('index', 'en', $app_configuration);
 
-$lucene = sfLucene::getInstance('testLucene');
-
-class MockResult extends Zend_Search_Lucene_Search_QueryHit
+class MockResult extends Apache_Solr_Document
 {
   public function __construct($a)
   {

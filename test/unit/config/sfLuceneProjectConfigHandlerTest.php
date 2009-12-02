@@ -17,15 +17,10 @@
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
 $t = new limeade_test(2, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
-
-$luceneade = new limeade_lucene($limeade);
-$luceneade->configure()->clear_sandbox()->load_models();
 
 $config = new sfLuceneProjectConfigHandler();
 
-$response = $config->execute(array($luceneade->data_dir . '/configTest/project.yml'));
+$response = $config->execute(array( dirname(__FILE__) . '/../../data/configTest/project.yml'));
 
 file_put_contents(lime_test::get_temp_directory() . '/search.yml.php', $response);
 require lime_test::get_temp_directory() . '/search.yml.php';
@@ -33,7 +28,7 @@ unlink(lime_test::get_temp_directory() . '/search.yml.php');
 
 $t->ok(isset($config), '->execute() creates a $config variable');
 
-$t->is_deeply($config, array (
+$expected = array (
   'testLucene' =>
   array (
     'models' =>
@@ -47,18 +42,30 @@ $t->is_deeply($config, array (
             'type' => 'text',
             'boost' => 1,
             'transform' => NULL,
+            'multiValued' => false,
+            'required' => false,
+            'stored'   => false,
+            'default' => null
           ),
           'title' =>
           array (
             'type' => 'text',
             'boost' => 1,
             'transform' => NULL,
+            'multiValued' => false,
+            'required' => false,
+            'stored'   => false,
+            'default' => null
           ),
           'description' =>
           array (
             'type' => 'text',
             'boost' => 3,
             'transform' => NULL,
+            'multiValued' => false,
+            'required' => false,
+            'stored'   => false,
+            'default' => null
           ),
         ),
         'title' => 'title',
@@ -70,8 +77,9 @@ $t->is_deeply($config, array (
         'route' => 'forum/showForum?id=%id%',
         'validator' => 'isIndexable',
         'rebuild_limit' => 5,
-        'peer' => 'FakeForumPeer',
+        'peer' => 'FakeForumTable',
         'partial' => 'forumResult',
+        'callback' => NULL,
         'indexer' => NULL,
       ),
     ),
@@ -95,6 +103,10 @@ $t->is_deeply($config, array (
       'param' =>
       array (
       ),
+      'host' => 'localhost',
+      'port' => '8983',
+      'base_url' => '/solr',
+
     ),
     'interface' =>
     array (
@@ -121,11 +133,12 @@ $t->is_deeply($config, array (
         array (
         ),
         'partial' => NULL,
+        'callback' => NULL,
         'route' => NULL,
         'indexer' => NULL,
         'title' => NULL,
         'description' => NULL,
-        'peer' => 'FakeModelPeer',
+        'peer' => 'FakeModelTable',
         'rebuild_limit' => 250,
         'validator' => NULL,
         'categories' =>
@@ -138,7 +151,7 @@ $t->is_deeply($config, array (
       'encoding' => 'utf-8',
       'cultures' =>
       array (
-        0 => NULL,
+        0 => 'en',
       ),
       'stop_words' =>
       array (
@@ -160,6 +173,9 @@ $t->is_deeply($config, array (
       'param' =>
       array (
       ),
+      'host' => 'localhost',
+      'port' => '8983',
+      'base_url' => '/solr',
     ),
     'factories' =>
     array (
@@ -181,7 +197,7 @@ $t->is_deeply($config, array (
       'encoding' => 'utf-8',
       'cultures' =>
       array (
-        0 => NULL,
+        0 => 'en',
       ),
       'stop_words' =>
       array (
@@ -203,6 +219,9 @@ $t->is_deeply($config, array (
       'param' =>
       array (
       ),
+      'host' => 'localhost',
+      'port' => '8983',
+      'base_url' => '/solr',
     ),
     'factories' =>
     array (
@@ -213,5 +232,7 @@ $t->is_deeply($config, array (
       array (
       ),
     ),
-  ),
-), '->execute() writes the correct configuration from the YAML file');
+  )
+);
+
+$t->is_deeply($config, $expected, '->execute() writes the correct configuration from the YAML file');

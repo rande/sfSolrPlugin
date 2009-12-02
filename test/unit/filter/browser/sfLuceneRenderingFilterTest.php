@@ -17,8 +17,6 @@
 require dirname(__FILE__) . '/../../../bootstrap/unit.php';
 
 $t = new limeade_test(3, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
 
 class Foo
 {
@@ -30,7 +28,7 @@ class Foo
   }
 }
 
-$context = sfContext::getInstance();
+$context = sfContext::createInstance($app_configuration);
 $context->getResponse()->setContent('foobar 2357');
 
 $filter = new sfLuceneRenderingFilter($context);

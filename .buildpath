@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<buildpath>
+	<buildpathentry kind="src" path="config"/>
+	<buildpathentry kind="src" path="data/skeleton/module/actions"/>
+	<buildpathentry kind="src" path="index_en"/>
+	<buildpathentry kind="src" path="lib"/>
+	<buildpathentry kind="src" path="modules/sfLucene/actions"/>
+	<buildpathentry kind="src" path="modules/sfLucene/lib"/>
+	<buildpathentry kind="src" path="modules/sfLucene/templates"/>
+	<buildpathentry kind="src" path="test"/>
+	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
+</buildpath>

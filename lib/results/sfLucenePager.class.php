@@ -27,14 +27,30 @@ class sfLucenePager
     $search = null,
     $page = 1, 
     $perPage = 5,
-    $lucene_results;
+    $lucene_results,
+    $search_parameters,
+    $must_reload;
 
   public function __construct(sfLuceneResults $lucene_results, $search = null)
   {
 
+    if(!$lucene_results instanceof sfLuceneResults)
+    {
+      
+      throw new sfLuceneException('first arguments must be a sfLuceneResults instance');
+    }
+    
     $this->lucene_results = $lucene_results;
     $this->results = $lucene_results->toArray();
-    $this->search = $search ? $search : $lucene_results->getSearch();
+    $this->search_parameters = $lucene_results->getRawResult()->sf_lucene_search;
+    
+    $this->search = $search === null ? $lucene_results->getSearch() : $search;
+
+    if(!$this->search instanceof sfLucene)
+    {
+      
+      throw new sfLuceneException('second arguments must be a sfLucene instance');
+    }
   }
 
   /**
@@ -57,6 +73,34 @@ class sfLucenePager
     return $this->search;
   }
 
+  protected function reloadFromServer()
+  {
+    if($this->must_reload === false)
+    {
+      
+      return;
+    }
+    
+    $response = $this->getSearch()->getLucene()->search(
+      $this->search_parameters['query'],
+      ($this->getPage() - 1) * $this->search_parameters['limit'],
+      $this->search_parameters['limit'],
+      $this->search_parameters['params'],
+      $this->search_parameters['method']
+    );
+    
+    $this->lucene_results = new sfLuceneResults($response, $this->getSearch()->getLucene());
+
+    $this->results = $this->lucene_results->toArray();
+    
+    $this->must_reload = false;
+  }
+  
+  protected function resetResults()
+  {
+    $this->must_reload = true;
+  }
+  
   public function getLinks($nb_links = 5)
   {
     $links = array();
@@ -101,6 +145,11 @@ class sfLucenePager
       $page = $this->getLastPage();
     }
 
+    if($this->page != $page)
+    {
+      $this->resetResults();
+    }
+    
     $this->page = $page;
   }
 
@@ -111,6 +160,7 @@ class sfLucenePager
 
   public function getResults()
   {
+    $this->reloadFromServer();
     
     return $this->lucene_results;
   }
@@ -118,7 +168,7 @@ class sfLucenePager
   public function getNbResults()
   {
 
-    return $this->lucene_results->getRawResult()->response->numFound;
+    return $this->getResults()->getRawResult()->response->numFound;
   }
 
   public function getFirstPage()

@@ -19,7 +19,9 @@ class sfLuceneHighlighterHTML extends sfLuceneHighlighterXHTML
 {
   protected function prepare()
   {
+    
     $this->document = new DomDocument($this->version, $this->encoding);
+    
     $this->document->loadHTML($this->data);
 
     $this->xpath = new DOMXPath($this->document);

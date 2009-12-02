@@ -16,7 +16,11 @@
   */
 class limeade_sf extends limeade
 {
-  public $project_root, $sf_lib_dir, $sf_data_dir, $app;
+  public 
+    $project_root,
+    $sf_lib_dir,
+    $sf_data_dir,
+    $app;
 
   public $autoload = null;
 

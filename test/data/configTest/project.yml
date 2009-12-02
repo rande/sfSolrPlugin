@@ -13,7 +13,7 @@ testLucene:
       route: "forum/showForum?id=%id%"
       validator: isIndexable
       rebuild_limit: 5
-      peer: FakeForumPeer
+      peer: FakeForumTable
       partial: forumResult
   index:
     encoding: UTF-8

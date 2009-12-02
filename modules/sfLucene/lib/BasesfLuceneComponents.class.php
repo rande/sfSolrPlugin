@@ -43,6 +43,7 @@ abstract class BasesfLuceneComponents extends sfComponents
 
   protected function getLuceneInstance()
   {
-    return sfLuceneToolkit::getApplicationInstance();
+    
+    throw new sfException('Implement this feature with an event dispatcher');
   }
 }

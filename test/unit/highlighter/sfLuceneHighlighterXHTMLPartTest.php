@@ -17,8 +17,6 @@
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
 $t = new limeade_test(3, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
 
 $given = '<p>This is part of a document, dedicated to foobar.</p><p>Look, a foobar</p>';
 $expected = '<p>This is part of a document, dedicated to <h>foobar</h>.</p><p>Look, a <h>foobar</h></p>';
@@ -32,7 +30,7 @@ $highlighter->highlight();
 $t->is($highlighter->export(), $expected, '->highlight() highlights a part of the document and returns just that part');
 
 $given = '<html><body><p>This is part of a document, dedicated to foobar.</p></body></html>';
-$expected = '<html><body><p>This is part of a document, dedicated to <h>foobar</h>.</p></body></html>';
+$expected = '<html xmlns="http://www.w3.org/1999/xhtml"><body><p>This is part of a document, dedicated to <h>foobar</h>.</p></body></html>';
 
 $keyword = new sfLuceneHighlighterKeywordNamed(new sfLuceneHighlighterMarkerSprint('<h>%s</h>'), 'foobar');
 

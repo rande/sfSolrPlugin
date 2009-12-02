@@ -106,7 +106,7 @@ class sfLuceneHighlightFilter extends sfFilter
       $timer->addTime();
 
       $this->getContext()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array($e->getMessage(), 'priority' => sfLogger::WARNING)));
-
+      
       if ($e instanceof sfLuceneHighlighterXMLException)
       {
         $errors = $e->getProblems();
@@ -204,11 +204,7 @@ class sfLuceneHighlightFilter extends sfFilter
 
     if ($css && false !== ($pos = stripos($content, '</head>')))
     {
-
-      sfLoader::loadHelpers(array('Tag', 'Asset'));
-
-      $css = stylesheet_tag($css);
-
+      $css = sprintf('<link rel="stylesheet" type="text/css" media="all" href="%s" />'."\n", $css);
       $this->getContext()->getResponse()->setContent(substr($content, 0, $pos) . $css . substr($content, $pos));
     }
   }

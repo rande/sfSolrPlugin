@@ -17,8 +17,6 @@
 require dirname(__FILE__) . '/../../../bootstrap/unit.php';
 
 $t = new limeade_test(5, limeade_output::get());
-$limeade = new limeade_sf($t);
-$app = $limeade->bootstrap();
 
 class FooFilter extends sfLuceneExecutionFilter
 {
@@ -32,8 +30,10 @@ class FooFilter extends sfLuceneExecutionFilter
 $moduleName = 'test';
 $actionName = 'foo';
 
-$context = sfContext::getInstance();
+$context = sfContext::createInstance($app_configuration);
+
 $actionInstance = $context->getController()->getAction($moduleName, $actionName);
+
 $context->getController()->getActionStack()->addEntry($moduleName, $actionName, $actionInstance);
 
 $filter = new FooFilter($context);
