@@ -112,10 +112,11 @@ class sfLuceneCriteria
     }
     else // string ...
     {
+      
       if($query !== Apache_Solr_Service::escape($query) && !$force)
       {
 
-        throw new sfException('Invalid terms');
+        throw new sfException('Invalid terms : '.$query.' != '.Apache_Solr_Service::escape($query));
       }
     }
     
@@ -127,7 +128,7 @@ class sfLuceneCriteria
   public function addString($query, $type = sfLuceneCriteria::TYPE_AND)
   {
     
-    return $this->add($query, $type);
+    return $this->addSane($query, $type);
   }
 
   /**

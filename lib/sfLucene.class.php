@@ -521,7 +521,7 @@ class sfLucene
   * @param mixed $query The query
   * @return array The array of results
   */
-  public function find($query)
+  public function find($query, $is_sane = false)
   {
     $this->configure();
 
@@ -541,7 +541,18 @@ class sfLucene
     }
     elseif (is_string($query))
     {
-      $query = sfLuceneCriteria::newInstance($this)->addString($query);
+      $criteria = sfLuceneCriteria::newInstance($this);
+      
+      if($is_sane)
+      {
+        $criteria->add($query, sfLuceneCriteria::TYPE_AND, true);
+      }
+      else
+      {
+        $criteria->addString($query);
+      }
+      
+      $query = $criteria;
     }
 
     try
