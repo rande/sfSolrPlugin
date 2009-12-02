@@ -59,6 +59,10 @@ class sfLucene
    */
   protected $luke = null;
 
+  /**
+   * Holds the configuration as set in the search.yml
+   */
+  protected $row_configuration = array();
 
   /**
   * Holder for the instances
@@ -144,14 +148,38 @@ class sfLucene
   /**
   * Returns the name of every registered index.
   */
-  static public function getAllNames(sfApplicationConfiguration $configuration)
+  static public function getAllNames(sfApplicationConfiguration $configuration = null)
   {
+    
+    if($configuration == null)
+    {
+      $configuration = sfProjectConfiguration::getActive();
+    }
+    
     require($configuration->getConfigCache()->checkConfig('config/search.yml'));
 
 
     return array_keys($config);
   }
 
+  /**
+  * Returns the config of every registered index.
+  */
+  static public function getConfig(sfApplicationConfiguration $configuration = null)
+  {
+    
+    if($configuration == null)
+    {
+      $configuration = sfProjectConfiguration::getActive();
+    }
+    
+    require($configuration->getConfigCache()->checkConfig('config/search.yml'));
+
+
+    return $config;
+  }
+  
+  
   public function getPublicName()
   {
 
@@ -176,7 +204,7 @@ class sfLucene
 
     $config = $config[$holder->get('name')];
 
-    foreach (array('encoding', 'cultures' => 'enabled_cultures', 'stop_words', 'short_words', 'analyzer', 'case_sensitive', 'mb_string', 'host', 'port', 'base_url') as $key => $param)
+    foreach (array('encoding', 'cultures' => 'enabled_cultures', 'mb_string', 'host', 'port', 'base_url') as $key => $param)
     {
 
       if (is_int($key))
@@ -216,7 +244,8 @@ class sfLucene
       $data->set('categories', $model['categories']);
       $data->set('route', $model['route']);
       $data->set('callback', $model['callback']);
-
+      $data->set('alias', $model['alias']);
+      
       $models->set($name, $data);
     }
 
@@ -230,8 +259,16 @@ class sfLucene
     {
       throw new sfLuceneException(sprintf('Culture "%s" is not enabled.', $holder->get('culture')));
     }
+    
+    $this->raw_configuration = $config;
   }
 
+  public function getRawConfiguration()
+  {
+    
+    return $this->raw_configuration;
+  }
+  
   public function setParameter($key, $value)
   {
     $this->parameters->set($key, $value);

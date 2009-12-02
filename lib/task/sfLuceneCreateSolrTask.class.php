@@ -48,8 +48,7 @@ EOF;
     $this->checkAppExists($app);
     $this->standardBootstrap($app, $options['env']);
 
-    $this->createConfigFiles(sfLucene::getConfig());
-
+    $this->createConfigFiles(sfLucene::getConfig($this->configuration));
   }
 
 
@@ -58,7 +57,7 @@ EOF;
     
     $core_options = array();
     
-    $fs = new sfFilesystem($this->dispatcher, $this->formatter);
+    $fs = $this->getFilesystem();
     
     $base_solr_config_dir = sfConfig::get('sf_config_dir').'/solr';
     

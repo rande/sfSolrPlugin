@@ -184,8 +184,9 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
     {
       $field_properties = $properties->get('fields')->get($field);
 
+      $getter = $field_properties->get('alias') ? $field_properties->get('alias') : 'get' . sfInflector::camelize($field);
+      
       // build getter by converting from underscore case to camel case
-      $getter = 'get' . sfInflector::camelize($field);
       try
       {
         $value = $this->getModel()->$getter();

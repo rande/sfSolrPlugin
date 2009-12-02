@@ -24,6 +24,7 @@ $response = $config->execute(array( dirname(__FILE__) . '/../../data/configTest/
 
 file_put_contents(sys_get_temp_dir()  . '/search.yml.php', $response);
 require sys_get_temp_dir()  . '/search.yml.php';
+
 unlink(sys_get_temp_dir()  . '/search.yml.php');
 
 $t->ok(isset($config), '->execute() creates a $config variable');
@@ -45,7 +46,8 @@ $expected = array (
             'multiValued' => false,
             'required' => false,
             'stored'   => false,
-            'default' => null
+            'default' => null,
+            'alias' => NULL,
           ),
           'title' =>
           array (
@@ -55,7 +57,8 @@ $expected = array (
             'multiValued' => false,
             'required' => false,
             'stored'   => false,
-            'default' => null
+            'default' => null,
+            'alias' => NULL,
           ),
           'description' =>
           array (
@@ -65,7 +68,8 @@ $expected = array (
             'multiValued' => false,
             'required' => false,
             'stored'   => false,
-            'default' => null
+            'default' => null,
+            'alias' => NULL,
           ),
         ),
         'title' => 'title',
@@ -91,14 +95,6 @@ $expected = array (
         0 => 'en',
         1 => 'fr',
       ),
-      'stop_words' =>
-      array (
-        0 => 'and',
-        1 => 'the',
-      ),
-      'short_words' => 2,
-      'analyzer' => 'utf8num',
-      'case_sensitive' => false,
       'mb_string' => true,
       'param' =>
       array (
@@ -153,22 +149,6 @@ $expected = array (
       array (
         0 => 'en',
       ),
-      'stop_words' =>
-      array (
-        0 => 'a',
-        1 => 'an',
-        2 => 'at',
-        3 => ' the',
-        4 => 'and',
-        5 => 'or',
-        6 => 'is',
-        7 => 'am',
-        8 => 'are',
-        9 => 'of',
-      ),
-      'short_words' => 2,
-      'analyzer' => 'textnum',
-      'case_sensitive' => false,
       'mb_string' => false,
       'param' =>
       array (
@@ -199,22 +179,6 @@ $expected = array (
       array (
         0 => 'en',
       ),
-      'stop_words' =>
-      array (
-        0 => 'a',
-        1 => 'an',
-        2 => 'at',
-        3 => ' the',
-        4 => 'and',
-        5 => 'or',
-        6 => 'is',
-        7 => 'am',
-        8 => 'are',
-        9 => 'of',
-      ),
-      'short_words' => 2,
-      'analyzer' => 'textnum',
-      'case_sensitive' => false,
       'mb_string' => false,
       'param' =>
       array (
@@ -235,4 +199,26 @@ $expected = array (
   )
 );
 
-$t->is_deeply($config, $expected, '->execute() writes the correct configuration from the YAML file');
+if($config != $expected)
+{
+  // expected file
+  $expected_file = sys_get_temp_dir()  . '/search.yml.php.expected';
+  file_put_contents($expected_file, var_export($expected, 1));
+
+  // config file
+  $config_file = sys_get_temp_dir()  . '/search.yml.php';
+  file_put_contents($config_file, var_export($config, 1));
+  
+  $cmd = sprintf('diff -y %s %s', $expected_file, $config_file);
+  system($cmd);
+  
+  $t->fail('->execute() writes the correct configuration from the YAML file');
+  
+  unlink($expected_file);
+  unlink($config_file);
+}
+else
+{
+  $t->pass('->execute() writes the correct configuration from the YAML file');
+}
+

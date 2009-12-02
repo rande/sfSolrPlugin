@@ -86,13 +86,15 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
 
             if (is_array($field))
             {
-              $type = isset($field['type']) ? $field['type'] : null;
-              $stored = isset($field['stored']) ? $field['stored'] : null;
+              $type         = isset($field['type']) ? $field['type'] : null;
+              $stored       = isset($field['stored']) ? $field['stored'] : null;
               $multi_valued = isset($field['multiValued']) ? $field['multiValued'] : null;
-              $required = isset($field['required']) ? $field['required'] : null;
-              $boost = isset($field['boost']) ? $field['boost'] : null;
-              $transform = isset($field['transform']) ? $field['transform'] : null;
-              $default = isset($field['default']) ? $field['default'] : null;
+              $required     = isset($field['required']) ? $field['required'] : null;
+              $boost        = isset($field['boost']) ? $field['boost'] : null;
+              $transform    = isset($field['transform']) ? $field['transform'] : null;
+              $default      = isset($field['default']) ? $field['default'] : null;
+              $alias        = isset($field['alias']) ? $field['alias'] : null;
+              
             }
             elseif (empty($field))
             {
@@ -103,21 +105,22 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
               $type = $field;
             }
 
-            $type = $type ? $type : 'text';
-            $boost = $boost ? $boost : 1.0;
-            $transform = $transform || count($transform) ? $transform : null;
+            $type         = $type ? $type : 'text';
+            $boost        = $boost ? $boost : 1.0;
+            $transform    = $transform || count($transform) ? $transform : null;
             $multi_valued = $multi_valued ? $multi_valued : false;
-            $stored = $stored ? $stored : false;
-            $required = $required ? $required : false;
+            $stored       = $stored ? $stored : false;
+            $required     = $required ? $required : false;
             
             $field = array(
-              'type' => $type,
-              'boost' => $boost,
+              'type'      => $type,
+              'boost'     => $boost,
               'transform' => $transform,
               'multiValued' => $multi_valued,
-              'required' => $required,
-              'stored' => $stored,
-              'default' => $default
+              'required'  => $required,
+              'stored'    => $stored,
+              'default'   => $default,
+              'alias'     => $alias
             );
           }
         }
@@ -165,7 +168,7 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
         {
           $model_config['rebuild_limit'] = 250;
         }
-
+        
         if (!isset($model_config['validator']))
         {
           $model_config['validator'] = null;
@@ -184,10 +187,6 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
 
     $encoding = isset($config['index']['encoding']) ? $config['index']['encoding'] : 'utf-8';
     $cultures = isset($config['index']['cultures']) ? $config['index']['cultures'] : array(sfConfig::get('sf_default_culture'));
-    $stop_words = isset($config['index']['stop_words']) ? $config['index']['stop_words'] : array('a', 'an', 'at',' the', 'and', 'or', 'is', 'am', 'are', 'of');
-    $short_words = isset($config['index']['short_words']) ? $config['index']['short_words'] : 2;
-    $analyzer = isset($config['index']['analyzer']) ? $config['index']['analyzer'] : 'textnum';
-    $case_sensitive = isset($config['index']['case_sensitive']) ? $config['index']['case_sensitive'] : false;
     $mb_string = isset($config['index']['mb_string']) ? $config['index']['mb_string'] : false;
     $param = isset($config['index']['param']) ? $config['index']['param'] : array();
     
@@ -198,10 +197,6 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
     $config['index'] = array(
       'encoding' => $encoding,
       'cultures' => $cultures,
-      'stop_words' => $stop_words,
-      'short_words' => $short_words,
-      'analyzer' => $analyzer,
-      'case_sensitive' => (bool) $case_sensitive,
       'mb_string' => (bool) $mb_string,
       'param' => $param,
       'host' => $host,
