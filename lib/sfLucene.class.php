@@ -244,7 +244,6 @@ class sfLucene
       $data->set('categories', $model['categories']);
       $data->set('route', $model['route']);
       $data->set('callback', $model['callback']);
-      $data->set('alias', $model['alias']);
       
       $models->set($name, $data);
     }
