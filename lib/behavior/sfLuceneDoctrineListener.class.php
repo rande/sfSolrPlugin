@@ -72,8 +72,11 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
       return;
     }
     
-    sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->identifier()))));
-
+    if(sfContext::hasInstance())
+    {
+      sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->identifier()))));
+    }
+    
     foreach ($this->getSearchInstances($node) as $instance)
     {
       $instance->getIndexerFactory()->getModel($node)->delete();
@@ -91,8 +94,11 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
       return;
     }
 
-    sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->identifier()))));
-  
+    if(sfContext::hasInstance())
+    {
+      sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->identifier()))));
+    }
+    
     foreach ($this->getSearchInstances($node) as $instance)
     {
       $instance->getIndexerFactory()->getModel($node)->insert();
@@ -142,7 +148,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
         {
           foreach ($item['index']['cultures'] as $culture)
           {
-            $instances[$class][] = sfLucene::getInstance($name, $culture);
+            $instances[$class][] = sfLucene::getInstance($name, $culture, sfProjectConfiguration::getActive());
           }
         }
       }

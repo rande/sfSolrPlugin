@@ -185,7 +185,7 @@ class sfLucenePropelBehavior
           foreach ($item['index']['cultures'] as $culture)
           {
             // store instance
-            $instances[$class][] = sfLucene::getInstance($name, $culture);
+            $instances[$class][] = sfLucene::getInstance($name, $culture, sfProjectConfiguration::getActive());
           }
         }
       }
