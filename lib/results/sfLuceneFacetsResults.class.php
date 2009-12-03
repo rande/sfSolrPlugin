@@ -35,6 +35,32 @@ class sfLuceneFacetsResults extends sfLuceneResults
 
     return $this->getFacetsField('facet_fields');
   }
+
+  public function getFacetQuery($name)
+  {
+    $facets =  $this->getFacetQueries();
+    
+    if(!$facets || !isset($facets[$name]))
+    {
+      
+      return null;
+    }
+    
+    return $facets[$name];
+  }
+  
+  public function getFacetField($name)
+  {
+    $facets =  $this->getFacetFields();
+    
+    if(!$facets || !isset($facets[$name]))
+    {
+      
+      return null;
+    }
+    
+    return $facets[$name];
+  }
   
   public function getFacetsField($facet_field_name)
   {

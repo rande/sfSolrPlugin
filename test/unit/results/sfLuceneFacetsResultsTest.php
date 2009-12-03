@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new limeade_test(2, limeade_output::get());
+$t = new limeade_test(7, limeade_output::get());
 
 
 class MockResult extends Apache_Solr_Document
@@ -54,11 +54,18 @@ $search = sfLucene::getInstance('index', 'en', $app_configuration);
 
 $results = new sfLuceneFacetsResults($response, $search);
 
+
+$t->diag('testing facet queries');
+
 $expected_queries = array(
   "name:[a TO z]" => 3,
 );
-$t->is_deeply($results->getFacetQueries(), $expected_queries, '->getFacetQueries() returns the expected array');
 
+$t->is_deeply($results->getFacetQueries(), $expected_queries, '->getFacetQueries() returns the expected array');
+$t->is_deeply($results->getFacetQuery("name:[a TO z]"), 3, '->getFacetQuery() returns the expected value');
+$t->is_deeply($results->getFacetQuery("non_existant_facet"), null, '->getFacetQuery() return correct value on non existant facet');
+
+$t->diag('testing facet fields');
 $expected_fields = array(
   'sfl_model' => array(
     "User" => 1,
@@ -66,3 +73,9 @@ $expected_fields = array(
   )
 );
 $t->is_deeply($results->getFacetFields(), $expected_fields, '->getFacetFields() returns the expected array');
+$t->cmp_ok($results->getFacetsField('non_existant_field'), '===', null, '->getFacetsField() return null on non existant field');
+
+$t->is_deeply($results->getFacetField('sfl_model'), array("User" => 1, "Group" => 2,), '->getFacetField() return correct facet\'s value');
+$t->is_deeply($results->getFacetField('non_existant_facet'), null, '->getFacetField() return correct value on non existant facet');
+
+

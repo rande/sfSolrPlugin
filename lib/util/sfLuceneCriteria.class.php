@@ -38,9 +38,8 @@ class sfLuceneCriteria
     TYPE_AND = 'AND',
     TYPE_OR  = 'OR';
   
-  public function __construct($search)
+  public function __construct()
   {
-    $this->search = $search;
     $this->query = '';
   }
 
@@ -81,9 +80,9 @@ class sfLuceneCriteria
    * 
    * @return sfLuceneCriteria
    */
-  static public function newInstance(sfLucene $search)
+  static public function newInstance()
   {
-    return new self($search);
+    return new self;
   }
 
   /**
@@ -401,7 +400,7 @@ class sfLuceneCriteria
    */
   public function getNewCriteria()
   {
-    return new self($this->search);
+    return new self;
   }
   
   public static function sanitize($keyword)

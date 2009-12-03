@@ -22,27 +22,27 @@ class Foo { }
 
 function inst($app_configuration)
 {
-  return sfLuceneCriteria::newInstance(sfLucene::getInstance('index','en', $app_configuration));
+  return sfLuceneCriteria::newInstance();
 }
 
 $t->diag('testing constructors');
 try {
-  $criteria = new sfLuceneFacetsCriteria(sfLucene::getInstance('index','en', $app_configuration));
+  $criteria = new sfLuceneFacetsCriteria();
   $t->pass('__construct() takes a sfLucene instance');
 } catch (Exception $e) {
   $t->fail('__construct() takes a sfLuce instance');
 }
-$t->isa_ok(sfLuceneFacetsCriteria::newInstance(sfLucene::getInstance('index','en', $app_configuration)), 'sfLuceneFacetsCriteria', '::newInstance() returns an sfLuceneFacetsCriteria object');
+$t->isa_ok(sfLuceneFacetsCriteria::newInstance(), 'sfLuceneFacetsCriteria', '::newInstance() returns an sfLuceneFacetsCriteria object');
 
 $t->diag('testing ->getQuery()');
 $t->ok(is_string($criteria->getQuery()), '->getQuery() returns an instance a string');
 
 
-$criteria->addField('language');
-$criteria->addField('task');
+$criteria->addFacetField('language');
+$criteria->addFacetField('task');
 
-$criteria->addQuery('price:[0 TO 100]');
-$criteria->addQuery('price:[100 TO 200]');
+$criteria->addFacetQuery('price:[0 TO 100]');
+$criteria->addFacetQuery('price:[100 TO 200]');
 
 $expected = array (
   'facet' => array (
@@ -60,9 +60,9 @@ $expected = array (
 
 $t->is_deeply($criteria->getParams(), $expected, '->getParams() return the parameters array');
 
-$t->diag('testing ->addField() and ->addQuery() reset');
-$criteria->addField('another_field', true);
-$criteria->addQuery('the_price:[0 TO 100]', true);
+$t->diag('testing ->addFacetField() and ->addFacetQuery() reset');
+$criteria->addFacetField('another_field', true);
+$criteria->addFacetQuery('the_price:[0 TO 100]', true);
 
 $expected = array (
   'facet' => array (

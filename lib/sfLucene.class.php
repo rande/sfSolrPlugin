@@ -577,7 +577,7 @@ class sfLucene
     }
     elseif (is_string($query))
     {
-      $criteria = sfLuceneCriteria::newInstance($this);
+      $criteria = sfLuceneCriteria::newInstance();
       
       if($is_sane)
       {

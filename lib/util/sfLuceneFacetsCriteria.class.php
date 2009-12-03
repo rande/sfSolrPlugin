@@ -24,9 +24,9 @@
 class sfLuceneFacetsCriteria extends sfLuceneCriteria
 {
   
-  public function __construct($search)
+  public function __construct()
   {
-    parent::__construct($search);
+    parent::__construct();
     
     $this->addParam('facet', 'true');
   }
@@ -37,7 +37,7 @@ class sfLuceneFacetsCriteria extends sfLuceneCriteria
    * @param string $name
    * @return sfLuceneFacetsCriteria
    */
-  public function addField($name, $reset = false)
+  public function addFacetField($name, $reset = false)
   {
     $this->addParam('facet.field', $name, $reset);
     
@@ -50,7 +50,7 @@ class sfLuceneFacetsCriteria extends sfLuceneCriteria
    * @param string $name
    * @return sfLuceneFacetsCriteria
    */
-  public function addQuery($name, $reset = false)
+  public function addFacetQuery($name, $reset = false)
   {
     $this->addParam('facet.query', $name, $reset);
     

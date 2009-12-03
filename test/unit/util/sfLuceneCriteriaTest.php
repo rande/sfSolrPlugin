@@ -16,23 +16,18 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new limeade_test(27, limeade_output::get());
+$t = new limeade_test(26, limeade_output::get());
 
 class Foo { }
 
-function inst($app_configuration)
+function inst()
 {
-  return sfLuceneCriteria::newInstance(sfLucene::getInstance('index','en', $app_configuration));
+  return sfLuceneCriteria::newInstance();
 }
 
-$t->diag('testing constructors');
-try {
-  $criteria = new sfLuceneCriteria(sfLucene::getInstance('index','en', $app_configuration));
-  $t->pass('__construct() takes a sfLucene instance');
-} catch (Exception $e) {
-  $t->fail('__construct() takes a sfLuce instance');
-}
-$t->isa_ok(sfLuceneCriteria::newInstance(sfLucene::getInstance('index','en', $app_configuration)), 'sfLuceneCriteria', '::newInstance() returns an sfLuceneCriteria object');
+$t->isa_ok(sfLuceneCriteria::newInstance(), 'sfLuceneCriteria', '::newInstance() returns an sfLuceneCriteria object');
+
+$criteria = inst();
 
 $t->diag('testing ->getQuery()');
 $t->ok(is_string($criteria->getQuery()), '->getQuery() returns an instance a string');
@@ -42,21 +37,21 @@ $t->diag('testing ->add()');
 $criteria->add('test', sfLuceneCriteria::TYPE_AND);
 $t->pass('->add() accepts a string');
 
-$queries = inst($app_configuration)->add('foo')->add('bar')->getQuery();
+$queries = inst()->add('foo')->add('bar')->getQuery();
 $t->cmp_ok($queries, '===', 'foo AND bar', '->add() correctly parses and adds text queries');
 
-$queries = inst($app_configuration)->add('foo')->add('bar', sfLuceneCriteria::TYPE_OR)->getQuery();
+$queries = inst()->add('foo')->add('bar', sfLuceneCriteria::TYPE_OR)->getQuery();
 $t->cmp_ok($queries, '===', 'foo OR bar', '->add() correctly parses and adds text queries');
 
-$query = inst($app_configuration);
+$query = inst();
 $query->add('foo');
 
 $criteria->add($query, null);
 $t->pass('->add() accepts sfLuceneCriteria');
 
-$luceneQuery = inst($app_configuration)->add($query);
+$luceneQuery = inst()->add($query);
 $luceneQuery->add('bar', sfLuceneCriteria::TYPE_OR);
-$subqueries = inst($app_configuration)->add($luceneQuery)->getQuery();
+$subqueries = inst()->add($luceneQuery)->getQuery();
 
 $t->cmp_ok($subqueries, '==', '((foo) OR bar)', '->getQuery() correctly combines sfLuceneCriteria queries');
 
@@ -78,7 +73,7 @@ $t->diag('testing ->addString()');
 
 $criteria->add('test');
 
-$queries = inst($app_configuration)->addString('foobar')->getQuery();
+$queries = inst()->addString('foobar')->getQuery();
 $t->cmp_ok($queries, '===', $queries , '->addString() correctly parses and adds string queries');
 
 $t->diag('testing ->addSane()');
@@ -110,29 +105,29 @@ try {
 
 $t->diag('testing addWildcard()');
 
-$s = inst($app_configuration)->addWildcard('foo*')->getQuery();
+$s = inst()->addWildcard('foo*')->getQuery();
 $t->cmp_ok($s, '===', '"foo*"', '->addWildcard() registers the correct query with mutlitple character wildcards');
 
-$s = inst($app_configuration)->addWildcard('f?o')->getQuery();
+$s = inst()->addWildcard('f?o')->getQuery();
 $t->cmp_ok($s, '===', '"f?o"', '->addWildcard() registers the correct query with single character wildcards');
 
-$s = inst($app_configuration)->addWildcard('foo* baz?')->getQuery();
+$s = inst()->addWildcard('foo* baz?')->getQuery();
 $t->cmp_ok($s, '===', '"foo* baz?"', '->addWildcard() registers the correct query with mixing character wildcards');
 
 $t->diag('testing addPhrase()');
-$s = inst($app_configuration)->addPhrase("foo bar")->getQuery();
+$s = inst()->addPhrase("foo bar")->getQuery();
 
 $t->ok($s == '"foo bar"', '->addPhrase() registers the correct simple phrase query');
 
 $t->diag('testing addRange()');
 
-$s = inst($app_configuration)->addRange('a', 'b')->getQuery();
+$s = inst()->addRange('a', 'b')->getQuery();
 $t->cmp_ok($s, '===', '[a TO b]', '->addRange() registers a simple, two-way range');
 
-$s = inst($app_configuration)->addRange('a')->getQuery();
+$s = inst()->addRange('a')->getQuery();
 $t->cmp_ok($s, '===', '[a TO *]', '->addRange() registers a simple, one-way forward range');
 
-$s = inst($app_configuration)->addRange(null, 'b')->getQuery();
+$s = inst()->addRange(null, 'b')->getQuery();
 $t->cmp_ok($s, '===', '[* TO b]', '->addRange() registers a simple, one-way backward range');
 
 try {
@@ -145,25 +140,25 @@ try {
 $t->diag('testing addProximity()');
 
 try {
-  inst($app_configuration)->addProximity(37.7752, -122.4192, 0);
+  inst()->addProximity(37.7752, -122.4192, 0);
   $t->fail('->addProximity() rejects a zero proximity');
 } catch (Exception $e) {
   $t->pass('->addProximity() rejects a zero proximity');
 }
 
 try {
-  inst($app_configuration)->addProximity(37.7752, -122.4192, 90, 0);
+  inst()->addProximity(37.7752, -122.4192, 90, 0);
   $t->fail('->addProximity() rejects a zero radius');
 } catch (Exception $e) {
   $t->pass('->addProximity() rejects a zero radius');
 }
 
 // not sure this test is fine ... float computation might differ from cpu to cpu
-$s = inst($app_configuration)->addProximity(37.7752, -122.4192, 200)->getQuery();
+$s = inst()->addProximity(37.7752, -122.4192, 200)->getQuery();
 $expected = '(latitude:[35.9785590093 TO 39.5718409907] AND longitude:[-124.6922199992 TO -120.1461800008])';
 $t->cmp_ok($s, '===', $expected, '->addProximity()');
 
 
 $t->diag('testing getNewCriteria()');
 
-$t->isa_ok(inst($app_configuration)->getNewCriteria(), 'sfLuceneCriteria', '->getNewCriteria() returns a new instance of sfLuceneCriteria');
+$t->isa_ok(inst()->getNewCriteria(), 'sfLuceneCriteria', '->getNewCriteria() returns a new instance of sfLuceneCriteria');
