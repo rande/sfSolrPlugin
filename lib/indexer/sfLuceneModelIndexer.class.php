@@ -184,28 +184,8 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
     {
       $field_properties = $properties->get('fields')->get($field);
 
-      $getter = $field_properties->get('alias') ? $field_properties->get('alias') : 'get' . sfInflector::camelize($field);
+      $value = $this->getFieldValue($field, $field_properties);
       
-      // build getter by converting from underscore case to camel case
-      try
-      {
-        $value = $this->getModel()->$getter();
-      }
-      catch(Doctrine_Record_Exception $e)
-      {
-      
-        // some fields can be only used as a definition
-        // and used in the callback method
-        if(!$properties->get('callback'))
-        {
-          throw $e;
-        }
-        else
-        {
-          continue;
-        }
-      }
-     
       $type = $field_properties->get('type');
       $boost = $field_properties->get('boost');
 
@@ -217,6 +197,10 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
       elseif (is_null($value))
       {
         $value = '';
+      }
+      elseif (is_array($value) && $field_properties->get('multiValued'))
+      {
+        // nothing to do ;)
       }
       elseif (!is_scalar($value))
       {
@@ -230,13 +214,27 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
         {
           throw new sfLuceneIndexerException('Transformation function ' . $transform . ' does not exist');
         }
-
-        $value = call_user_func($transform, $value);
+      }
+      
+      if(!is_array($value))
+      {
+        $value = array($value);
       }
 
-      $doc->addField($field, $value, $boost);
+      foreach($value as $v)
+      {
+        if($transform)
+        {
+           $v = call_user_func($transform, $v);
+        }
+        
+        $doc->addField($field, $v, $boost);
+      }
+      
     }
 
     return $doc;
   }
+  
+  abstract public function getFieldValue($field, $properties);
 }

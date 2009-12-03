@@ -64,8 +64,6 @@ class sfLuceneFacetsResults extends sfLuceneResults
   
   public function getFacetsField($facet_field_name)
   {
-    
-    
     // The underline library convert the json into a stdClass object
     // There is no other choice for now, sorry for this code ...
     if($this->facets_fields == null)

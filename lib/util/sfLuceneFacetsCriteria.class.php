@@ -62,8 +62,8 @@ class sfLuceneFacetsCriteria extends sfLuceneCriteria
    * 
    * @return sfLuceneCriteria
    */
-  static public function newInstance(sfLucene $search)
+  static public function newInstance()
   {
-    return new self($search);
+    return new self;
   }
 }

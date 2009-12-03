@@ -158,4 +158,49 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
   {
     return NULL;
   }
+  
+  public function getFieldValue($field, $properties)
+  {
+  
+    $getter = $properties->get('alias') ? $properties->get('alias') : 'get' . sfInflector::camelize($field);
+    
+    // build getter by converting from underscore case to camel case
+    try
+    {
+      $value = $this->getModel()->$getter();
+    }
+    catch(Doctrine_Record_Exception $e)
+    {
+    
+      // some fields can be only used as a definition
+      // and used in the callback method
+      if(!$properties->get('callback'))
+      {
+        throw $e;
+      }
+      else
+      {
+        $value = null;
+      }
+    }
+
+    if($value instanceof Doctrine_Collection && !$properties->get('multiValued'))
+    {
+      
+      throw new sfException('You cannot store a Doctrine_Collection with multiValued=false');
+    }
+    
+    if($value instanceof Doctrine_Collection && $properties->get('multiValued'))
+    {
+      $values = array();
+      foreach($value as $object)
+      {
+        $values[] = $object->__toString();
+      }
+      
+      return $values;
+    }
+    
+    return $value;
+  }
 }
