@@ -563,19 +563,7 @@ class sfLucene
 
     $timer = sfTimerManager::getTimer('Solr Search Lucene Find');
 
-    $sort = array();
-    $scoring = null;
-
-    if ($query instanceof sfLuceneCriteria)
-    {
-      foreach ($query->getSorts() as $sortable)
-      {
-        $sort[] = $sortable['field'];
-        $sort[] = $sortable['type'];
-        $sort[] = $sortable['order'];
-      }
-    }
-    elseif (is_string($query))
+    if(is_string($query))
     {
       $criteria = sfLuceneCriteria::newInstance();
       

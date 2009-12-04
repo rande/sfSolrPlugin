@@ -14,7 +14,7 @@
   * @version SVN: $Id$
   */
 
-// require dirname(__FILE__) . '/../../bootstrap/unit.php';
+//require dirname(__FILE__) . '/../../bootstrap/unit.php';
 // require dirname(__FILE__) . '/../../bin/AllFakeModels.php';
 // 
 // class Foo { }

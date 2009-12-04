@@ -41,35 +41,75 @@ class sfLuceneCriteria
   public function __construct()
   {
     $this->query = '';
+    
+    $this->select('*,score');     // default selection
+    $this->sortBy('score', 'desc');  // always sort by relevance
   }
 
+  /**
+   * set the limit
+   * 
+   * @return sfLuceneCriteria
+   */
   public function setLimit($limit)
   {
     $this->limit = $limit;
+    
+    return $this;
   }
-  
+
+  /**
+   * Return the defined limit
+   * 
+   * @return int
+   */
   public function getLimit()
   {
     return $this->limit;
   }
 
+  
+  /**
+   * set the path to the remote request handler
+   * 
+   * @return sfLuceneCriteria
+   */
   public function setPath($path)
   {
 
     $this->path = $path;
+    
+    return  $this;
   }
 
+  /**
+   * Return the defined path
+   * 
+   * @return string
+   */
   public function getPath()
   {
 
     return $this->path;
   }
   
+  /**
+   * set the offset
+   * 
+   * @return sfLuceneCriteria
+   */
   public function setOffset($offset)
   {
     $this->offset = $offset;
+    
+    return $this;
   }
   
+  /**
+   * Return the defined offset
+   * 
+   * @return int
+   */
   public function getOffset()
   {
     return $this->offset;
@@ -124,6 +164,15 @@ class sfLuceneCriteria
     return $this;
   }
   
+  /**
+   * equivalent to addSane
+   * 
+   * Add a subquery to the query itself. The phrase will be automatically sanitized
+   *
+   * @param string $phrase
+   * @param string $type : OR | AND operator
+   * @return sfLuceneCriteria
+   */
   public function addString($query, $type = sfLuceneCriteria::TYPE_AND)
   {
     
@@ -134,6 +183,7 @@ class sfLuceneCriteria
    * Add a subquery to the query itself. The phrase will be automatically sanitized
    *
    * @param string $phrase
+   * @param string $type : OR | AND operator
    * @return sfLuceneCriteria
    *
    */
@@ -283,13 +333,14 @@ class sfLuceneCriteria
    * Add a parameter to the solr query, a parameter is an solr option
    *  - fq : filtering option
    *  - qt : the query handler name
-   *
+   *  - fl : fields to return (coma separated)
+   *  
    * Any parameters will be appended to the query string
    *
    * @param string $name
    * @param string $value
    * @param boolean $reset
-   *
+   * @return sfLuceneCriteria
    */
   public function addParam($name, $value, $reset = false)
   {
@@ -304,6 +355,13 @@ class sfLuceneCriteria
     return $this;
   }
 
+  /**
+   * define a parameter, always erase old value
+   * 
+   * @param string $name
+   * @param mixed $value
+   * @return sfLuceneCriteria
+   */
   public function setParam($name, $value)
   {
 
@@ -311,11 +369,9 @@ class sfLuceneCriteria
   }
 
   /**
-   *
    * Extra parameters send to solr
    *
    * @return array
-   *
    */
   public function getParams()
   {
@@ -323,6 +379,24 @@ class sfLuceneCriteria
     return $this->params;
   }
 
+  /**
+   * define the field to use
+   * 
+   * @param string $field comma separated list of field
+   * @return unknown_type
+   */
+  public function select($field)
+  {
+    
+    $this->setParam('fl', $field);
+  }
+  /**
+   * return the value of one parameter
+   * 
+   * @param $name parameter name
+   * @param $default default value
+   * @return mixed
+   */
   public function getParam($name, $default = null)
   {
 
@@ -358,7 +432,7 @@ class sfLuceneCriteria
   /**
    * 
    * @param string $field
-   * @param interger $type
+   * @param integer $type
    * 
    * @return sfLuceneCriteria
    */  
@@ -372,6 +446,22 @@ class sfLuceneCriteria
 
     return $this;
   }
+  
+  /**
+   * 
+   * @param string $field
+   * @param integer $type
+   * 
+   * @return sfLuceneCriteria
+   */  
+  public function sortBy($field, $order = SORT_ASC)
+  {
+
+    $add_sort = sprintf("%s %s", $field, $order == SORT_ASC ? 'asc' : 'desc');
+    $this->setParam('sort',  $add_sort);
+
+    return $this;
+  }
 
   /**
    * Returns a string query that can be fed directly to Lucene
@@ -380,17 +470,21 @@ class sfLuceneCriteria
    */
   public function getQuery()
   {
+    
     return $this->query;
   }
 
+  /**
+   * return the sort option
+   * 
+   * @return string
+   */
   public function getSorts()
   {
-    return $this->getParam('sort', array());
-  }
-
-  public function getScoringAlgorithm()
-  {
-    return $this->scoring;
+    
+    $sort = $this->getParam('sort', array(''));
+    
+    return $sort[0];
   }
 
   /**
@@ -400,9 +494,16 @@ class sfLuceneCriteria
    */
   public function getNewCriteria()
   {
+    
     return new self;
   }
   
+  /**
+   * sanitize a phrase to be correctly handler by the solr engine
+   * 
+   * @param string $keyword
+   * @return string
+   */
   public static function sanitize($keyword)
   {
 

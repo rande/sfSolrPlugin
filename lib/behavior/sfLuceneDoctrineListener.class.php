@@ -49,7 +49,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
         sfContext::getInstance()->getLogger()->crit('{sfLuceneDoctrineListener::postSave} Error while deleting document to solr : '.$e->getMessage());
       }
     }
-    
+
   }
 
   /**
@@ -62,8 +62,8 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
   }
 
   /**
-  * Deletes the old model
-  */
+   * Deletes the old model
+   */
   public function deleteIndex($node)
   {
     if(sfConfig::get('app_sfLucene_disable_listener', false))
@@ -71,12 +71,12 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
 
       return;
     }
-    
+
     if(sfContext::hasInstance())
     {
       sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->identifier()))));
     }
-    
+
     foreach ($this->getSearchInstances($node) as $instance)
     {
       $instance->getIndexerFactory()->getModel($node)->delete();
@@ -84,8 +84,8 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
   }
 
   /**
-  * Adds the new model
-  */
+   * Adds the new model
+   */
   public function insertIndex($node)
   {
     if(sfConfig::get('app_sfLucene_disable_listener', false))
@@ -98,7 +98,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
     {
       sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->identifier()))));
     }
-    
+
     foreach ($this->getSearchInstances($node) as $instance)
     {
       $instance->getIndexerFactory()->getModel($node)->insert();
@@ -124,7 +124,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
     static $instances;
 
     $class = get_class($node);
-    
+
     if (!isset($instances))
     {
       $instances = array();
@@ -138,7 +138,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
       foreach ($config as $name => $item)
       {
         $inheritance_class = $this->getInheritanceClass($node, $item);
-        
+
         if(!$inheritance_class)
         {
           throw new sfException('Cannot find the correct inheritance class for the object type : '.get_class($node));
@@ -158,8 +158,8 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
   }
 
   /**
-  * Returns the behavior initializer
-  */
+   * Returns the behavior initializer
+   */
   static public function getInitializer()
   {
     return sfLuceneDoctrineInitializer::getInstance();

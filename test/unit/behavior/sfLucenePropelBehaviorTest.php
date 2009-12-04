@@ -17,9 +17,11 @@
 // NOTE : For now Propel implementation is not tested / supported  
   
 // 
-// require dirname(__FILE__) . '/../../bootstrap/unit.php';
-// 
-// $t = new limeade_test(30, limeade_output::get());
+require dirname(__FILE__) . '/../../bootstrap/unit.php';
+ 
+$t = new limeade_test(0, limeade_output::get());
+
+//$t = new limeade_test(30, limeade_output::get());
 // $limeade = new limeade_sf($t);
 // $app = $limeade->bootstrap();
 // 
