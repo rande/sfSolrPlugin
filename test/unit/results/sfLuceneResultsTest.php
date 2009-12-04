@@ -22,7 +22,7 @@ $t = new limeade_test(18, limeade_output::get());
 class MockResult extends Apache_Solr_Document
 {
   public $name;
-
+  public $sfl_type = 'model';
   public function __construct($a)
   {
     $this->name = $a;
@@ -37,7 +37,7 @@ $results = array();
 foreach(range(1, 3) as $num)
 {
   $results[] = sprintf(
-    '{"description":"symfony fan boy","id":%d,"name":"rande","sfl_guid":"GUID_%d","skills":["symfony","php","objective-c"]}',
+    '{"description":"symfony fan boy","id":%d,"name":"rande","sfl_type":"model","sfl_guid":"GUID_%d","skills":["symfony","php","objective-c"]}',
     $num,
     $num
   );
@@ -50,6 +50,7 @@ Apache_Solr_Document::__set_state(array(
     'description' => 'symfony fan boy',
     'id' => $num,
     'name' => 'rande',
+    'sfl_type' => 'model',
     'sfl_guid' => 'GUID_$num',
     'skills' => 
     array (
@@ -63,6 +64,7 @@ Apache_Solr_Document::__set_state(array(
     'description' => false,
     'id' => false,
     'name' => false,
+    'sfl_type' => false,
     'sfl_guid' => false,
     'skills' => false,
   ),

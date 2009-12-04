@@ -45,6 +45,12 @@ $criteria->addFacetQuery('price:[0 TO 100]');
 $criteria->addFacetQuery('price:[100 TO 200]');
 
 $expected = array (
+  'fl' => array (
+    0 => '*,score', 
+  ),
+  'sort' => array ( 
+    0 => 'score desc',
+  ),
   'facet' => array (
     0 => 'true',
   ),
@@ -65,6 +71,12 @@ $criteria->addFacetField('another_field', true);
 $criteria->addFacetQuery('the_price:[0 TO 100]', true);
 
 $expected = array (
+  'fl' => array (
+    0 => '*,score', 
+  ),
+  'sort' => array ( 
+    0 => 'score desc',
+  ),
   'facet' => array (
     0 => 'true',
   ),

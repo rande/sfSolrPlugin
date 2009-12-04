@@ -95,8 +95,10 @@ class sfLuceneResult
   */
   static public function getInstance($result, $search)
   {
-
-    switch ($result->sfl_type)
+    
+    $type = isset($result->sfl_type) ? $result->sfl_type : null;
+    
+    switch ($type)
     {
       case 'action':
         $c = 'sfLuceneActionResult';
@@ -119,7 +121,6 @@ class sfLuceneResult
     if (substr($method, 0, 3) == 'get')
     {
       $field = sfInflector::underscore(substr($method, 3));
-      
       
       if(substr($field, 0, 8) == 'internal')
       {
