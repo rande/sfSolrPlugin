@@ -22,15 +22,14 @@
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version SVN: $Id$
  */
-
 class sfLuceneCriteria
 {
   protected 
     $query = null,
-    $sorts = array(),
     $scoring = null,
     $params = array(),
     $path = null,
+    $http_method = Apache_Solr_Service::METHOD_GET,
     $limit = 10,
     $offset = 0;
 
@@ -203,6 +202,18 @@ class sfLuceneCriteria
   {
     
     return $this->add(self::sanitize($phrase), $type, true );
+  }
+
+  public function getHttpMethod()
+  {
+
+    return $this->http_method;
+  }
+
+  public function setHttpMethod($method)
+  {
+
+    $this->http_method = $method;
   }
   
   /**
