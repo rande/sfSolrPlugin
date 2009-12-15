@@ -185,7 +185,14 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
       $field_properties = $properties->get('fields')->get($field);
 
       $value = $this->getFieldValue($field, $field_properties);
-      
+
+      // do not index null value
+      if($value == null)
+      {
+
+        continue;
+      }
+
       $type = $field_properties->get('type');
       $boost = $field_properties->get('boost');
 
@@ -228,9 +235,8 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
            $v = call_user_func($transform, $v);
         }
         
-        $doc->addField($field, $v, $boost);
+        $doc->setField($field, $v, $boost);
       }
-      
     }
 
     return $doc;

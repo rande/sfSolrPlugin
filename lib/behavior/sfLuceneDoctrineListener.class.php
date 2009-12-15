@@ -16,12 +16,14 @@
  */
 class sfLuceneDoctrineListener extends Doctrine_Record_Listener
 {
+  
+  static $instances;
+  
   /**
    * Executes save routine
    */
   public function postSave(Doctrine_Event $event)
   {
-
     try {
       $this->saveIndex($event->getInvoker());
     }
@@ -57,6 +59,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
    */
   public function saveIndex($node)
   {
+    
     $this->deleteIndex($node);
     $this->insertIndex($node);
   }
@@ -66,6 +69,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
    */
   public function deleteIndex($node)
   {
+    
     if(sfConfig::get('app_sfLucene_disable_listener', false))
     {
 
@@ -79,6 +83,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
 
     foreach ($this->getSearchInstances($node) as $instance)
     {
+
       $instance->getIndexerFactory()->getModel($node)->delete();
     }
   }
@@ -116,31 +121,30 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
       }
     }
 
-    return null;
+    return get_class($node);
   }
 
   protected function getSearchInstances($node)
   {
-    static $instances;
-
     $class = get_class($node);
 
-    if (!isset($instances))
+    if (!isset($this->instances))
     {
-      $instances = array();
+      $this->instances = array();
     }
 
-
-    if (!isset($instances[$class]))
+    if (!isset($this->instances[$class]))
     {
       $config = sfLucene::getConfig();
-
+      
+      $configuration = sfProjectConfiguration::getActive();
+      
       foreach ($config as $name => $item)
       {
         $inheritance_class = $this->getInheritanceClass($node, $item);
-
         if(!$inheritance_class)
         {
+          
           throw new sfException('Cannot find the correct inheritance class for the object type : '.get_class($node));
         }
 
@@ -148,20 +152,13 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
         {
           foreach ($item['index']['cultures'] as $culture)
           {
-            $instances[$class][] = sfLucene::getInstance($name, $culture, sfProjectConfiguration::getActive());
+            
+            $this->instances[$class][] = sfLucene::getInstance($name, $culture, $configuration);
           }
         }
       }
     }
 
-    return $instances[$class];
-  }
-
-  /**
-   * Returns the behavior initializer
-   */
-  static public function getInitializer()
-  {
-    return sfLuceneDoctrineInitializer::getInstance();
+    return $this->instances[$class];
   }
 }

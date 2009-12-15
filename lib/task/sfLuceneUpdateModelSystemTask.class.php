@@ -161,8 +161,7 @@ EOF;
         $offset
       );
 
-      echo $command."\n";
-      system($command);
+      $this->getFilesystem()->sh($command);
 
     } while((++$page < $num_pages ?  true : false));
   }

@@ -22,6 +22,7 @@ $lucene = sfLucene::getInstance('index', 'en', $app_configuration);
 
 class MockDocument extends Apache_Solr_Document
 {
+
   public function setFields($fields)
   {
     $this->_fields = $fields;
@@ -34,7 +35,6 @@ class MockDocument extends Apache_Solr_Document
     return $this->$field;
   }
 }
-
 
 $doc = new MockDocument;
 $doc->setFields(array(
@@ -56,6 +56,7 @@ try {
 
 $t->is($result->getInternalModel(), 'FakeForum', '->getInternalModel() returns the correct model');
 
+// $h contains the FakeForum configuration
 $h = $lucene->getParameter('models')->get('FakeForum');
 
 $t->diag('testing ->getInternalTitle()');
@@ -63,7 +64,8 @@ $t->diag('testing ->getInternalTitle()');
 $t->is($result->getInternalTitle(), 'Registered title', '->getInternalTitle() returns the title registered in the document');
 
 $h->remove('title');
-$t->is($result->getInternalTitle(), 'No title available.', '->getInternalTitle() can guess the title');
+
+$t->is($result->getInternalTitle(), 'Registered title', '->getInternalTitle() can guess the title');
 
 $fields = clone $h->get('fields');
 $h->get('fields')->clear();

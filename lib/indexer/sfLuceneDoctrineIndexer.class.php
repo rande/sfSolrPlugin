@@ -171,11 +171,13 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
     }
     catch(Doctrine_Record_Exception $e)
     {
-    
+      $model_properies = $this->getModelProperties();
+      
       // some fields can be only used as a definition
       // and used in the callback method
-      if(!$properties->get('callback'))
+      if(!$model_properies->get('callback'))
       {
+        
         throw $e;
       }
       else
@@ -184,13 +186,12 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
       }
     }
 
-    if($value instanceof Doctrine_Collection && !$properties->get('multiValued'))
+    if((is_array($value) || $value instanceof Doctrine_Collection) && !$properties->get('multiValued'))
     {
       
       throw new sfException('You cannot store a Doctrine_Collection with multiValued=false');
     }
-    
-    if($value instanceof Doctrine_Collection && $properties->get('multiValued'))
+    else if($value instanceof Doctrine_Collection && $properties->get('multiValued'))
     {
       $values = array();
       foreach($value as $object)
@@ -200,7 +201,7 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
       
       return $values;
     }
-    
+
     return $value;
   }
 }

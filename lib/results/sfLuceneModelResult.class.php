@@ -26,15 +26,18 @@ class sfLuceneModelResult extends sfLuceneResult
 
     if ($model->has('title') && !is_null($model->get('title')))
     {
-      return $this->result->__get($model->get('title'));
+      return $this->getResult()->__get($model->get('title'));
     }
     else
     {
+      
       foreach (array('title', 'subject') as $check)
       {
-        if ($model->get('fields')->has($check) && !is_null($model->get($check)))
+
+        if ($model->get('fields')->has($check))
         {
-          return strip_tags($this->result->__get($check));
+
+          return strip_tags($this->getResult()->__get($check));
         }
       }
     }
@@ -113,6 +116,7 @@ class sfLuceneModelResult extends sfLuceneResult
   */
   protected function retrieveModel()
   {
+
     return $this->search->getParameter('models')->get($this->getSflModel());
   }
   
