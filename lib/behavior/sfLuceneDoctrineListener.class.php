@@ -18,7 +18,11 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
 {
   
   static $instances;
-  
+
+  public function  __construct()
+  {
+    self::$instances = array();
+  }
   /**
    * Executes save routine
    */
@@ -128,12 +132,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
   {
     $class = get_class($node);
 
-    if (!isset($this->instances))
-    {
-      $this->instances = array();
-    }
-
-    if (!isset($this->instances[$class]))
+    if (!isset(self::$instances[$class]))
     {
       $config = sfLucene::getConfig();
       
@@ -153,12 +152,12 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
           foreach ($item['index']['cultures'] as $culture)
           {
             
-            $this->instances[$class][] = sfLucene::getInstance($name, $culture, $configuration);
+            self::$instances[$class][] = sfLucene::getInstance($name, $culture, $configuration);
           }
         }
       }
     }
 
-    return $this->instances[$class];
+    return self::$instances[$class];
   }
 }
