@@ -29,9 +29,9 @@ class sfLucenePager
     $perPage = 5,
     $lucene_results,
     $search_parameters,
-    $must_reload;
+    $must_reload = false;
 
-  public function __construct(sfLuceneResults $lucene_results, $search = null)
+  public function __construct(sfLuceneResults $lucene_results, sfLucene $search = null)
   {
 
     if(!$lucene_results instanceof sfLuceneResults)
@@ -89,7 +89,7 @@ class sfLucenePager
       $this->search_parameters['method']
     );
     
-    $this->lucene_results = new sfLuceneResults($response, $this->getSearch()->getLucene());
+    $this->lucene_results = new sfLuceneResults($response, $this->getSearch());
 
     $this->results = $this->lucene_results->toArray();
     
