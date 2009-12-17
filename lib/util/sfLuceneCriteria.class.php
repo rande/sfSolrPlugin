@@ -33,9 +33,11 @@ class sfLuceneCriteria
     $limit = 10,
     $offset = 0;
 
-  const 
-    TYPE_AND = 'AND',
-    TYPE_OR  = 'OR';
+  const
+    TYPE_NONE = '',
+    TYPE_AND  = 'AND',
+    TYPE_OR   = 'OR';
+
   
   public function __construct()
   {
@@ -179,6 +181,29 @@ class sfLuceneCriteria
   }
 
   /**
+   * Add a subquery to the query itself. The phrase will be splited by words
+   *
+   * @param string $phrase
+   * @param string $type : OR | AND operator
+   * @param string $inner_type : OR | AND operator
+   * @return sfLuceneCriteria
+   */
+  public function addSane($phrase, $type = sfLuceneCriteria::TYPE_AND, $inner_type = sfLuceneCriteria::TYPE_OR)
+  {
+    $keywords = preg_split("/[\s,]+/", $phrase);
+
+    $c = new self;
+    foreach($keywords as $keyword)
+    {
+      $c->add(self::sanitize($keyword), $inner_type, true);
+    }
+
+    $this->add($c, $type);
+
+    return $this;
+  }
+
+  /**
    * Add a subquery to the query itself. The phrase will be automatically sanitized
    *
    * @param string $phrase
@@ -186,16 +211,10 @@ class sfLuceneCriteria
    * @return sfLuceneCriteria
    *
    */
-  public function addSane($phrase, $type = sfLuceneCriteria::TYPE_AND)
-  {
-
-    return $this->add(self::sanitize($phrase), $type, true );
-  }
-  
   public function addPhrase($phrase, $type = sfLuceneCriteria::TYPE_AND)
   {
     
-    return $this->addSane($phrase, $type);
+    return $this->add(self::sanitize($phrase), $type, true);
   }
   
   public function addWildcard($phrase, $type = sfLuceneCriteria::TYPE_AND)

@@ -81,12 +81,12 @@ $t->diag('testing ->addSane()');
 $criteria = inst($app_application);
 $criteria->addSane('test'); 
 $s = $criteria->getQuery();
-$t->cmp_ok($s, '===', '"test"', '::addSane() with standard string');
+$t->cmp_ok($s, '===', '("test")', '::addSane() with standard string');
 
 $criteria->addSane('&" ? \unsafe'); 
 $s = $criteria->getQuery();
 
-$t->cmp_ok($s, '===', '"test" AND "&\\" ? \\\\unsafe"', '::addSane() with standard string');
+$t->cmp_ok($s, '===', '("test") AND ("&\\"" OR "?" OR "\\\\unsafe")', '::addSane() with standard string');
 
 try {
   $criteria->add('carl!');
@@ -117,7 +117,7 @@ $t->cmp_ok($s, '===', '"foo* baz?"', '->addWildcard() registers the correct quer
 $t->diag('testing addPhrase()');
 $s = inst()->addPhrase("foo bar")->getQuery();
 
-$t->ok($s == '"foo bar"', '->addPhrase() registers the correct simple phrase query');
+$t->cmp_ok($s, '==', '"foo bar"', '->addPhrase() registers the correct simple phrase query');
 
 $t->diag('testing addRange()');
 
