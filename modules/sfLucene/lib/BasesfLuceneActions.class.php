@@ -43,48 +43,60 @@ abstract class BasesfLuceneActions extends sfActions
     $this->configureCategories($form);
     $form->bind($request->getParameter('form', array()));
 
-    // do we have a query?
-    if ($form->isValid())
-    {
-      $values = $form->getValues();
+    $this->form = $form;
 
-      // get results
-      $pager = $this->getResults($form);
-
-      $num = $pager->getNbResults();
-
-      // were any results returned?
-      if ($num > 0)
-      {
-        // display results
-        $pager = $this->configurePager($pager, $form);
-
-        $this->num = $num;
-        $this->pager = $pager;
-        $this->query = $values['query'];
-        $this->form = $form;
-
-        $this->setTitleNumResults($pager);
-
-        return 'Results';
-      }
-      else
-      {
-        // display error
-        $this->form = $form;
-        $this->setTitleI18n('No Results Found');
-
-        return 'NoResults';
-      }
-    }
-    else
+    if(!$form->isValid())
     {
       // display search controls
-      $this->form = $form;
       $this->setTitleI18n('Search');
-
-      return 'Controls';
+      $this->setTemplate('searchControls');
     }
+
+
+    $values = $form->getValues();
+
+    
+    if (count($values) == 0)
+    {
+      // display error
+      $this->setTitleI18n('No Results Found');
+
+      $this->setTemplate('searchNoResults');
+
+      return sfView::SUCCESS;
+    }
+    
+    // build the criteria
+    $query = new sfLuceneCriteria();
+    $query->addSane($values['query']);
+
+    if (sfConfig::get('app_lucene_categories', true) && isset($values['category']) && $values['category'] != $this->translate('All'))
+    {
+      $query->add('sfl_category: ' . $values['category']);
+    }
+
+    $pager = new sfLucenePager($this->getLuceneInstance()->friendlyFind($query));
+
+    // were any results returned?
+    if ($pager->getNbResults() == 0)
+    {
+            // display error
+      $this->setTitleI18n('No Results Found');
+
+      $this->setTemplate('searchNoResults');
+
+      return sfView::SUCCESS;
+    }
+
+    // display results
+    $pager = $this->configurePager($pager, $form);
+
+    $this->pager = $pager;
+    $this->query = $values['query'];
+
+    $this->setTitleNumResults($pager);
+
+    $this->setTemplate('searchResults');
   }
 
   /**
@@ -99,97 +111,76 @@ abstract class BasesfLuceneActions extends sfActions
     // determine if the "Basic" button was clicked
     if ($request->getParameter('commit') == $this->translate('Basic'))
     {
+      
       $this->redirect($this->getModuleName() . '/search');
     }
 
     $form = new sfLuceneAdvancedForm();
     $this->configureCategories($form);
 
-    // continue only if there was a submit
-    if ($request->getParameter('commit'))
-    {
-      $form->bind($request->getParameter('form'));
-
-        // is the form valid?
-      if ($form->isValid())
-      {
-        $values = $form->getValues();
-
-        // base quey
-        $query = $values['keywords'];
-
-        // build the must have part
-        $musthave = preg_split('/ +/', $values['musthave'], -1, PREG_SPLIT_NO_EMPTY);
-
-        if (count($musthave))
-        {
-          $query .= ' +' . implode($musthave, ' +');
-        }
-
-        // build the must not have
-        $mustnothave = preg_split('/ +/', $values['mustnothave'], -1, PREG_SPLIT_NO_EMPTY);
-
-        if (count($mustnothave))
-        {
-          $query .= ' -' . implode($mustnothave, ' -');
-        }
-
-        // build the has pharse part
-        if ($values['hasphrase'] != '')
-        {
-          $query .= ' "' . str_replace('"', '', $values['hasphrase']) . '"';
-        }
-
-        $query = trim($query);
-
-        // is there a query?
-        if ($query)
-        {
-          // yes, so search
-
-          $requestParam = array('query' => $query);
-
-          if (isset($values['category']))
-          {
-            $requestParam['category'] = $values['category'];
-          }
-
-          $request->setParameter('form', $requestParam);
-
-          $this->forward($this->getModuleName(), 'search');
-        }
-      }
-    }
-
     $this->form = $form;
 
-    $this->setTitleI18n('Advanced Search');
-
-    return 'Controls';
-  }
-
-  /**
-  * Wrapper function for getting the results.
-  */
-  protected function getResults($form)
-  {
-    $data = $form->getValues();
-
-    $query = new sfLuceneCriteria();
-    $query->addSane($data['query']);
-
-    if (sfConfig::get('app_lucene_categories', true) && isset($data['category']) && $data['category'] != $this->translate('All'))
+    // continue only if there was a submit
+    if (!$request->getParameter('form'))
     {
-      $query->add('sfl_category: ' . $data['category']);
+
+      return sfView::SUCCESS;
     }
 
-    return new sfLucenePager( $this->getLuceneInstance()->friendlyFind($query) );
+    $form->bind($request->getParameter('form'));
+    
+    $values = $form->getValues();
+
+    // build the criteria
+    $c = new sfLuceneCriteria();
+    $c->addSane($values['keywords']);
+
+    $query = $values['keywords'];
+    
+    // build the must have part
+    $keywords = preg_split("/[\s,]+/", $values['musthave']);
+    foreach($keywords as $keyword)
+    {
+      $c->add("+".sfLuceneCriteria::sanitize($keyword), sfLuceneCriteria::TYPE_NONE, true);
+    }
+    $query .= ' '.$values['musthave'];
+    
+
+    // build the must have part
+    $keywords = preg_split("/[\s,]+/", $values['mustnothave']);
+    foreach($keywords as $keyword)
+    {
+      $c->add("-".sfLuceneCriteria::sanitize($keyword), sfLuceneCriteria::TYPE_NONE, true);
+    }
+    $query .= ' '.$values['mustnothave'];
+
+    // build the has pharse part
+    $c->add("+".sfLuceneCriteria::sanitize($values['hasphrase']), sfLuceneCriteria::TYPE_NONE, true);
+    $query .= ' '.$values['hasphrase'];
+
+    if (sfConfig::get('app_lucene_categories', true) && isset($values['category']) && $values['category'] != $this->translate('All'))
+    {
+      $c->add('sfl_category: ' . $values['category']);
+    }
+
+    $pager = new sfLucenePager($this->getLuceneInstance()->friendlyFind($c));
+
+    // display results
+    $pager = $this->configurePager($pager, $form);
+
+    $this->getContext()->getConfiguration()->loadHelpers('sfLucene');
+    
+    $this->pager = $pager;
+    $this->query = $query;
+    
+    $this->setTitleI18n('Advanced Search');
   }
 
   /**
    * Returns an instance of sfLucene configured for this environment.
    */
   protected function getLuceneInstance()
+  
   {
     
     throw new sfException('Implement this feature with an event dispatcher');
@@ -276,14 +267,14 @@ abstract class BasesfLuceneActions extends sfActions
     $this->getResponse()->setTitle($title);
   }
 
-  protected function setTitleI18n($title, $args = array(), $ns = 'messages')
+  protected function setTitleI18n($title, $args = array(), $ns = 'sfLucene')
   {
     $this->setTitle( $this->translate($title, $args, $ns) );
   }
 
-  protected function translate($text, $args = array(), $ns = 'messages')
+  protected function translate($text, $args = array(), $ns = 'sfLucene')
   {
-    sfLoader::loadHelpers('I18N');
+    $this->getContext()->getConfiguration()->loadHelpers('I18N');
 
     return __($text, $args, $ns);
   }

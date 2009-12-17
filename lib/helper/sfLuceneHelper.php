@@ -14,21 +14,6 @@
  * @version SVN: $Id$
  */
 
-function include_search_result($result, $query = null)
-{
-  include_partial($result->getInternalPartial(), array('result' => $result, 'query' => $query));
-}
-
-function include_search_controls($form)
-{
-  include_partial('sfLucene/controls', array('form' => $form));
-}
-
-function include_search_pager($pager, $form, $radius = 5)
-{
-  include_partial('sfLucene/pagerNavigation', array('pager' => $pager, 'form' => $form, 'radius' => $radius));
-}
-
 function highlight_result_text($text, $query, $size = 200, $sprint = '<strong class="highlight">%s</strong>')
 {
 

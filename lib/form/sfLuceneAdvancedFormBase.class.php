@@ -36,12 +36,15 @@ abstract class sfLuceneAdvancedFormBase extends sfLuceneForm
    */
   public function setup()
   {
+
+
     $widgetSchema = new sfWidgetFormSchema(
     array( // fields
       'keywords' => new sfWidgetFormInput(),
       'musthave' => new sfWidgetFormInput(),
       'mustnothave' => new sfWidgetFormInput(),
-      'hasphrase' => new sfWidgetFormInput()
+      'hasphrase' => new sfWidgetFormInput(),
+      'page' => new sfWidgetFormInputHidden()
     ),
     array( // options
     ),
@@ -66,7 +69,8 @@ abstract class sfLuceneAdvancedFormBase extends sfLuceneForm
       'keywords' => new sfValidatorString(array('required' => false)),
       'musthave' => new sfValidatorString(array('required' => false)),
       'mustnothave' => new sfValidatorString(array('required' => false)),
-      'hasphrase' => new sfValidatorString(array('required' => false))
+      'hasphrase' => new sfValidatorString(array('required' => false)),
+      'page' => new sfValidatorInteger(array('required' => false, 'empty_value' => 1))
     ),
     array( // options
     ),

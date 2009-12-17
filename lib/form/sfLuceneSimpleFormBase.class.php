@@ -77,29 +77,4 @@ abstract class sfLuceneSimpleFormBase extends sfLuceneForm
 
     $this->setValidatorSchema($validatorSchema);
   }
-
-  /**
-   * Gets the query string for a certain page
-   */
-  public function getQueryString($page = null)
-  {
-    $values = $this->getValues();
-
-    if ($page)
-    {
-      $values['page'] = $page;
-    }
-
-    $string = '';
-
-    foreach ($values as $key => $value)
-    {
-      $key = urlencode(sprintf($this->widgetSchema->getNameFormat(), $key));
-      $string .= $key . '=' . $value . '&amp;';
-    }
-
-    $string = substr($string, 0, -5);
-
-    return $string;
-  }
 }

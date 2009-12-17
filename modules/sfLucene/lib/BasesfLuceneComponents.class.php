@@ -24,7 +24,7 @@ abstract class BasesfLuceneComponents extends sfComponents
   {
     $installed = array_keys($this->getLuceneInstance()->getCategories()->getAllCategories());
 
-    sfLoader::loadHelpers('I18N');
+    $this->getContext()->getConfiguration()->loadHelpers('I18N');
 
     $categories = array(null => __('All'));
 

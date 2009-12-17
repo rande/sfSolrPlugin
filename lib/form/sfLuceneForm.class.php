@@ -53,4 +53,29 @@ abstract class sfLuceneForm extends sfForm
   {
     return count($this->getOption('categories', array())) > 0;
   }
+
+    /**
+   * Gets the query string for a certain page
+   */
+  public function getQueryString($page = null)
+  {
+    $values = $this->getValues();
+
+    if ($page)
+    {
+      $values['page'] = $page;
+    }
+
+    $string = '';
+
+    foreach ($values as $key => $value)
+    {
+      $key = urlencode(sprintf($this->widgetSchema->getNameFormat(), $key));
+      $string .= $key . '=' . $value . '&amp;';
+    }
+
+    $string = substr($string, 0, -5);
+
+    return $string;
+  }
 }
