@@ -20,6 +20,10 @@ require_once(dirname(__FILE__).'/sfLuceneBaseTask.class.php');
 
 class sfLuceneServiceTask extends sfLuceneBaseTask
 {
+  protected
+    $nohup = false,
+    $java  = false;
+  
   protected function configure()
   {
     $this->addArguments(array(
@@ -27,14 +31,18 @@ class sfLuceneServiceTask extends sfLuceneBaseTask
       new sfCommandArgument('action', sfCommandArgument::REQUIRED, 'The action name')
     ));
 
+    $results =  $output = false;
     exec('which java', $output, $results);
-
     $java = $results == 0 ? $output[0] : false;
+
+    $results = $output = false;
+    exec('which nohup', $output, $results);
+    $nohup = $results == 0 ? $output[0] : false;
 
     $this->addOptions(array(
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'prod'),
       new sfCommandOption('java', null, sfCommandOption::PARAMETER_REQUIRED, 'the java binary', $java),
-
+      new sfCommandOption('nohup', null, sfCommandOption::PARAMETER_REQUIRED, 'the nohup binary', $nohup),
     ));
 
     $this->aliases = array('lucene-service');
@@ -79,7 +87,18 @@ EOF;
 
       throw new sfException('Please provide a valid java executable file');
     }
+
+    $this->java = $options['java'];
     
+    if(!is_executable($options['nohup'] ))
+    {
+
+      throw new sfException('Please provide a valid nohup executable file');
+    }
+    
+    $this->nohup = $options['nohup'];
+
+
     $action = $arguments['action'];
 
     switch($action)
@@ -119,8 +138,10 @@ EOF;
     }
 
     // start the jetty built in server
-    $command = sprintf('cd %s/plugins/sfLucenePlugin/lib/vendor/Solr/example; java -Dsolr.solr.home=%s/config/solr/ -Dsolr.data.dir=%s/data/solr_index -jar start.jar > %s/solr_server_%s_%s.log 2>&1 & echo $!',
+    $command = sprintf('cd %s/plugins/sfLucenePlugin/lib/vendor/Solr/example; %s %s -Dsolr.solr.home=%s/config/solr/ -Dsolr.data.dir=%s/data/solr_index -jar start.jar > %s/solr_server_%s_%s.log 2>&1 & echo $!',
       sfConfig::get('sf_root_dir'),
+      $this->nohup,
+      $this->java,
       sfConfig::get('sf_root_dir'),
       sfConfig::get('sf_root_dir'),
       sfConfig::get('sf_root_dir').'/log',
@@ -129,7 +150,6 @@ EOF;
     );
 
     $this->logSection('exec ', $command);
-
     exec($command ,$op);
 
     $this->getFilesystem()->sh(sprintf('cd %s',
@@ -151,10 +171,17 @@ EOF;
     }
 
     $pid = file_get_contents($this->getPidFile($app, $env));
-    
+
+    if(!($pid > 0))
+    {
+      
+      throw new sfException('Invalid pid provided : '.$pid);
+    }
+
     $this->getFilesystem()->sh("kill -9 ".$pid);
 
     unlink($this->getPidFile($app, $env));
+
   }
 
   public function status($app, $env)
@@ -170,6 +197,12 @@ EOF;
 
     $pid = file_get_contents($this->getPidFile($app, $env));
 
+    if(!($pid > 0))
+    {
+      $this->log('pid file presents but invalid pid');
+      return;
+    }
+    
     exec("ps ax | grep $pid 2>&1", $output);
 
     while( list(,$row) = each($output) ) {
