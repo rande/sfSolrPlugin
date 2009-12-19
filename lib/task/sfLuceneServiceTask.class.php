@@ -178,16 +178,14 @@ EOF;
       throw new sfException('Invalid pid provided : '.$pid);
     }
 
-    $this->getFilesystem()->sh("kill -9 ".$pid);
+    $this->getFilesystem()->sh("kill -15 ".$pid);
 
     unlink($this->getPidFile($app, $env));
-
   }
 
   public function status($app, $env)
   {
 
-   
     if(!$this->isRunning($app, $env))
     {
       
