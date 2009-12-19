@@ -43,6 +43,15 @@ class sfLucenePager
     $this->lucene_results = $lucene_results;
     $this->results = $lucene_results->toArray();
     $this->search_parameters = $lucene_results->getRawResult()->sf_lucene_search;
+
+    // compute the page number from the results
+    $limit = $lucene_results->getRawResult()->sf_lucene_search['limit'];
+    
+    $start = $this->getResults()->getRawResult()->response->start;
+
+    $this->setPage((int)($start  / $limit) + 1);
+    $this->must_reload = false;
+
     
     $this->search = $search === null ? $lucene_results->getSearch() : $search;
 
@@ -155,6 +164,7 @@ class sfLucenePager
 
   public function getPage()
   {
+
     return $this->page;
   }
 
@@ -173,6 +183,7 @@ class sfLucenePager
 
   public function getFirstPage()
   {
+    
     return 1;
   }
 
