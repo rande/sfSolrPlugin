@@ -142,8 +142,15 @@ class sfLuceneCriteria
         
         throw new sfException('Cannot add itself as a subquery');
       }
+
+      $query = $query->getQuery();
+      if(strlen($query) == 0)
+      {
+
+        return $this;
+      }
       
-      $query = '('.$query->getQuery().')';
+      $query = '('.$query.')';
     }
     else if(is_object($query))
     {
@@ -259,7 +266,7 @@ class sfLuceneCriteria
     {
       $query = ($field ? $field . ':' : ''). '{'.$start.' TO '.$stop.'}';
     }
-    
+
     return $this->add($query, $type, true);
   }
 
@@ -320,7 +327,7 @@ class sfLuceneCriteria
     $longitudeUpper = round($longitudeUpper, 10);
     
     $subquery = $this->getNewCriteria();
-    
+
     $subquery->addRange($latitudeLower, $latitudeUpper, $latitudeField, true);
     $subquery->addRange($longitudeLower, $longitudeUpper, $longitudeField, true);
 
