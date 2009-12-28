@@ -149,9 +149,7 @@ EOF;
     $content =<<<XML
 <?xml version="1.0" encoding="UTF-8" ?>
 <schema name="Index : $name - created by sfLucene - Solr version" version="1.1">
-  <types>
-   <fieldtype name="string"  class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
-   
+  <types>   
    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <!-- Documentation references : http://wiki.apache.org/solr/AnalyzersTokenizersTokenFilters -->
