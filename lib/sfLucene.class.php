@@ -104,19 +104,19 @@ class sfLucene
   *
   * @return sfLucene
   */
-  static public function getInstance($name, $culture, sfApplicationConfiguration $configuration)
+  static public function getInstance($name, $culture, sfApplicationConfiguration $configuration = null)
   {
 
     if($culture === null)
     {
       $culture = 'en';
     }
-    
+ 
     if($configuration === null)
-    {
-      $configuration == sfProjectConfiguration::getActive();
+    {   
+      $configuration = sfProjectConfiguration::getActive();
     }
-    
+
     if (!isset(self::$instances[$name][$culture]))
     {
       if (!isset(self::$instances[$name]))
