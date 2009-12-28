@@ -49,6 +49,7 @@ class sfLucenePager
     
     $start = $this->getResults()->getRawResult()->response->start;
 
+    $this->setMaxPerPage($limit);
     $this->setPage((int)($start  / $limit) + 1);
     $this->must_reload = false;
 
@@ -77,11 +78,21 @@ class sfLucenePager
     return $event->getReturnValue();
   }
 
+  /**
+   * return the related sfLucene instance
+   * 
+   * @return sfLucene
+   */
   public function getSearch()
   {
     return $this->search;
   }
 
+  /**
+   * reload results from the server
+   *
+   * This method is used when the page number is altered
+   */
   protected function reloadFromServer()
   {
     if($this->must_reload === false)
@@ -104,12 +115,22 @@ class sfLucenePager
     
     $this->must_reload = false;
   }
-  
+
+  /**
+   * force the result to be reloaded from the server
+   *
+   */
   protected function resetResults()
   {
     $this->must_reload = true;
   }
-  
+
+  /**
+   * return an array of available page numbers
+   *
+   * @param integer> $nb_links
+   * @return <type>
+   */
   public function getLinks($nb_links = 5)
   {
     $links = array();
@@ -127,22 +148,42 @@ class sfLucenePager
     return $links;
   }
 
+  /**
+   * true if the page have to paginate
+   * 
+   * @return boolean true if the page have to paginate
+   */
   public function haveToPaginate()
   {
 
     return (($this->getPage() != 0) && ($this->getNbResults() > $this->getMaxPerPage()));
   }
 
+  /**
+   * return the number of results per page
+   * 
+   * @return integer number of results per page
+   */
   public function getMaxPerPage()
   {
     return $this->perPage;
   }
 
+  /**
+   * set the number of results per page
+   * 
+   * @param integer $per
+   */
   public function setMaxPerPage($per)
   {
     $this->perPage = $per;
   }
 
+  /**
+   * set the current page number
+   *
+   * @param integer $page
+   */
   public function setPage($page)
   {
     if ($page <= 0)
@@ -162,12 +203,22 @@ class sfLucenePager
     $this->page = $page;
   }
 
+  /**
+   * return the page number
+   *
+   * @return integer return the page number
+   */
   public function getPage()
   {
 
     return $this->page;
   }
 
+  /**
+   * return the results
+   *
+   * @return sfLuceneResults
+   */
   public function getResults()
   {
     $this->reloadFromServer();
@@ -175,28 +226,48 @@ class sfLucenePager
     return $this->lucene_results;
   }
 
+  /**
+   *
+   * @return integer number of result
+   */
   public function getNbResults()
   {
 
     return $this->getResults()->getRawResult()->response->numFound;
   }
 
+  /**
+   *
+   * @return integer the number of the fist page
+   */
   public function getFirstPage()
   {
     
     return 1;
   }
 
+  /**
+   *
+   * @return integer the last page number
+   */
   public function getLastPage()
   {
     return ceil($this->getNbResults() / $this->getMaxPerPage());
   }
 
+  /**
+   *
+   * @return integer the next availabe page number
+   */
   public function getNextPage()
   {
     return min($this->getPage() + 1, $this->getLastPage());
   }
 
+  /**
+   *
+   * @return integer the previous availabe page number
+   */
   public function getPreviousPage()
   {
     return max($this->getPage() - 1, $this->getFirstPage());
