@@ -135,7 +135,7 @@ $expected = array (
         'title' => NULL,
         'description' => NULL,
         'peer' => 'FakeModelTable',
-        'rebuild_limit' => 250,
+        'rebuild_limit' => 50,
         'validator' => NULL,
         'categories' =>
         array (

@@ -46,9 +46,7 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
       for ($page = 0; $page < $totalPages; $page++)
       {
         $offset = $page * $per;
-        $this->_rebuild($query, $offset, $per);
-        $query->free();
-        $query->from($table->getComponentName());
+        $this->_rebuild(clone $query, $offset, $per);
       }
     }
   }
@@ -78,6 +76,7 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
 
   protected function _rebuild($query, $offset, $limit)
   {
+
     $collection = $query->limit($limit)->offset($offset)->execute();
 
     foreach($collection as $record)

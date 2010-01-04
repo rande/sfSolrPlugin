@@ -166,7 +166,7 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
 
         if (!isset($model_config['rebuild_limit']))
         {
-          $model_config['rebuild_limit'] = 250;
+          $model_config['rebuild_limit'] = 50;
         }
         
         if (!isset($model_config['validator']))
