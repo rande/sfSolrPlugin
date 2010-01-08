@@ -30,9 +30,9 @@ class sfLucene
   protected $dispatcher = null;
 
   /**
-   * Holds the Lucene instance
+   * Holds the search service instance
    */
-  protected $lucene = null;
+  protected $search_service = null;
 
   /**
    * Holds the sfApplicationConfiguration object
@@ -310,12 +310,35 @@ class sfLucene
 
   /**
   * Returns the lucene object
-  * @return Zend_Search_Lucene
+   *
+  * @deprecated use getSearchService
+  * @return sfLuceneApacheSolrService
   */
   public function getLucene()
   {
+    
+    return $this->getSearchService();
+  }
 
-    if ($this->lucene == null)
+
+  /**
+   * define the solr engine, use this only for testing
+   *
+   * @deprecated use setSearchService
+   */
+  public function setLucene($solr)
+  {
+    $this->setSearchService($solr);
+  }
+
+  /**
+   * define the solr engine, use this only for testing
+   *
+   * @deprecated use setSearchService
+   */
+  public function getSearchService()
+  {
+    if ($this->search_service == null)
     {
       $solr = new sfLuceneApacheSolrService(
         $this->getParameter('host'),
@@ -328,23 +351,27 @@ class sfLucene
         //throw new Exception('Search is not available right now.');
       }
 
-      $this->lucene =  $solr;
+      $this->search_service =  $solr;
     }
 
-    return $this->lucene;
+    return $this->search_service;
   }
-  
+
   /**
    * define the solr engine, use this only for testing
+   *
+   * @deprecated use setSearchService
    */
-  public function setLucene($solr)
+  public function setSearchService($service)
   {
-    
-    $this->lucene = $solr;
+
+    $this->search_service = $service;
   }
+
 
   /**
   * Gets the specified indexer from the factory.
+  *
   * @return mixed An instance of the indexer factory.
   */
   public function getIndexerFactory()
@@ -591,13 +618,27 @@ class sfLucene
 
     try
     {
-      $results = $this->getLucene()->search(
+      $change_path = $query->getPath();
+
+      if($change_path)
+      {
+        $old_path = $this->getSearchService()->getPath();
+        $this->getSearchService()->setPath($query->getPath());
+      }
+      
+      $results = $this->getSearchService()->search(
         $query->getQuery(),
         $query->getOffset(),
         $query->getLimit(),
         $query->getParams(),
         $query->getHttpMethod()
       );
+
+      if($change_path)
+      {
+        $this->getSearchService()->setPath($old_path);
+      }
+      
     }
     catch (Exception $e)
     {
@@ -618,7 +659,13 @@ class sfLucene
   */
   public function friendlyFind($query)
   {
-    return new sfLuceneResults($this->find($query), $this);
+    $class = 'sfLuceneResults';
+    if($query instanceof sfLuceneFacetsCriteria)
+    {
+      $class = 'sfLuceneFacetsResults';
+    }
+    
+    return new $class($this->find($query), $this);
   }
 
   /**
@@ -648,10 +695,12 @@ class sfLucene
   /**
    * Force the index to use a Lucene instance.  Do not ever use except for unit
    * testing.
+   *
+   * @deprecated use setSearchService
    */
-  public function forceLucene($lucene)
+  public function forceLucene($service)
   {
-    $this->lucene = $lucene;
+    $this->setSearchService($service);
   }
 
   /**
