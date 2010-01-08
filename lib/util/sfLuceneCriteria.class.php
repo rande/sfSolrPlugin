@@ -157,18 +157,14 @@ class sfLuceneCriteria
       
       throw new sfException('Wrong object type');
     }
-    else // string ...
+    else if($query !== Apache_Solr_Service::escape($query) && !$force)
     {
-      
-      if($query !== Apache_Solr_Service::escape($query) && !$force)
-      {
 
-        throw new sfException('Invalid terms : '.$query.' != '.Apache_Solr_Service::escape($query));
-      }
+      throw new sfException('Invalid terms : '.$query.' != '.Apache_Solr_Service::escape($query));
     }
     
     $this->query = strlen($this->query) == 0 ? $query : $this->query.' '.$type.' '.$query;
-    
+
     return $this;
   }
   
@@ -197,7 +193,7 @@ class sfLuceneCriteria
    */
   public function addSane($phrase, $type = sfLuceneCriteria::TYPE_AND, $inner_type = sfLuceneCriteria::TYPE_OR)
   {
-    $keywords = preg_split("/[\s,]+/", $phrase);
+    $keywords = preg_split("/[\ ,\.]+/", $phrase);
 
     $c = new self;
     foreach($keywords as $keyword)
@@ -205,7 +201,7 @@ class sfLuceneCriteria
       $c->add(self::sanitize($keyword), $inner_type, true);
     }
 
-    $this->add($c, $type);
+    $this->add($c, $type, true);
 
     return $this;
   }
@@ -216,7 +212,6 @@ class sfLuceneCriteria
    * @param string $phrase
    * @param string $type : OR | AND operator
    * @return sfLuceneCriteria
-   *
    */
   public function addPhrase($phrase, $type = sfLuceneCriteria::TYPE_AND)
   {
@@ -252,6 +247,7 @@ class sfLuceneCriteria
     
     if ($stop == null && $start == null)
     {
+      
       throw new sfLuceneException('You must specify at least a start or stop in a range query.');
     }
 
@@ -544,6 +540,6 @@ class sfLuceneCriteria
   public static function sanitize($keyword)
   {
 
-    return Apache_Solr_Service::phrase($keyword);
+    return sfLuceneApacheSolrService::phrase($keyword);
   }
 }
