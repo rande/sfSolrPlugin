@@ -10,7 +10,7 @@ abstract class BaseFakeForumI18nPeer {
 	const TABLE_NAME = 'fake_forum_i18n';
 
 	
-	const CLASS_DEFAULT = 'plugins.sfLucenePlugin.test.bin.model.FakeForumI18n';
+	const CLASS_DEFAULT = 'plugins.sfSolrPlugin.test.bin.model.FakeForumI18n';
 
 	
 	const NUM_COLUMNS = 4;
@@ -54,7 +54,7 @@ abstract class BaseFakeForumI18nPeer {
 	
 	public static function getMapBuilder()
 	{
-		return BasePeer::getMapBuilder('plugins.sfLucenePlugin.test.bin.model.map.FakeForumI18nMapBuilder');
+		return BasePeer::getMapBuilder('plugins.sfSolrPlugin.test.bin.model.map.FakeForumI18nMapBuilder');
 	}
 	
 	public static function getPhpNameMap()
@@ -582,5 +582,5 @@ if (Propel::isInit()) {
 		Propel::log('Could not initialize Peer: ' . $e->getMessage(), Propel::LOG_ERR);
 	}
 } else {
-			Propel::registerMapBuilder('plugins.sfLucenePlugin.test.bin.model.map.FakeForumI18nMapBuilder');
+			Propel::registerMapBuilder('plugins.sfSolrPlugin.test.bin.model.map.FakeForumI18nMapBuilder');
 }

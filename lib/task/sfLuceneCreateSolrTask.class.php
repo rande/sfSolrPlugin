@@ -382,7 +382,7 @@ EOF;
   </types>
 
  <fields>   
-  <!-- general, field use by sfLucenePlugin -->
+  <!-- general, field use by sfSolrPlugin -->
   <field name="sfl_guid"      type="string"   indexed="true"  stored="true"  multiValued="false" required="true"/>
   <field name="sfl_title"      type="string"   indexed="true"  stored="true"  multiValued="false" required="false"/>
   <field name="sfl_description"      type="string"   indexed="true"  stored="true"  multiValued="false" required="false"/>
@@ -556,7 +556,7 @@ XML;
       'stopwords.txt'
     );
 
-    $solr_example_path = sfConfig::get('sf_plugins_dir').'/sfLucenePlugin/lib/vendor/Solr/example/solr/conf';
+    $solr_example_path = sfConfig::get('sf_plugins_dir').'/sfSolrPlugin/lib/vendor/Solr/example/solr/conf';
     
     foreach($files as $file)
     {

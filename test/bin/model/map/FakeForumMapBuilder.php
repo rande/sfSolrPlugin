@@ -5,7 +5,7 @@
 class FakeForumMapBuilder {
 
 	
-	const CLASS_NAME = 'plugins.sfLucenePlugin.test.bin.model.map.FakeForumMapBuilder';
+	const CLASS_NAME = 'plugins.sfSolrPlugin.test.bin.model.map.FakeForumMapBuilder';
 
 	
 	private $dbMap;

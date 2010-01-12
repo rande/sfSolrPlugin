@@ -12,7 +12,7 @@ class ProjectConfiguration extends sfProjectConfiguration
     // for compatibility / remove and enable only the plugins you want
     $this->enablePlugins(array(
      'sfDoctrinePlugin',
-     'sfLucenePlugin',
+     'sfSolrPlugin',
     ));
   }
 }

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-require_once  sfConfig::get('sf_plugins_dir'). '/sfLucenePlugin/modules/sfLucene/lib/BasesfLuceneComponents.class.php';
+require_once  sfConfig::get('sf_plugins_dir'). '/sfSolrPlugin/modules/sfLucene/lib/BasesfLuceneComponents.class.php';
 
 /**
  * @package    sfLucenePlugin

@@ -50,7 +50,7 @@ class sfLuceneHighlightFilter extends sfFilter
         'notice_referer_string'     => '<div>Welcome from <strong>%from%</strong>!  The following keywords were automatically highlighted: %keywords% %remove%</div>',
         'notice_string'             => '<div>The following keywords were automatically highlighted: %keywords% %remove%</div>',
         'remove_string'             => '[<a href="%url%">remove highlighting</a>]',
-        'css'                       => '../sfLucenePlugin/css/search.css',
+        'css'                       => '../sfSolrPlugin/css/search.css',
         'possible_refers'           => array(
                                         'google'  => array('qs' => 'q',         'name' => 'Google'),
                                         'yahoo'   => array('qs' => 'p',         'name' => 'Yahoo!'),

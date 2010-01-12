@@ -138,7 +138,7 @@ EOF;
     }
 
     // start the jetty built in server
-    $command = sprintf('cd %s/plugins/sfLucenePlugin/lib/vendor/Solr/example; %s %s -Dsolr.solr.home=%s/config/solr/ -Dsolr.data.dir=%s/data/solr_index -jar start.jar > %s/solr_server_%s_%s.log 2>&1 & echo $!',
+    $command = sprintf('cd %s/plugins/sfSolrPlugin/lib/vendor/Solr/example; %s %s -Dsolr.solr.home=%s/config/solr/ -Dsolr.data.dir=%s/data/solr_index -jar start.jar > %s/solr_server_%s_%s.log 2>&1 & echo $!',
       sfConfig::get('sf_root_dir'),
       $this->nohup,
       $this->java,
