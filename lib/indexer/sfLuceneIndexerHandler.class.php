@@ -27,6 +27,10 @@ abstract class sfLuceneIndexerHandler
     $this->factory = new sfLuceneIndexerFactory($this->getSearch());
   }
 
+  /**
+   *
+   * @return sfLucene
+   */
   protected function getSearch()
   {
     return $this->search;

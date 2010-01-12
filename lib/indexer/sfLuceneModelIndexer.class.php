@@ -52,6 +52,13 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   }
 
   /**
+   * return the full document
+   *
+   * @return Apache_Solr_Document
+   */
+  abstract protected function getDocument();
+
+  /**
    * Calculates the GUID for the model
    */
   abstract protected function getModelGuid();
@@ -108,8 +115,8 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
    */
   protected function configureDocumentMetas(Apache_Solr_Document $doc)
   {
-    $doc->addField('sfl_model', $this->getModelName());
-    $doc->addField('sfl_type', 'model');
+    $doc->setField('sfl_model', $this->getModelName());
+    $doc->setField('sfl_type', 'model');
 
     return $doc;
   }

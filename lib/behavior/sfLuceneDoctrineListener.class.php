@@ -38,7 +38,6 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
         sfContext::getInstance()->getLogger()->crit('{sfLuceneDoctrineListener::postSave} Error while saving document to solr : '.$e->getMessage());
       }
     }
-
   }
 
   /**
@@ -89,6 +88,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
     {
 
       $instance->getIndexerFactory()->getModel($node)->delete();
+      $instance->getSearchService()->commit();
     }
   }
 
@@ -111,6 +111,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
     foreach ($this->getSearchInstances($node) as $instance)
     {
       $instance->getIndexerFactory()->getModel($node)->insert();
+      $instance->getSearchService()->commit();
     }
   }
 

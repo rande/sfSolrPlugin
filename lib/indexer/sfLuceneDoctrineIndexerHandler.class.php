@@ -79,11 +79,69 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
 
     $collection = $query->limit($limit)->offset($offset)->execute();
 
+    $documents = array();
+    $pks = array();
     foreach($collection as $record)
     {
-      $this->getFactory()->getModel($record)->save();
+      $doc = $this->getFactory()->getModel($record)->getDocument();
+
+      if(!$doc)
+      {
+        $this->getSearch()->getEventDispatcher()->notify(
+          new sfEvent($this, 'application.log', array(
+            sprintf('invalid document %s [id:%s]: ', get_class($record), $record->identifier()),
+            'priority' => sfLogger::ALERT
+          ))
+        );
+        continue;
+      }
+      $documents[] = $doc;
+      
+      $field = $doc->getField('id');
+      
+      $pks[] = $field['value'];
+      
       unset($record);
     }
+
+
+    $search_engine =  $this->getSearch()->getSearchService();
+
+    try
+    {
+      $search_engine->deleteByMultipleIds(array_keys($documents));
+      $search_engine->commit();
+
+      $search_engine->addDocuments($documents);
+      $search_engine->commit();
+
+      $this->getSearch()->getEventDispatcher()->notify(
+         new sfEvent(
+           $this,
+           'indexer.log',
+           array('indexing ok - primary keys [%s]', implode(', ', $pks))
+         )
+      );
+    }
+    catch(Exception $e)
+    {
+       $this->getSearch()->getEventDispatcher()->notify(
+         new sfEvent(
+           $this,
+           'indexer.log',
+           array('indexing Failed indexing object - primary keys [%s]', implode(', ', $pks))
+         )
+      );
+       
+      $this->getSearch()->getEventDispatcher()->notify(
+        new sfEvent($this, 'application.log', array(
+          'indexing document fail : '.$e->getMessage(),
+          'priority' => sfLogger::ALERT
+        ))
+      );
+    }
+
+    
     unset($collection);
   }
 }

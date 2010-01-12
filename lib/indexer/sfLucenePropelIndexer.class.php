@@ -32,19 +32,13 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     parent::__construct($search, $instance);
   }
 
-  
-  /**
-  * Inserts the provided model into the index based off parameters in search.yml.
-  */
-  public function insert()
+  public function getDocument()
   {
-    // should we continue with indexing?
+     // should we continue with indexing?
     if (!$this->shouldIndex())
     {
-      // indexer said to skip indexing
-      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Ignoring model "%s" from index with primary key = %s', $this->getModelName(), $this->getModel()->getPrimaryKey())));
 
-      return $this;
+      return false;
     }
 
     $old_culture = null;
@@ -63,13 +57,34 @@ class sfLucenePropelIndexer extends sfLuceneModelIndexer
     $doc = $this->configureDocumentMetas($doc);
 
     // add document to index
-    $this->addDocument($doc, $this->getModelGuid());
+    $doc->addField('sfl_guid', $this->getModelGuid());
 
     // restore culture in symfony i18n detection
     if ($old_culture)
     {
       $this->getModel()->setCulture($old_culture);
     }
+
+    return $doc;
+  }
+  
+  /**
+  * Inserts the provided model into the index based off parameters in search.yml.
+  */
+  public function insert()
+  {
+    $doc = $this->getDocument();
+    
+    // should we continue with indexing?
+    if (!$doc)
+    {
+      // indexer said to skip indexing
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Ignoring model "%s" from index with primary key = %s', $this->getModelName(), $this->getModel()->getPrimaryKey())));
+
+      return $this;
+    }
+
+    $this->addDocument($doc, $this->getModelGuid());
 
     // notify about new record
     $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Inserted model "%s" from index with primary key = %s', $this->getModelName(), $this->getModel()->getPrimaryKey())));

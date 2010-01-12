@@ -66,12 +66,12 @@ abstract class sfLuceneIndexer
     {
       $this->getConfiguration()->getEventDispatcher()->notify(
         new sfEvent($this, 'application.log', array(
-          '{sfSolrPlugin} saving document to index fail : '.$e->getMessage(),
+          'indexing document fail : '.$e->getMessage(),
           'priority' => sfLogger::ALERT
         ))
       );
     }
-    
+
     return $this;
   }
 
@@ -119,7 +119,7 @@ abstract class sfLuceneIndexer
   */
   protected function addDocument(Apache_Solr_Document $document, $guid)
   {
-    $document->addField('sfl_guid', $guid);
+    $document->setField('sfl_guid', $guid);
 
     $timer = sfTimerManager::getTimer('Solr Search Lucene');
     $this->getSearch()->getLucene()->addDocument($document);

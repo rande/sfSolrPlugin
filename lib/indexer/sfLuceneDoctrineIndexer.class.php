@@ -19,21 +19,18 @@
  */
 class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
 {
-  /**
-  * Inserts the provided model into the index based off parameters in search.yml.
-  * @param BaseObject $this->getModel() The model to insert
-  */
-  public function insert()
+
+  public function getDocument()
   {
     if (!$this->shouldIndex())
     {
-      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('model "%s" cancelled indexation - primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));
-      
-      return $this;
+
+      return false;
     }
 
+
     $old_culture = null;
-    
+
     // automatic symfony i18n detection
     if ($this->getModel()->getTable()->hasRelation('Translation'))
     {
@@ -46,18 +43,39 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
     $doc = $this->configureDocumentFields($doc);
     //$doc = $this->configureDocumentCategories($doc);
     $doc = $this->configureDocumentMetas($doc);
-    
-    // add document
 
-    $this->addDocument($doc, $this->getModelGuid());
-    
-    $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Inserted model "%s" from index with primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));
+    // add document
+    $doc->setField('sfl_guid', $this->getModelGuid());
 
     // restore culture in symfony i18n detection
     if ($old_culture)
     {
       sfDoctrineRecord::setDefaultCulture($old_culture);
     }
+
+    return $doc;
+  }
+
+    /**
+  * Inserts the provided model into the index based off parameters in search.yml.
+   *
+  * @param BaseObject $this->getModel() The model to insert
+  */
+  public function insert()
+  {
+    $doc = $this->getDocument();
+
+    if (!$doc)
+    {
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('model "%s" cancelled indexation - primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));
+
+      return $this;
+    }
+
+    $this->addDocument($doc, $this->getModelGuid());
+
+    $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Inserted model "%s" from index with primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));
+
     return $this;
   }
 
