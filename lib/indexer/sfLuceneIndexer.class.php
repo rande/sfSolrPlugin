@@ -50,17 +50,35 @@ abstract class sfLuceneIndexer
 
   /**
    * Saves the record.
+   *
+   * Any errors generated is logged
+   *
+   * @return sfLuceneIndexer
    */
   public function save()
   {
-    $this->delete();
-    $this->insert();
-
+    try
+    {
+      $this->delete();
+      $this->insert();
+    }
+    catch(Exception $e)
+    {
+      $this->getConfiguration()->getEventDispatcher()->notify(
+        new sfEvent($this, 'application.log', array(
+          '{sfSolrPlugin} saving document to index fail : '.$e->getMessage(),
+          'priority' => sfLogger::ALERT
+        ))
+      );
+    }
+    
     return $this;
   }
 
   /**
   * Gets the search instance.
+  *
+  * @return sfLucene
   */
   protected function getSearch()
   {
@@ -68,11 +86,13 @@ abstract class sfLuceneIndexer
   }
 
   /**
-   * Return the context that the search is bound to
+   * Return the sfApplicationConfiguration that the search is bound to
+   *
+   * @return sfApplicationConfiguration
    */
-  protected function getContext()
+  protected function getConfiguration()
   {
-    return $this->search->getContext();
+    return $this->search->getConfiguration();
   }
 
   /**
