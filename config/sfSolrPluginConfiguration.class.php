@@ -1,6 +1,6 @@
 <?php
 
-class sfLucenePluginConfiguration extends sfPluginConfiguration
+class sfSolrPluginConfiguration extends sfPluginConfiguration
 {
 
   public function setup()
@@ -28,7 +28,7 @@ class sfLucenePluginConfiguration extends sfPluginConfiguration
   public function loadConfigHandlerClasses()
   {
     
-    $lib_folder = sfConfig::get('sf_plugins_dir').'/sfLucenePlugin/lib/config';
+    $lib_folder = sfConfig::get('sf_plugins_dir').'/sfSolrPlugin/lib/config';
     
     if(!class_exists('sfLuceneProjectConfigHandler', true))
     {
