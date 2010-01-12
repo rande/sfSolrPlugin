@@ -272,6 +272,17 @@ class sfLucene
     $this->raw_configuration = $config;
   }
 
+  /**
+   * return the related sfApplicationConfiguration bound to this index
+   * 
+   * @return sfApplicationConfiguration
+   */
+  public function getConfiguration()
+  {
+
+    return $this->configuration;
+  }
+
   public function getRawConfiguration()
   {
     
