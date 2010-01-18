@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new limeade_test(26, limeade_output::get());
+$t = new limeade_test(27, limeade_output::get());
 
 class Foo { }
 
@@ -162,3 +162,9 @@ $t->cmp_ok($s, '===', $expected, '->addProximity()');
 $t->diag('testing getNewCriteria()');
 
 $t->isa_ok(inst()->getNewCriteria(), 'sfLuceneCriteria', '->getNewCriteria() returns a new instance of sfLuceneCriteria');
+
+$s = inst()->add('toto')->add(' ')->add('pipop')->getQuery();
+
+$expected = 'toto AND pipop';
+$t->cmp_ok($s, '===', $expected, '->add() with empty string');
+

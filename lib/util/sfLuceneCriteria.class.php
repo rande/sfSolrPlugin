@@ -156,7 +156,7 @@ class sfLuceneCriteria
        throw new sfException('Invalid terms : '.$query.' != '.sfLuceneApacheSolrService::escape($query));
      }
      
-     return $query;
+     return trim($query);
   }
   
   /**
