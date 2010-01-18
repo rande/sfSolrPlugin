@@ -235,15 +235,15 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
         $value = array($value);
       }
 
-      foreach($value as $v)
+      foreach($value as $pos => $v)
       {
         if($transform)
         {
-           $v = call_user_func($transform, $v);
+           $value[$pos] = call_user_func($transform, $v);
         }
-        
-        $doc->setField($field, $v, $boost);
       }
+      
+      $doc->setField($field, $value, $boost);
     }
 
     return $doc;

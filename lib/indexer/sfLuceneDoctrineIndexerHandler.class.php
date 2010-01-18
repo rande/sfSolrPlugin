@@ -99,7 +99,7 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
       
       $field = $doc->getField('id');
       
-      $pks[] = $field['value'];
+      $pks[] = $field['value']['0'];
       
       unset($record);
     }
