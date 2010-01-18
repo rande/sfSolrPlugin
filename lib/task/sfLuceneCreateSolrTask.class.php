@@ -201,7 +201,7 @@ XML;
     file_put_contents($base_solr_config_dir.'/solr.xml', $content);
   }
   
-  public function createSolrTxtFiles($config_dir, sfFilesystem $fs)
+  public function createSolrTxtFiles($config_dir)
   {
     $files = array(
       'synonyms.txt',
