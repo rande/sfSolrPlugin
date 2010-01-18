@@ -140,7 +140,7 @@ class sfLuceneCriteria
        if(strlen($query) == 0)
        {
 
-         return $this;
+         return false;
        }
 
        $query = '('.$query.')';
@@ -168,19 +168,22 @@ class sfLuceneCriteria
   public function add($query, $type = sfLuceneCriteria::TYPE_AND, $force = false)
   {
     
-    $query = $this->checkQueryFragment($query, $force);
+    if($query = $this->checkQueryFragment($query, $force))
+    {
+      $this->query = strlen($this->query) == 0 ? $query : $this->query.' '.$type.' '.$query;
+    }
     
-    $this->query = strlen($this->query) == 0 ? $query : $this->query.' '.$type.' '.$query;
-
     return $this;
   }
   
   public function addField($field, $query, $type = sfLuceneCriteria::TYPE_AND, $force = false)
   {
-    $query = $field.':('.$this->checkQueryFragment($query, $force).')';
-    
-    $this->query = strlen($this->query) == 0 ? $query : $this->query.' '.$type.' '.$query;
-
+    if($query = $this->checkQueryFragment($query, $force))
+    {
+      $query = $field.':('.$query.')';
+      $this->query = strlen($this->query) == 0 ? $query : $this->query.' '.$type.' '.$query;
+    }
+   
     return $this;
   }
   
