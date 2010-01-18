@@ -216,7 +216,7 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
       {
         $values[] = $object->__toString();
       }
-
+      
       return $values;
     }
     else if($value instanceof Doctrine_Record)

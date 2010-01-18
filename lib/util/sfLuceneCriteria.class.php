@@ -29,7 +29,7 @@ class sfLuceneCriteria
     $scoring = null,
     $params = array(),
     $path = null,
-    $http_method = Apache_Solr_Service::METHOD_GET,
+    $http_method = sfLuceneApacheSolrService::METHOD_GET,
     $limit = 10,
     $offset = 0;
 
@@ -125,7 +125,40 @@ class sfLuceneCriteria
   {
     return new self;
   }
+  
+  public function checkQueryFragment($query, $force = false)
+  {
+    if($query instanceof sfLuceneCriteria)
+     {
+       if($this === $query)
+       {
 
+         throw new sfException('Cannot add itself as a subquery');
+       }
+
+       $query = $query->getQuery();
+       if(strlen($query) == 0)
+       {
+
+         return $this;
+       }
+
+       $query = '('.$query.')';
+     }
+     else if(is_object($query))
+     {
+
+       throw new sfException('Wrong object type');
+     }
+     else if($query !== sfLuceneApacheSolrService::escape($query) && !$force)
+     {
+
+       throw new sfException('Invalid terms : '.$query.' != '.sfLuceneApacheSolrService::escape($query));
+     }
+     
+     return $query;
+  }
+  
   /**
    * Adds a subquery to the query itself.  It accepts either a string which will
    * be parsed or a sfLuceneCriteria object.
@@ -135,33 +168,16 @@ class sfLuceneCriteria
   public function add($query, $type = sfLuceneCriteria::TYPE_AND, $force = false)
   {
     
-    if($query instanceof sfLuceneCriteria)
-    {
-      if($this === $query)
-      {
-        
-        throw new sfException('Cannot add itself as a subquery');
-      }
+    $query = $this->checkQueryFragment($query, $force);
+    
+    $this->query = strlen($this->query) == 0 ? $query : $this->query.' '.$type.' '.$query;
 
-      $query = $query->getQuery();
-      if(strlen($query) == 0)
-      {
-
-        return $this;
-      }
-      
-      $query = '('.$query.')';
-    }
-    else if(is_object($query))
-    {
-      
-      throw new sfException('Wrong object type');
-    }
-    else if($query !== Apache_Solr_Service::escape($query) && !$force)
-    {
-
-      throw new sfException('Invalid terms : '.$query.' != '.Apache_Solr_Service::escape($query));
-    }
+    return $this;
+  }
+  
+  public function addField($field, $query, $type = sfLuceneCriteria::TYPE_AND, $force = false)
+  {
+    $query = $field.':('.$this->checkQueryFragment($query, $force).')';
     
     $this->query = strlen($this->query) == 0 ? $query : $this->query.' '.$type.' '.$query;
 
@@ -181,6 +197,22 @@ class sfLuceneCriteria
   {
     
     return $this->addSane($query, $type);
+  }
+  
+  /**
+   * equivalent to addSane
+   * 
+   * Add a field subquery to the query itself. The phrase will be automatically sanitized
+   * 
+   * @param string $field
+   * @param string $phrase
+   * @param string $type : OR | AND operator
+   * @return sfLuceneCriteria
+   */
+  public function addFieldString($field, $query, $type = sfLuceneCriteria::TYPE_AND)
+  {
+    
+    return $this->addFieldSane($field, $query, $type);
   }
 
   /**
@@ -205,6 +237,30 @@ class sfLuceneCriteria
 
     return $this;
   }
+  
+  /**
+   * Add a field subquery to the query itself. The phrase will be splited by words
+   *
+   * @param string $field
+   * @param string $phrase
+   * @param string $type : OR | AND operator
+   * @param string $inner_type : OR | AND operator
+   * @return sfLuceneCriteria
+   */
+  public function addFieldSane($field, $phrase, $type = sfLuceneCriteria::TYPE_AND, $inner_type = sfLuceneCriteria::TYPE_OR)
+  {
+    $keywords = preg_split("/[\ ,\.]+/", $phrase);
+
+    $c = new self;
+    foreach($keywords as $keyword)
+    {
+      $c->add(self::sanitize($keyword), $inner_type, true);
+    }
+
+    $this->addField($field, $c->getQuery(), $type, true);
+
+    return $this;
+  }
 
   /**
    * Add a subquery to the query itself. The phrase will be automatically sanitized
@@ -218,6 +274,12 @@ class sfLuceneCriteria
     
     return $this->add(self::sanitize($phrase), $type, true);
   }
+
+  public function addFieldPhrase($field, $phrase, $type = sfLuceneCriteria::TYPE_AND)
+  {
+    
+    return $this->addField($field, self::sanitize($phrase), $type, true);
+  }
   
   public function addWildcard($phrase, $type = sfLuceneCriteria::TYPE_AND)
   {
@@ -225,6 +287,12 @@ class sfLuceneCriteria
     return $this->add(self::sanitize($phrase), $type, true );
   }
 
+  public function addFieldWildcard($field, $phrase, $type = sfLuceneCriteria::TYPE_AND)
+  {
+    
+    return $this->addField($field, self::sanitize($phrase), $type, true );
+  }
+  
   public function getHttpMethod()
   {
 

@@ -104,7 +104,6 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
       unset($record);
     }
 
-
     $search_engine =  $this->getSearch()->getSearchService();
 
     try
