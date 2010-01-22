@@ -171,27 +171,27 @@ $t->cmp_ok($s, '===', $expected, '->add() with empty string');
 $t->diag('testing addPhraseGuess()');
 
 $s = inst()->addPhraseGuess('Thomas -"zend framework"')->getQuery();
-$expected = '-("zend framework") AND ("Thomas")';
+$expected = '(-("zend framework")) AND (("Thomas"))';
 $t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
 
 $s = inst()->addPhraseGuess('"Thomas"   -"zend framework"')->getQuery();
-$expected = '-("zend framework") AND ("Thomas")';
+$expected = '(-("zend framework")) AND (("Thomas"))';
 $t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
 
 $s = inst()->addPhraseGuess('"Thomas"   -.zend')->getQuery();
-$expected = '-(".zend") AND ("Thomas")';
+$expected = '(-(".zend")) AND (("Thomas"))';
 $t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
 
 $s = inst()->addPhraseGuess('Thomas Rabaix +"symfony expert" -"zend framework" +javascript -.net')->getQuery();
-$expected = '+("symfony expert" AND "javascript") AND -("zend framework" AND ".net") AND ("Thomas" OR "Rabaix")';
+$expected = '(+("symfony expert") AND +("javascript")) AND (-("zend framework") AND -(".net")) AND (("Thomas") OR ("Rabaix"))';
 $t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
 
 $s = inst()->addPhraseGuess('Thomas Rabaix +"sym"fony expert" -"zen-d framework" +javascript -.net')->getQuery();
-$expected = '+("sym" AND "javascript") AND -("zen-d framework" AND ".net") AND ("Thomas" OR "Rabaix" OR "fony" OR "expert")';
+$expected = '(+("sym") AND +("javascript")) AND (-("zen-d framework") AND -(".net")) AND (("Thomas") OR ("Rabaix") OR ("fony") OR ("expert"))';
 $t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
 
 $s = inst()->addPhraseFieldGuess('name', 'Thomas Rabaix +"sym"fony expert" -"zen-d framework" +javascript -.net')->getQuery();
-$expected = 'name:((+("sym" AND "javascript") AND -("zen-d framework" AND ".net") AND ("Thomas" OR "Rabaix" OR "fony" OR "expert")))';
+$expected = 'name:((+("sym") AND +("javascript") AND -("zen-d framework") AND -(".net") AND ("Thomas") AND ("Rabaix") AND ("fony") AND ("expert")))';
 $t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
 
 

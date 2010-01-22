@@ -278,10 +278,10 @@ class sfLuceneCriteria
       $c = new sfLuceneCriteria;
       foreach($phrases as $phrase)
       {
-        $c->addPhrase($phrase, $inner_type);
+        $c->add($sign.'('.self::sanitize($phrase).')', $inner_type, true);
       }
       
-      $this->add($sign.'('.$c->getQuery().')', 'AND', true); 
+      $this->add('('.$c->getQuery().')', 'AND', true); 
     }
     
     return $this;
@@ -313,10 +313,10 @@ class sfLuceneCriteria
       $c = new sfLuceneCriteria;
       foreach($phrases as $phrase)
       {
-        $c->addPhrase($phrase, $inner_type);
+        $c->add($sign.'('.self::sanitize($phrase).')', $type, true);
       }
       
-      $main_criteria->add($sign.'('.$c->getQuery().')', 'AND', true); 
+      $main_criteria->add($c->getQuery(), 'AND', true); 
     }
     
     $this->addField($field, $main_criteria, $type, true);
