@@ -137,6 +137,11 @@ class sfLucene
   {
     static $instances;
 
+    if($configuration == null)
+    {
+      $configuration = sfProjectConfiguration::getActive();
+    }
+    
     if (!$instances)
     {
       require($configuration->getConfigCache()->checkConfig('config/search.yml'));
