@@ -263,7 +263,7 @@ class sfLuceneCriteria
    */
   public function addPhraseGuess($full_phrase)
   {
-
+        
     foreach($this->guessParts($full_phrase) as $section => $phrases)
     {
       if(count($phrases) == 0)
@@ -313,10 +313,10 @@ class sfLuceneCriteria
       $c = new sfLuceneCriteria;
       foreach($phrases as $phrase)
       {
-        $c->add($sign.'('.self::sanitize($phrase).')', $type, true);
+        $c->add($sign.'('.self::sanitize($phrase).')', $inner_type, true);
       }
       
-      $main_criteria->add($c->getQuery(), 'AND', true); 
+      $main_criteria->add('('.$c->getQuery().')', 'AND', true); 
     }
     
     $this->addField($field, $main_criteria, $type, true);

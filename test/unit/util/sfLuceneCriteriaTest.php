@@ -191,8 +191,11 @@ $expected = '(+("sym") AND +("javascript")) AND (-("zen-d framework") AND -(".ne
 $t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
 
 $s = inst()->addPhraseFieldGuess('name', 'Thomas Rabaix +"sym"fony expert" -"zen-d framework" +javascript -.net')->getQuery();
-$expected = 'name:((+("sym") AND +("javascript") AND -("zen-d framework") AND -(".net") AND ("Thomas") AND ("Rabaix") AND ("fony") AND ("expert")))';
+$expected = 'name:(((+("sym") AND +("javascript")) AND (-("zen-d framework") AND -(".net")) AND (("Thomas") OR ("Rabaix") OR ("fony") OR ("expert"))))';
 $t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
 
 
+$s = inst()->addPhraseFieldGuess('name', 'poulet -sel -chasseur')->getQuery();
+$expected = 'name:(((-("sel") AND -("chasseur")) AND (("poulet"))))';
+$t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
 
