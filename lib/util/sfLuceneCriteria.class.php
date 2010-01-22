@@ -36,7 +36,8 @@ class sfLuceneCriteria
   const
     TYPE_NONE = '',
     TYPE_AND  = 'AND',
-    TYPE_OR   = 'OR';
+    TYPE_OR   = 'OR',
+    TYPE_DEFAULT = ' '; // default use the default separator defined in the schema.xml file
 
   
   public function __construct()
@@ -176,6 +177,153 @@ class sfLuceneCriteria
     return $this;
   }
   
+  public function guessParts($phrase)
+  {
+    // initialize variable
+     $phrase = trim($phrase);
+     $phrase = str_replace('""', '', $phrase);
+     $phrase = str_replace('\'\'', '', $phrase);
+
+     $default_separators = array(' ', ',');
+     $phrase_separators  = array('\'', '"');
+     $separators = array_merge($default_separators, $phrase_separators);
+     $separator = $default_separators;
+
+     $current_phrase = "";
+     $contains       = 'contains';
+
+     $parts = array(
+       'must_contains' => array(),
+       'must_not_contains' => array(),
+       'contains' => array(),
+     );
+
+     for($i = 0; $i < strlen($phrase); $i++)
+     {
+       $char = $phrase{$i};
+
+
+       if(strlen($current_phrase) == 0)
+       {
+
+         if($char == '-')
+         {
+           $contains = 'must_not_contains';
+           continue;
+         } 
+         elseif($char == '+')
+         {
+           $contains = 'must_contains';
+           continue;
+         }
+
+         if(in_array($char, $phrase_separators))
+         {
+           $separator = array($char);
+           continue;
+         } 
+         else if(in_array($char, $default_separators))
+         {
+           $separator = $default_separators;
+
+           continue;
+         }
+       }
+
+       // end of the phrase
+       if(strlen($current_phrase) > 0 && (in_array($char, $separator) || strlen($phrase) - 1 == $i))
+       {
+
+         if(strlen($phrase) - 1 == $i && !in_array($char, $separator))
+         {
+           $current_phrase .= $char;
+         }
+
+         $parts[$contains][] = $current_phrase;
+
+         // restore default values
+         $contains       = 'contains';
+         $current_phrase = '';
+         $separator      = $default_separators;
+
+         continue;
+       }
+
+       $current_phrase .= $char;
+     }
+     
+     return $parts;
+  }
+  /**
+   * This method try to parse the provided $phrase into a valid solr query
+   * The method can handle +/- and quote grouping
+   *
+   * @param string $phrase 
+   * @return sfLuceneCriteria 
+   */
+  public function addPhraseGuess($full_phrase)
+  {
+
+    foreach($this->guessParts($full_phrase) as $section => $phrases)
+    {
+      if(count($phrases) == 0)
+      {
+        
+        continue;
+      }
+
+      $inner_type = ($section == 'must_contains' || $section == 'must_not_contains') ? 'AND' : 'OR';
+      $sign       = ($section == 'must_contains' ? '+' : ($section == 'must_not_contains' ? '-' : ''));
+      
+      $c = new sfLuceneCriteria;
+      foreach($phrases as $phrase)
+      {
+        $c->addPhrase($phrase, $inner_type);
+      }
+      
+      $this->add($sign.'('.$c->getQuery().')', 'AND', true); 
+    }
+    
+    return $this;
+  }
+  
+  /**
+   * This method try to parse the provided $phrase into a valid solr query
+   * The method can handle +/- and quote grouping
+   *
+   * @param string $field 
+   * @param string $phrase 
+   * @return sfLuceneCriteria 
+   */
+  public function addPhraseFieldGuess($field, $full_phrase, $type = sfLuceneCriteria::TYPE_AND)
+  {
+
+    $main_criteria = new sfLuceneCriteria;
+    foreach($this->guessParts($full_phrase) as $section => $phrases)
+    {
+      if(count($phrases) == 0)
+      {
+        
+        continue;
+      }
+
+      $inner_type = ($section == 'must_contains' || $section == 'must_not_contains') ? 'AND' : 'OR';
+      $sign       = ($section == 'must_contains' ? '+' : ($section == 'must_not_contains' ? '-' : ''));
+      
+      $c = new sfLuceneCriteria;
+      foreach($phrases as $phrase)
+      {
+        $c->addPhrase($phrase, $inner_type);
+      }
+      
+      $main_criteria->add($sign.'('.$c->getQuery().')', 'AND', true); 
+    }
+    
+    $this->addField($field, $main_criteria, $type, true);
+    
+    return $this;
+  }
+  
   public function addField($field, $query, $type = sfLuceneCriteria::TYPE_AND, $force = false)
   {
     if($query = $this->checkQueryFragment($query, $force))
@@ -272,7 +420,7 @@ class sfLuceneCriteria
    * @param string $type : OR | AND operator
    * @return sfLuceneCriteria
    */
-  public function addPhrase($phrase, $type = sfLuceneCriteria::TYPE_AND)
+  public function addPhrase($phrase, $type = sfLuceneCriteria::TYPE_AND, $clever = false)
   {
     
     return $this->add(self::sanitize($phrase), $type, true);
@@ -610,7 +758,7 @@ class sfLuceneCriteria
    */
   public static function sanitize($keyword)
   {
-
+    $keyword = str_replace('"', '', $keyword);
     return sfLuceneApacheSolrService::phrase($keyword);
   }
 }

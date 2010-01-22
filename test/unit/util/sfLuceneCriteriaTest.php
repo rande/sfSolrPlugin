@@ -86,7 +86,7 @@ $t->cmp_ok($s, '===', '("test")', '::addSane() with standard string');
 $criteria->addSane('&" ? \unsafe'); 
 $s = $criteria->getQuery();
 
-$t->cmp_ok($s, '===', '("test") AND ("&\\"" OR "?" OR "\\\\unsafe")', '::addSane() with standard string');
+$t->cmp_ok($s, '===', '("test") AND ("&" OR "?" OR "\\\\unsafe")', '::addSane() with standard string');
 
 try {
   $criteria->add('carl!');
@@ -167,4 +167,32 @@ $s = inst()->add('toto')->add(' ')->add('pipop')->getQuery();
 
 $expected = 'toto AND pipop';
 $t->cmp_ok($s, '===', $expected, '->add() with empty string');
+
+$t->diag('testing addPhraseGuess()');
+
+$s = inst()->addPhraseGuess('Thomas -"zend framework"')->getQuery();
+$expected = '-("zend framework") AND ("Thomas")';
+$t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
+
+$s = inst()->addPhraseGuess('"Thomas"   -"zend framework"')->getQuery();
+$expected = '-("zend framework") AND ("Thomas")';
+$t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
+
+$s = inst()->addPhraseGuess('"Thomas"   -.zend')->getQuery();
+$expected = '-(".zend") AND ("Thomas")';
+$t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
+
+$s = inst()->addPhraseGuess('Thomas Rabaix +"symfony expert" -"zend framework" +javascript -.net')->getQuery();
+$expected = '+("symfony expert" AND "javascript") AND -("zend framework" AND ".net") AND ("Thomas" OR "Rabaix")';
+$t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
+
+$s = inst()->addPhraseGuess('Thomas Rabaix +"sym"fony expert" -"zen-d framework" +javascript -.net')->getQuery();
+$expected = '+("sym" AND "javascript") AND -("zen-d framework" AND ".net") AND ("Thomas" OR "Rabaix" OR "fony" OR "expert")';
+$t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
+
+$s = inst()->addPhraseFieldGuess('name', 'Thomas Rabaix +"sym"fony expert" -"zen-d framework" +javascript -.net')->getQuery();
+$expected = 'name:((+("sym" AND "javascript") AND -("zen-d framework" AND ".net") AND ("Thomas" OR "Rabaix" OR "fony" OR "expert")))';
+$t->cmp_ok($s, '===', $expected, '->addPhraseGuess()');
+
+
 
