@@ -133,7 +133,7 @@ class sfLucene
   /**
    * Returns all the instances
    */
-  static public function getAllInstances(sfApplicationConfiguration $configuration)
+  static public function getAllInstances(sfApplicationConfiguration $configuration = null)
   {
     static $instances;
 
