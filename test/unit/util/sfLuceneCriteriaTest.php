@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new limeade_test(27, limeade_output::get());
+$t = new limeade_test(34, limeade_output::get());
 
 class Foo { }
 
