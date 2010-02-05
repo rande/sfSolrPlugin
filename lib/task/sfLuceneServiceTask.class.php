@@ -136,14 +136,27 @@ EOF;
 
       throw new sfException('Server is running, cannot start (pid file : '.$this->getPidFile($app, $env).')');
     }
-
+    
+    $instances = sfLucene::getAllInstances($this->configuration);
+    
+    if(count($instances) == 0)
+    {
+      
+      throw new sfException('There is no Solr instance for the current application');
+    }
+    
+    $host     = $instances[0]->getParameter('host');
+    $port     = $instances[0]->getParameter('port');
+    $base_url = $instances[0]->getParameter('base_url');
+    
     // start the jetty built in server
-    $command = sprintf('cd %s/plugins/sfSolrPlugin/lib/vendor/Solr/example; %s %s -Dsolr.solr.home=%s/config/solr/ -Dsolr.data.dir=%s/data/solr_index -jar start.jar > %s/solr_server_%s_%s.log 2>&1 & echo $!',
+    $command = sprintf('cd %s/plugins/sfSolrPlugin/lib/vendor/Solr/example; %s %s -Dsolr.solr.home=%s/config/solr/ -Dsolr.data.dir=%s/data/solr_index -Djetty.port=%s -jar start.jar > %s/solr_server_%s_%s.log 2>&1 & echo $!',
       sfConfig::get('sf_root_dir'),
       $this->nohup,
       $this->java,
       sfConfig::get('sf_root_dir'),
       sfConfig::get('sf_root_dir'),
+      $port,
       sfConfig::get('sf_root_dir').'/log',
       $app,
       $env
@@ -160,6 +173,7 @@ EOF;
     file_put_contents($this->getPidFile($app, $env), $pid);
 
     $this->logSection("solr", "Server started with pid : ".$pid);
+    $this->logSection("solr", "server started  : http://".$host.":".$port.$base_url);
   }
 
   public function stop($app, $env)
