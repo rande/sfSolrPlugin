@@ -179,7 +179,7 @@ Before indexing your models you need to declare which fields to index. These fie
 
 Further, you can specify a transformation function to put the value through before it is indexed.  This is useful if you have HTML code being returned and you need strip it out.  Define this like so:
 
-Everytime you update the search.yml file, the `create-config-solr` command must be run. The server must be restarted too. Depending on how deep is your update, you *might* need to reindex or to delete the index.
+Everytime you update the search.yml file, the `create-solr-conf` command must be run. The server must be restarted too. Depending on how deep is your update, you *might* need to reindex or to delete the index.
 
 
 
@@ -361,7 +361,7 @@ simple search
     $lucene = sfLucene::getInstance('index', 'fr');
 
     // retrieve the results
-    $sf_lucene_results = $lucene->friendlyFind($c);
+    $sf_lucene_results = $lucene->friendlyFind($criteria);
 
     // in a template file
     <ul>
@@ -450,7 +450,7 @@ There are two types of facet :
 Usage:
 
     [php]
-    $criteria = new sfLuceneFacetCriteria;
+    $criteria = new sfLuceneFacetsCriteria;
     $criteria
        ->addFacetField('sfl_model')
        ->addFacetQuery('first_letter:[A TO M]')
