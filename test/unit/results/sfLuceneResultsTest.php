@@ -19,7 +19,7 @@ require dirname(__FILE__) . '/../../bootstrap/unit.php';
 $t = new limeade_test(18, limeade_output::get());
 
 
-class MockResult extends Apache_Solr_Document
+class MockResult extends sfLuceneDocument
 {
   public $name;
   public $sfl_type = 'model';
@@ -43,7 +43,7 @@ foreach(range(1, 3) as $num)
   );
   
   $expected_objects[] =<<<VAR_DUMP
-Apache_Solr_Document::__set_state(array(
+sfLuceneDocument::__set_state(array(
    '_documentBoost' => false,
    '_fields' => 
   array (
@@ -74,7 +74,7 @@ VAR_DUMP;
 $standard_response = sprintf($standard_response, 3, implode(", ", $results));
 
 
-$response = new Apache_Solr_Response($standard_response);
+$response = new sfLuceneResponse($standard_response);
 
 $search = sfLucene::getInstance('index', 'en', $app_configuration);
 

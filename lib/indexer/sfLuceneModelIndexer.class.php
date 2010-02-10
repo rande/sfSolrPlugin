@@ -54,7 +54,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   /**
    * return the full document
    *
-   * @return Apache_Solr_Document
+   * @return sfLuceneDocument
    */
   abstract protected function getDocument();
 
@@ -113,7 +113,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   /**
    * Configures meta data about the document
    */
-  protected function configureDocumentMetas(Apache_Solr_Document $doc)
+  protected function configureDocumentMetas(sfLuceneDocument $doc)
   {
     $doc->setField('sfl_model', $this->getModelName());
     $doc->setField('sfl_type', 'model');
@@ -124,7 +124,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   /**
    * Configures categories into the document
    */
-  protected function configureDocumentCategories(Apache_Solr_Document $doc)
+  protected function configureDocumentCategories(sfLuceneDocument $doc)
   {
     $categories = $this->getModelCategories();
 
@@ -146,7 +146,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
 
   /**
    * Returns the base document to work with.  Most of the time this will just
-   * return an empty Apache_Solr_Document, but if a callback is specified
+   * return an empty sfLuceneDocument, but if a callback is specified
    * it will return that.
    */
   protected function getBaseDocument()
@@ -165,14 +165,14 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
       
       $doc = $this->getModel()->$cb($this->getSearch());
 
-      if (!($doc instanceof Apache_Solr_Document))
+      if (!($doc instanceof sfLuceneDocument))
       {
-        throw new sfLuceneIndexerException(sprintf('"%s::%s()" did not return a valid document (must be an instance of Apache_Solr_Document)', $this->getModelName(), $cb));
+        throw new sfLuceneIndexerException(sprintf('"%s::%s()" did not return a valid document (must be an instance of sfLuceneDocument)', $this->getModelName(), $cb));
       }
     }
     else
     {
-      $doc = new Apache_Solr_Document();
+      $doc = new sfLuceneDocument();
     }
 
     return $doc;
@@ -182,7 +182,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   /**
    * Builds the fields into the document as configured by the parameters.
    */
-  protected function configureDocumentFields(Apache_Solr_Document $doc)
+  protected function configureDocumentFields(sfLuceneDocument $doc)
   {
     $properties = $this->getModelProperties();
 

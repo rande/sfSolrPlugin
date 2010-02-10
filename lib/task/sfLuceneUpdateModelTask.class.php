@@ -27,7 +27,7 @@ class sfLuceneUpdateModelTask extends sfLuceneBaseTask
       new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
       new sfCommandArgument('index', sfCommandArgument::REQUIRED, 'The name of the index to rebuild'),
       new sfCommandArgument('culture', sfCommandArgument::REQUIRED, 'The name of the culture to rebuild'),
-      new sfCommandArgument('model', null, sfCommandArgument::REQUIRED, 'The model to reindex from the index', null),
+      new sfCommandArgument('model', sfCommandArgument::REQUIRED, 'The model to reindex from the index'),
     ));
 
     $this->addOptions(array(

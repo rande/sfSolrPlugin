@@ -20,7 +20,6 @@
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version SVN: $Id:$
  */
-
 class sfLuceneFacetsCriteria extends sfLuceneCriteria
 {
   

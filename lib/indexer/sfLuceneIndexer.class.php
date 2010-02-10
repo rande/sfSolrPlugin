@@ -117,7 +117,7 @@ abstract class sfLuceneIndexer
   /**
   * Adds a document to the index while attaching a GUID
   */
-  protected function addDocument(Apache_Solr_Document $document, $guid)
+  protected function addDocument(sfLuceneDocument $document, $guid)
   {
     $document->setField('sfl_guid', $guid);
 

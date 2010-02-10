@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../bootstrap/unit.php';
 
-$t = new limeade_test(55, limeade_output::get());
+$t = new limeade_test(53, limeade_output::get());
 
 $lucene = sfLucene::getInstance('index', 'en', $app_configuration);
 
@@ -90,8 +90,6 @@ $t->is($h->get('name'), 'index', 'property "name" is the name of the index');
 $t->is($h->get('culture'), 'en', 'property "culture" is the culture of the index');
 $t->is($h->get('enabled_cultures'), array('en', 'fr'), 'property "enabled_cultures" contains all enabled cultures');
 $t->is($h->get('encoding'), 'UTF-8', 'property "encoding" is the encoding');
-$t->is($h->get('stop_words'), array('and', 'the'), 'property "stop_words" contains the stop words');
-$t->is($h->get('short_words'), 2, 'property "short_words" is the short word limit');
 $t->is($h->get('mb_string'), true, 'property "mb_string" indicates if to use mb_string functions');
 
 $t->isa_ok($h->get('models'), 'sfParameterHolder', 'property "models" is a sfParameterHolder');
@@ -152,7 +150,6 @@ $originalLucene = $lucene->getLucene();
 $lucene->forceLucene($mock);
 
 $t->is($lucene->find('foo'), range(1, 100), '->find() returns what ZSL returns');
-$t->ok(sfLuceneCriteria::newInstance($lucene)->add('foo')->getQuery() == $mock->args[0], '->find() parses string queries');
 
 $query = sfLuceneCriteria::newInstance($lucene)->add('foo')->addRange('a', 'b', 'c');
 $lucene->find($query);
@@ -168,10 +165,15 @@ $lucene->find(
 
 $t->is_deeply(
   array_splice($mock->args, 1),
-  array (0, 10,array ( 'sort' =>
-    array ( 'sort1 asc, sort2 desc, sort3 asc',    ),
-  ),
-), '->find() uses sorting rules from sfLuceneCriteria');
+  array (
+    0, 
+    10,
+    array ( 
+      'fl' => array ( '*,score',    ), 
+      'sort' => array ( 'score desc, sort1 asc, sort2 desc, sort3 asc'   ),
+    ),
+    'GET'
+  ), '->find() uses sorting rules from sfLuceneCriteria');
 
 
 $mock->e = true;

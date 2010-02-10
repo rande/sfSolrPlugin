@@ -23,7 +23,7 @@ class sfLuceneResult
   /**
   * Consturctor, but consider using factor method ::getInstance()
   */
-  public function __construct(Apache_Solr_Document $result, sfLucene $search)
+  public function __construct(sfLuceneDocument $result, sfLucene $search)
   {
     $this->result = $result;
     $this->search = $search;
@@ -104,7 +104,19 @@ class sfLuceneResult
         $c = 'sfLuceneActionResult';
         break;
       case 'model':
-        $c = 'sfLuceneModelResult';
+        if(strtolower(sfConfig::get('sf_orm')) == 'doctrine')
+        {
+          $c = 'sfLuceneDoctrineResult';
+        }
+        else if(strtolower(sfConfig::get('sf_orm')) == 'propel')
+        {
+          $c = 'sfLucenePropelResult';
+        }
+        else
+        {
+          throw new sfException('Unable to detect the current ORM');
+        }
+        
         break;
       default:
         $c = __CLASS__;
@@ -129,6 +141,7 @@ class sfLuceneResult
       
       if($this->result->__isset($field))
       {
+        
         return $this->result->__get($field);
       }
     }

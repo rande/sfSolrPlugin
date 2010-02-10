@@ -29,7 +29,7 @@ class sfLuceneResults implements Iterator, Countable, ArrayAccess
   /**
   * Constructor.  Weeds through the results.
   */
-  public function __construct(Apache_Solr_Response $response, sfLucene $search)
+  public function __construct(sfLuceneResponse $response, sfLucene $search)
   {
     $this->results = $response;
     $this->search = $search;

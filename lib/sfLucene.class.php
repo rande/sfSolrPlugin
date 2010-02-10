@@ -328,7 +328,7 @@ class sfLucene
   * Returns the lucene object
    *
   * @deprecated use getSearchService
-  * @return sfLuceneApacheSolrService
+  * @return sfLuceneService
   */
   public function getLucene()
   {
@@ -349,14 +349,12 @@ class sfLucene
 
   /**
    * define the solr engine, use this only for testing
-   *
-   * @deprecated use setSearchService
    */
   public function getSearchService()
   {
     if ($this->search_service == null)
     {
-      $solr = new sfLuceneApacheSolrService(
+      $solr = new sfLuceneService(
         $this->getParameter('host'),
         $this->getParameter('port'),
         $this->getParameter('base_url').'/'.$this->getParameter('index_location')
@@ -604,7 +602,7 @@ class sfLucene
 
     throw new sfException('not implemented');
   }
-
+  
   /**
   * Wrapper for Lucene's find()
   * @param mixed $query The query

@@ -19,7 +19,7 @@ require dirname(__FILE__) . '/../../bootstrap/unit.php';
 $t = new limeade_test(7, limeade_output::get());
 
 
-class MockResult extends Apache_Solr_Document
+class MockResult extends sfLuceneDocument
 {
   public $name;
 

@@ -29,7 +29,7 @@ class sfLuceneCriteria
     $scoring = null,
     $params = array(),
     $path = null,
-    $http_method = sfLuceneApacheSolrService::METHOD_GET,
+    $http_method = sfLuceneService::METHOD_GET,
     $limit = 10,
     $offset = 0;
 
@@ -151,10 +151,10 @@ class sfLuceneCriteria
 
        throw new sfException('Wrong object type');
      }
-     else if($query !== sfLuceneApacheSolrService::escape($query) && !$force)
+     else if($query !== sfLuceneService::escape($query) && !$force)
      {
 
-       throw new sfException('Invalid terms : '.$query.' != '.sfLuceneApacheSolrService::escape($query));
+       throw new sfException('Invalid terms : '.$query.' != '.sfLuceneService::escape($query));
      }
      
      return trim($query);
@@ -759,6 +759,6 @@ class sfLuceneCriteria
   public static function sanitize($keyword)
   {
     $keyword = str_replace('"', '', $keyword);
-    return sfLuceneApacheSolrService::phrase($keyword);
+    return sfLuceneService::phrase($keyword);
   }
 }

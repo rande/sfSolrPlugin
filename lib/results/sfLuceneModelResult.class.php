@@ -15,7 +15,7 @@
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version SVN: $Id$
  */
-class sfLuceneModelResult extends sfLuceneResult
+abstract class sfLuceneModelResult extends sfLuceneResult
 {
   /**
   * Deduces the title to be displayed in search results.

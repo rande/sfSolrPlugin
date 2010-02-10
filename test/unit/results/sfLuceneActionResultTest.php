@@ -20,7 +20,7 @@ $t = new limeade_test(1, limeade_output::get());
 
 $lucene = sfLucene::getInstance('index', 'en', $app_configuration);
 
-class MockResult extends Apache_Solr_Document
+class MockResult extends sfLuceneDocument
 {
   public function __construct($a)
   {
