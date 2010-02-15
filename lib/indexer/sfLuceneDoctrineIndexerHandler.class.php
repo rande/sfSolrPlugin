@@ -95,7 +95,8 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
         );
         continue;
       }
-      $documents[] = $doc;
+
+      $documents[$doc->sfl_guid] = $doc;
       
       $field = $doc->getField('id');
       
@@ -109,8 +110,6 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
     try
     {
       $search_engine->deleteByMultipleIds(array_keys($documents));
-      $search_engine->commit();
-
       $search_engine->addDocuments($documents);
       $search_engine->commit();
 
@@ -118,7 +117,7 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
          new sfEvent(
            $this,
            'indexer.log',
-           array('indexing ok - primary keys [%s]', implode(', ', $pks))
+           array('indexing %s objects - primary keys [%s]', count($documents), implode(', ', $pks))
          )
       );
     }
