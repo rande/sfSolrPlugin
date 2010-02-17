@@ -34,14 +34,6 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
     $count = $query->count();
     
     $totalPages = ceil($count / $limit);
-
-    // try to reduce the limit usage on php 5.2
-    $memory_limit = sfLuceneService::convertBytes(ini_get('memory_limit'));
-    $internal_limit = 10485760 * 2  ; // 10Mo
-
-    // fetch one object to load all relations
-    $consume_memory_query = clone $query;
-    $consume_memory_query->limit(1)->fetchOne();
     
     for ($page = $start_page; $page < $totalPages; $page++)
     {

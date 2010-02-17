@@ -145,7 +145,7 @@ EOF;
       
       $this->dispatcher->notify(new sfEvent($this, 'command.log', array('', $final)));
       
-      $command = sprintf('php -d memory_limit=64M %s/symfony lucene:update-model %s %s %s %s --state=true',
+      $command = sprintf('%s/symfony lucene:update-model %s %s %s %s --state=true',
         $this->configuration->getRootDir(),
         $app,
         $index,
