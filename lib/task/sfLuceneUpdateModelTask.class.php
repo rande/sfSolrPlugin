@@ -20,7 +20,7 @@ require_once(dirname(__FILE__).'/sfLuceneBaseTask.class.php');
 */
 
 class sfLuceneUpdateModelTask extends sfLuceneBaseTask
-{
+{    
   protected function configure()
   {
     $this->addArguments(array(
@@ -31,10 +31,11 @@ class sfLuceneUpdateModelTask extends sfLuceneBaseTask
     ));
 
     $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'search'),
-      new sfCommandOption('offset', null, sfCommandOption::PARAMETER_REQUIRED, 'The offset were the index should start', null),
-      new sfCommandOption('limit', null, sfCommandOption::PARAMETER_REQUIRED, 'The number number max of record to index from the offset', null),
-      new sfCommandOption('delete', null, sfCommandOption::PARAMETER_OPTIONAL, 'set to true to delete all related index', false),
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_OPTIONAL, 'The environment', 'search'),
+      new sfCommandOption('state', null, sfCommandOption::PARAMETER_OPTIONAL, 'If state is set to true then the task will save the state on memory limit exception', false),
+      new sfCommandOption('page', null, sfCommandOption::PARAMETER_OPTIONAL, 'The page where the index should start', 1),
+      new sfCommandOption('limit', null, sfCommandOption::PARAMETER_OPTIONAL, 'The number number max of record to index from the page', null),
+      new sfCommandOption('delete', null, sfCommandOption::PARAMETER_OPTIONAL, 'set to true to delete all related index - page should', false),
     ));
 
     $this->aliases = array('lucene-update-model');
@@ -67,11 +68,11 @@ EOF;
     $culture = $arguments['culture'];
     $model   = $arguments['model'];
     
+    $state   = $options['state'];
     $offset  = $options['offset'];
     $limit   = $options['limit'];
     $delete  = $options['delete'];
     
-
     $this->checkAppExists($app);
     $this->standardBootstrap($app, $options['env']);
 
@@ -81,8 +82,21 @@ EOF;
       throw new LogicException('This feature is only implemented for Doctrine ORM');
     }
     
-    $instance = sfLucene::getInstance($index, $culture, $this->configuration);
     
+    if($state)
+    {
+      // use state file
+      // the state file only contains the last page used and the limit
+      $state = $this->getState($model);
+      $page  = $state['page'];
+      $limit = $state['limit'];
+      $this->logSection('lucene', sprintf('Loading state page:%s, limit:%s', $page, $limit));
+    }
+    
+    $this->configuration->getEventDispatcher()->connect('lucene.indexing_loop', array($this, 'handleMemoryLimitEvent'));
+
+    $instance = sfLucene::getInstance($index, $culture, $this->configuration);
+        
     $this->setupEventDispatcher($instance);
     
     if($delete)
@@ -92,8 +106,62 @@ EOF;
       $instance->getLucene()->commit();
     }
     
-    $this->rebuild($instance, $model, $offset, $limit);
+    $this->rebuild($instance, $model, $page, $limit);
+    
+    if($state)
+    {
+      $file = $this->getFilestatePath($model);
+      $this->getFilesystem()->remove($file);
+    }
+  }
+  
+  public function handleMemoryLimitEvent(sfEvent $event)
+  {
+    
+    // store the current state
+    $this->saveState($event['model'], array(
+      'limit' => $event['limit'],
+      'page'  => $event['page']
+    ));
+    
+    $event->setProcessed(true);
+  }
+  
+  public function getFilestatePath($model)
+  {
+    
+    return sprintf(sfConfig::get('sf_data_dir').'/solr_index/update_%s.state', sfInflector::underscore($model));
+  }
+  
+  public function getState($model)
+  {
+    
+    $file = $this->getFilestatePath($model);
+    
+    $state = false;
+    
+    if(is_file($file))
+    {
+      $state = unserialize(@file_get_contents($file));
 
+    }
+    
+    if(!is_array($state))
+    {
+      $state = array(
+        'page' => 1,
+        'limit' => null,
+      );
+    }
+    
+    return $state;
+  }
+  
+  public function saveState($model, $state)
+  {
+    
+    $file = sprintf(sfConfig::get('sf_data_dir').'/solr_index/update_%s.state', $model);
+    file_put_contents($file, serialize($state));
   }
 
   protected function rebuild($search, $model, $offset, $limit)
@@ -103,8 +171,9 @@ EOF;
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->format(sprintf('Processing "%s/%s" now...', $search->getParameter('name'), $search->getParameter('culture')), array('fg' => 'red', 'bold' => true)))));
 
     $search->rebuildIndexModel($model, $offset, $limit);
-    $search->optimize();
+
     $search->commit();
+    $search->optimize();
 
     $time = microtime(true) - $start;
 

@@ -25,11 +25,6 @@ class sfLucene
   const VERSION = '0.2-DEV';
 
   /**
-   * Holds the internal dispatcher for this Lucene instance.
-   */
-  protected $dispatcher = null;
-
-  /**
    * Holds the search service instance
    */
   protected $search_service = null;
@@ -84,8 +79,6 @@ class sfLucene
     $this->setParameter('name', $name);
     $this->setParameter('culture', $culture);
     $this->setParameter('index_location', $name.'_'.$culture);
-
-    $this->dispatcher = new sfEventDispatcher;
 
     $this->configuration = $configuration;
     
@@ -404,7 +397,7 @@ class sfLucene
   public function getEventDispatcher()
   {
     
-    return $this->dispatcher;
+    return $this->configuration->getEventDispatcher();
   }
 
   /**
@@ -450,10 +443,8 @@ class sfLucene
   /**
   * Update only the index for one model
   *
-  * if $offset and $limit are numeric then only the portion between
-  * the offset and the limit are updated
   */
-  public function rebuildIndexModel($model, $offset = null, $limit = null)
+  public function rebuildIndexModel($model, $page = 1, $limit = null)
   {
     $this->setBatchMode();
 
@@ -470,7 +461,7 @@ class sfLucene
         continue;
       }
 
-      $handler->rebuildModel($model, $offset, $limit);
+      $handler->rebuildModel($model, $page, $limit);
     }
 
     $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Index rebuilt.')));
@@ -509,9 +500,9 @@ class sfLucene
   */
   public function setBatchMode()
   {
-    //$this->getLucene()->setMaxBufferedDocs(500);
-    //$this->getLucene()->setMaxMergeDocs(PHP_INT_MAX);
-    //$this->getLucene()->setMergeFactor(50);
+    //$this->getSearchService()->setMaxBufferedDocs(500);
+    //$this->getSearchService()->setMaxMergeDocs(PHP_INT_MAX);
+    //$this->getSearchService()->setMergeFactor(50);
 
     return $this;
   }
@@ -522,9 +513,9 @@ class sfLucene
   */
   public function setInteractiveMode()
   {
-    //$this->getLucene()->setMaxBufferedDocs(10);
-    //$this->getLucene()->setMaxMergeDocs(PHP_INT_MAX);
-    //$this->getLucene()->setMergeFactor(10);
+    //$this->getSearchService()->setMaxBufferedDocs(10);
+    //$this->getSearchService()->setMaxMergeDocs(PHP_INT_MAX);
+    //$this->getSearchService()->setMergeFactor(10);
 
     return $this;
   }
@@ -540,7 +531,7 @@ class sfLucene
 
     $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Optimizing index...')));
 
-    $this->getLucene()->optimize();
+    $this->getSearchService()->optimize();
 
     $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Index optimized.')));
 
@@ -587,7 +578,7 @@ class sfLucene
 
     $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Committing changes...')));
 
-    $this->getLucene()->commit();
+    $this->getSearchService()->commit();
 
     $this->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('Changes committed.')));
 

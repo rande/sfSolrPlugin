@@ -16,10 +16,12 @@
 
 class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
 {
-  public function rebuildModel($name, $offset = null, $limit = null)
+  public function rebuildModel($name, $start_page = null, $limit = null)
   {
-
-    $options = $this->getSearch()->getParameter('models')->get($name);
+    
+    $options    = $this->getSearch()->getParameter('models')->get($name);
+    $start_page = $start_page === null ? 1 : $start_page;
+    $limit      = is_numeric($limit) ? $limit : $options->get('rebuild_limit');
 
     if(!$options)
     {
@@ -29,25 +31,29 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
     $table = Doctrine :: getTable($name);
     $query = $this->getBaseQuery($name);
 
-    if(is_numeric($offset) && is_numeric($limit))
+    $count = $query->count();
+    
+    $totalPages = ceil($count / $limit);
+
+    // try to reduce the limit usage on php 5.2
+    $memory_limit = sfLuceneService::convertBytes(ini_get('memory_limit'));
+    $internal_limit = 10485760 * 2  ; // 10Mo
+
+    // fetch one object to load all relations
+    $consume_memory_query = clone $query;
+    $consume_memory_query->limit(1)->fetchOne();
+    
+    for ($page = $start_page; $page < $totalPages; $page++)
     {
-      $this->_rebuild($query, $offset, $limit);
-      $query->free();
-      $query->from($table->getComponentName());
-    }
-    else
-    {
-
-      $count = $query->count();
-      $per   = $options->get('rebuild_limit');
-
-      $totalPages = ceil($count / $per);
-
-      for ($page = 0; $page < $totalPages; $page++)
-      {
-        $offset = $page * $per;
-        $this->_rebuild(clone $query, $offset, $per);
-      }
+      
+      $this->getSearch()->getEventDispatcher()->notifyUntil(new sfEvent($this, 'lucene.indexing_loop', array(
+        'model' => $name,
+        'page'  => $page,
+        'limit' => $limit
+      )));
+    
+      $offset = $page * $limit;
+      $this->batchRebuild(clone $query, $offset, $limit);
     }
   }
 
@@ -74,15 +80,15 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
     return $query->count();
   }
 
-  protected function _rebuild($query, $offset, $limit)
-  {
-
+  public function batchRebuild($query, $offset, $limit)
+  {    
     $collection = $query->limit($limit)->offset($offset)->execute();
 
     $documents = array();
     $pks = array();
     foreach($collection as $record)
     {
+      
       $doc = $this->getFactory()->getModel($record)->getDocument();
 
       if(!$doc)
@@ -139,7 +145,6 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
       );
     }
 
-    
     unset($collection);
   }
 }

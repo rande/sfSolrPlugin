@@ -87,20 +87,6 @@ EOF;
 
     $models = $search->getParameter('models')->getAll();
 
-    $factory = new sfLuceneIndexerFactory($search);
-    $handler = null;
-    foreach($factory->getHandlers() as $handler)
-    {
-      if($handler instanceof sfLuceneModelIndexerHandler)
-      {
-        break;
-      }
-    }
-
-    if(!$handler instanceof sfLuceneModelIndexerHandler)
-    {
-      throw new LogicException('No sfLuceneModelIndexerHandler defined !');
-    }
 
     if($model)
     {
@@ -108,7 +94,7 @@ EOF;
       {
         $this->deleteModel($search, $model);
       }
-      $this->update($handler, $app, $index, $culture, $model, $limit);
+      $this->update($app, $index, $culture, $model, $limit);
     }
     else
     {
@@ -119,7 +105,7 @@ EOF;
           $this->deleteModel($search, $model);
         }
         
-        $this->update($handler, $app, $index, $culture, $model, $limit);
+        $this->update($app, $index, $culture, $model, $limit);
       }
     }
     
@@ -138,20 +124,28 @@ EOF;
     $lucene->getLucene()->commit();
   }
   
-  public function update($handler, $app, $index, $culture, $model, $limit)
+  public function getFilestatePath($model)
   {
-    $page      = 0;
-    $count     = $handler->getCount($model);
-    $num_pages = ceil($count / $limit);
-
+    
+    return sprintf(sfConfig::get('sf_data_dir').'/solr_index/update_%s.state', sfInflector::underscore($model));
+  }
+  
+  public function update($app, $index, $culture, $model, $limit)
+  {
+    
+    $file = $this->getFilestatePath($model);
+    if(is_file($file))
+    {
+      $this->getFilesystem()->remove($file);
+    }
+        
     do
     {
-      $offset = $page * $limit;
-      $final = $this->formatter->format('Updating model='.$model.', page='.$page.'/'.$num_pages, array('fg' => 'green', 'bold' => true));
+      $final = $this->formatter->format('Updating model='.$model, array('fg' => 'green', 'bold' => true));
       
       $this->dispatcher->notify(new sfEvent($this, 'command.log', array('', $final)));
       
-      $command = sprintf('%s/symfony lucene:update-model %s %s %s %s --limit=%s --offset=%s',
+      $command = sprintf('php -d memory_limit=64M %s/symfony lucene:update-model %s %s %s %s --state=true',
         $this->configuration->getRootDir(),
         $app,
         $index,
@@ -161,8 +155,27 @@ EOF;
         $offset
       );
 
-      $this->getFilesystem()->sh($command);
+      try
+      {
+        $return_code = $this->getFilesystem()->sh($command);
+        $this->logSection('lucene', 'end indexing model : '.$model);
 
-    } while((++$page < $num_pages ?  true : false));
+        return 0;
+      } 
+      catch(sfException $e)
+      {
+        if(preg_match("/Allowed memory size of ([0-9]*) bytes/", $e->getMessage()))
+        {
+          $this->logSection('lucene', '  memory limit reach, starting new subprocess');
+
+          continue;
+        }
+        else
+        {
+          throw $e;
+        }
+      }
+
+    } while(1);
   }
 }
