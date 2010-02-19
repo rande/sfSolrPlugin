@@ -94,7 +94,7 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
               $transform    = isset($field['transform']) ? $field['transform'] : null;
               $default      = isset($field['default']) ? $field['default'] : null;
               $alias        = isset($field['alias']) ? $field['alias'] : null;
-              
+              $omitNorms    = isset($field['omitNorms']) ? $field['omitNorms'] : ($boost !== null ? false : null);
             }
             elseif (empty($field))
             {
@@ -106,11 +106,12 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
             }
 
             $type         = $type ? $type : 'text';
-            $boost        = $boost ? $boost : 1.0;
+            $boost        = $boost ? $boost : null;
             $transform    = $transform || count($transform) ? $transform : null;
             $multi_valued = $multi_valued ? $multi_valued : false;
             $stored       = $stored ? $stored : false;
             $required     = $required ? $required : false;
+            $omitNorms    = $omitNorms === null ? null : $omitNorms;
             
             $field = array(
               'type'      => $type,
@@ -120,7 +121,8 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
               'required'  => $required,
               'stored'    => $stored,
               'default'   => $default,
-              'alias'     => $alias
+              'alias'     => $alias,
+              'omitNorms' => $omitNorms,
             );
           }
         }

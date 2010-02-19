@@ -134,11 +134,13 @@ Before indexing your models you need to declare which fields to index. These fie
               alias: getFullName
             p_full_name:
               stored: true
+              boost: 3        # set the boost and enable omitNorms
               alias: getFullName
             p_description:
               stored: true
               transform: strip_tags
               alias: getDescription
+              omitNorms: false # enable boost
             location_latitude:
               type: tfloat
               stored: false

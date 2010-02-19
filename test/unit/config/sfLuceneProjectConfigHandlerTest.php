@@ -41,24 +41,26 @@ $expected = array (
           'id' =>
           array (
             'type' => 'text',
-            'boost' => 1,
+            'boost' => null,
             'transform' => NULL,
             'multiValued' => false,
             'required' => false,
             'stored'   => false,
             'default' => null,
             'alias' => NULL,
+            'omitNorms' => NULL,
           ),
           'title' =>
           array (
             'type' => 'text',
-            'boost' => 1,
+            'boost' => null,
             'transform' => NULL,
             'multiValued' => false,
             'required' => false,
             'stored'   => false,
             'default' => null,
             'alias' => NULL,
+            'omitNorms' => true,
           ),
           'description' =>
           array (
@@ -70,6 +72,7 @@ $expected = array (
             'stored'   => false,
             'default' => null,
             'alias' => NULL,
+            'omitNorms' => false,
           ),
         ),
         'title' => 'title',

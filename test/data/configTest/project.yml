@@ -3,7 +3,9 @@ testLucene:
     FakeModel:
       fields:
         id:
-        title: text
+        title: 
+          type: text
+          omitNorms: true
         description:
           type: text
           boost: 3
@@ -18,8 +20,6 @@ testLucene:
   index:
     encoding: UTF-8
     cultures: [en, fr]
-    stop_words: [and, the]
-    short_words: 2
     analyzer: 'utf8num'
     case_sensitive: false
     mb_string: true

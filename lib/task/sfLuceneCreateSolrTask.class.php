@@ -96,12 +96,13 @@ EOF;
           foreach($model['fields'] as $field_name => $field_option)
           {
             
-            $schema_options[$field_name] = sprintf("<field name='%s' type='%s' stored='%s' multiValued='%s' required='%s' %s/>",
+            $schema_options[$field_name] = sprintf("<field name='%s' type='%s' stored='%s' multiValued='%s' required='%s' %s %s/>",
               $field_name,
               $field_option['type'],
               $field_option['stored'] ? 'true' : 'false',
               $field_option['multiValued'] ? 'true' : 'false',
               $field_option['required'] ? 'true' : 'false',
+              !is_null($field_option['omitNorms']) ? 'omitNorms=\''.($field_option['omitNorms'] ? 'true' : 'false').'\'' : '',
               !is_null($field_option['default']) ? 'default=\''.$field_option['default'].'\'' : ''
             );
             
