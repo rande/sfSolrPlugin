@@ -44,8 +44,9 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
         'limit' => $limit
       )));
     
-      $offset = $page * $limit;
-      $this->batchRebuild(clone $query, $offset, $limit);
+      $offset = ($page - 1) * $limit;
+      
+      $this->batchRebuild($query, $offset, $limit);
     }
   }
 
@@ -73,24 +74,31 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
   }
 
   public function batchRebuild($query, $offset, $limit)
-  {    
+  { 
+
+    $start = microtime(true);
+    $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this,'indexer.log', array('batch indexing - offset:%s, limit:%s.', $offset, $limit)));
+    
     $collection = $query->limit($limit)->offset($offset)->execute();
 
+    $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this,'indexer.log', array('  - fetching and hydrating objects in %s seconds.', number_format(microtime(true) - $start, 5))));
+    
     $documents = array();
     $pks = array();
+    
+    $start = microtime(true);
     foreach($collection as $record)
-    {
+    {  
+      $start1 = microtime(true);
       
       $doc = $this->getFactory()->getModel($record)->getDocument();
+      // $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this,'indexer.log', array('  - creating one object in %s seconds.', number_format(microtime(true) - $start1, 5))));
 
       if(!$doc)
       {
-        $this->getSearch()->getEventDispatcher()->notify(
-          new sfEvent($this, 'application.log', array(
-            sprintf('invalid document %s [id:%s]: ', get_class($record), $record->identifier()),
-            'priority' => sfLogger::ALERT
-          ))
-        );
+        $this->getSearch()->getEventDispatcher()->notify( new sfEvent($this, 'application.log', array( sprintf('invalid document %s [id:%s]: ', get_class($record), $record->identifier()), 'priority' => sfLogger::ALERT )));
+        $this->getSearch()->getEventDispatcher()->notify( new sfEvent($this, 'indexer.log', array( sprintf('  - invalid document %s [id:%s]: ', get_class($record), $record->identifier()), 'priority' => sfLogger::ALERT )));
+        
         continue;
       }
 
@@ -99,44 +107,26 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
       $field = $doc->getField('id');
       
       $pks[] = $field['value']['0'];
-      
-      unset($record);
     }
+    
+    $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this,'indexer.log', array('  - creating solr documents in %s seconds.', number_format(microtime(true) - $start, 5))));
 
     $search_engine =  $this->getSearch()->getSearchService();
 
     try
     {
+      $start = microtime(true);
+      
       $search_engine->deleteByMultipleIds(array_keys($documents));
       $search_engine->addDocuments($documents);
       $search_engine->commit();
 
-      $this->getSearch()->getEventDispatcher()->notify(
-         new sfEvent(
-           $this,
-           'indexer.log',
-           array('indexing %s objects - primary keys [%s]', count($documents), implode(', ', $pks))
-         )
-      );
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this,'indexer.log', array('  - indexing %s objects in %s seconds.', count($documents),  number_format(microtime(true) - $start, 5))));      
     }
     catch(Exception $e)
     {
-       $this->getSearch()->getEventDispatcher()->notify(
-         new sfEvent(
-           $this,
-           'indexer.log',
-           array('indexing Failed indexing object - primary keys [%s]', implode(', ', $pks))
-         )
-      );
-       
-      $this->getSearch()->getEventDispatcher()->notify(
-        new sfEvent($this, 'application.log', array(
-          'indexing document fail : '.$e->getMessage(),
-          'priority' => sfLogger::ALERT
-        ))
-      );
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('indexing Failed indexing object - primary keys [%s]', implode(', ', $pks))));       
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array('indexing document fail : '.$e->getMessage(),'priority' => sfLogger::ALERT)));
     }
-
-    unset($collection);
   }
 }

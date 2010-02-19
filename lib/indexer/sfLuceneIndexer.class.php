@@ -64,12 +64,7 @@ abstract class sfLuceneIndexer
     }
     catch(Exception $e)
     {
-      $this->getConfiguration()->getEventDispatcher()->notify(
-        new sfEvent($this, 'application.log', array(
-          'indexing document fail : '.$e->getMessage(),
-          'priority' => sfLogger::ALERT
-        ))
-      );
+      $this->getConfiguration()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array('indexing document fail : '.$e->getMessage(),'priority' => sfLogger::ALERT)));
     }
 
     return $this;

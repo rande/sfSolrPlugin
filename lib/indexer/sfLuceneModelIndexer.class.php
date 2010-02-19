@@ -18,6 +18,9 @@
 
 abstract class sfLuceneModelIndexer extends sfLuceneIndexer
 {
+  static
+    $model_properties = array();
+    
   private 
     $instance,
     $model_name; // model name used in the search.yml file
@@ -84,8 +87,13 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   */
   protected function getModelProperties()
   {
-
-    return $this->getSearch()->getParameter('models')->get($this->getModelName());
+    $model_name = $this->getModelName();
+    if(!isset(self::$model_properties[$model_name]))
+    {
+      self::$model_properties[$model_name] =  $this->getSearch()->getParameter('models')->get($model_name);
+    }
+    
+    return self::$model_properties[$model_name];
   }
 
   /**
@@ -190,6 +198,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
     foreach ($properties->get('fields')->getNames() as $field)
     {
       $field_properties = $properties->get('fields')->get($field);
+
 
       $value = $this->getFieldValue($field, $field_properties);
 

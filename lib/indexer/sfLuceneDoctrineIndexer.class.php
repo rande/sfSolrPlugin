@@ -185,10 +185,11 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
     // build getter by converting from underscore case to camel case
     try
     {
-      $value = $this->getModel()->$getter();
+      $value = call_user_func(array($this->getModel(), $getter));
     }
     catch(Doctrine_Record_Exception $e)
     {
+      
       $model_properies = $this->getModelProperties();
       
       // some fields can be only used as a definition

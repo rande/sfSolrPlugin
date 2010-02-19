@@ -23,17 +23,15 @@ class sfLuceneUpdateModelSystemTask extends sfLuceneBaseTask
   protected function configure()
   {
     $this->addArguments(array(
-    new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    new sfCommandArgument('index', sfCommandArgument::REQUIRED, 'The name of the index to rebuild'),
-    new sfCommandArgument('culture', sfCommandArgument::REQUIRED, 'The name of the culture to rebuild'),
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+      new sfCommandArgument('index', sfCommandArgument::REQUIRED, 'The name of the index to rebuild'),
+      new sfCommandArgument('culture', sfCommandArgument::REQUIRED, 'The name of the culture to rebuild'),
     ));
 
     $this->addOptions(array(
-    new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'search'),
-    new sfCommandOption('model', null, sfCommandOption::PARAMETER_OPTIONAL, 'The model to reindex', null),
-    new sfCommandOption('limit', null, sfCommandOption::PARAMETER_OPTIONAL, 'The environment', 50),
-    new sfCommandOption('delete', null, sfCommandOption::PARAMETER_OPTIONAL, 'set to true to delete all related record', false),
-    
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'search'),
+      new sfCommandOption('model', null, sfCommandOption::PARAMETER_OPTIONAL, 'The model to reindex', null),
+      new sfCommandOption('delete', null, sfCommandOption::PARAMETER_OPTIONAL, 'set to true to delete all related record', false),    
     ));
 
     $this->aliases = array('lucene-rebuild-system');
@@ -65,12 +63,10 @@ EOF;
     $index   = $arguments['index'];
     $culture = $arguments['culture'];
 
-    $limit   = $options['limit'];
     $model   = $options['model'];
     $delete  = $options['delete'];
 
     $this->checkAppExists($app);
-    $this->standardBootstrap($app, $options['env']);
 
     if(sfConfig::get('sf_orm') != 'doctrine')
     {
@@ -82,39 +78,25 @@ EOF;
 
     $search = sfLucene::getInstance($index, $culture, $this->configuration);
     $search->optimize();
-    
-    $this->setupEventDispatcher($search);
 
-    $models = $search->getParameter('models')->getAll();
+    $models = $model ? array($model) : array_keys($search->getParameter('models')->getAll());
 
-
-    if($model)
+    foreach($models as $model)
     {
       if($delete)
       {
         $this->deleteModel($search, $model);
       }
+      
       $this->update($app, $index, $culture, $model, $limit);
-    }
-    else
-    {
-      foreach($models as $model => $params)
-      {
-        if($delete)
-        {
-          $this->deleteModel($search, $model);
-        }
-        
-        $this->update($app, $index, $culture, $model, $limit);
-      }
     }
     
     $time = microtime(true) - $start;
 
-   $final = $this->formatter->format('Update index done !!', array('fg' => 'green', 'bold' => true));
-   $final .= $this->formatter->format(number_format($time, 5), array('fg' => 'cyan')) . ' seconds.';
+    $final  = $this->formatter->format('Update index done !!', array('fg' => 'green', 'bold' => true));
+    $final .= $this->formatter->format(number_format($time, 5), array('fg' => 'cyan')) . ' seconds.';
 
-   $this->dispatcher->notify(new sfEvent($this, 'command.log', array('', $final)));
+    $this->dispatcher->notify(new sfEvent($this, 'command.log', array('', $final)));
   }
 
   public function deleteModel(sfLucene $lucene, $model)
@@ -122,6 +104,7 @@ EOF;
     $query = 'sfl_model:'.$model;
     $lucene->getLucene()->deleteByQuery($query);
     $lucene->getLucene()->commit();
+    $lucene->getLucene()->optimize();
   }
   
   public function getFilestatePath($model)
@@ -130,7 +113,7 @@ EOF;
     return sprintf(sfConfig::get('sf_data_dir').'/solr_index/update_%s.state', sfInflector::underscore($model));
   }
   
-  public function update($app, $index, $culture, $model, $limit)
+  public function update($app, $index, $culture, $model)
   {
     
     $file = $this->getFilestatePath($model);
@@ -150,9 +133,7 @@ EOF;
         $app,
         $index,
         $culture,
-        $model,
-        $limit,
-        $offset
+        $model
       );
 
       try

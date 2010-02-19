@@ -79,9 +79,12 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
       return;
     }
 
-    if(sfContext::hasInstance())
+    try{
+      sfProjectConfiguration::getActive()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('deleting model "%s" with PK = "%s"', get_class($node), current($node->identifier()))));
+    }
+    catch(RuntimeException $e)
     {
-      sfContext::getInstance()->getEventDispatcher()->notify(new sfEvent($this, 'lucene.log', array('{sfLucene} deleting model "%s" with PK = "%s"', get_class($node), current($node->identifier()))));
+      // no active ProjectConfiguration
     }
 
     foreach ($this->getSearchInstances($node) as $instance)

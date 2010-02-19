@@ -69,8 +69,8 @@ EOF;
     $model   = $arguments['model'];
     
     $state   = $options['state'];
-    $offset  = $options['offset'];
     $limit   = $options['limit'];
+    $page    = $options['page'];
     $delete  = $options['delete'];
     
     $this->checkAppExists($app);
@@ -82,7 +82,6 @@ EOF;
       throw new LogicException('This feature is only implemented for Doctrine ORM');
     }
     
-    
     if($state)
     {
       // use state file
@@ -93,17 +92,17 @@ EOF;
       $this->logSection('lucene', sprintf('Loading state page:%s, limit:%s', $page, $limit));
     }
     
-    $this->configuration->getEventDispatcher()->connect('lucene.indexing_loop', array($this, 'handleMemoryLimitEvent'));
+    $this->dispatcher->connect('lucene.indexing_loop', array($this, 'handleMemoryLimitEvent'));
 
     $instance = sfLucene::getInstance($index, $culture, $this->configuration);
-        
+    
     $this->setupEventDispatcher($instance);
     
     if($delete)
     {
       $query = 'sfl_model:'.$model;
-      $instance->getLucene()->deleteByQuery($query);
-      $instance->getLucene()->commit();
+      $instance->getSearchService()->deleteByQuery($query);
+      $instance->getSearchService()->commit();
     }
     
     $this->rebuild($instance, $model, $page, $limit);
@@ -159,8 +158,7 @@ EOF;
   
   public function saveState($model, $state)
   {
-    
-    $file = sprintf(sfConfig::get('sf_data_dir').'/solr_index/update_%s.state', $model);
+    $file = sprintf(sfConfig::get('sf_data_dir').'/solr_index/update_%s.state', sfInflector::underscore($model));
     file_put_contents($file, serialize($state));
   }
 
