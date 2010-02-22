@@ -37,7 +37,7 @@ class sfMockApacheService
     }
     $standard_response = sprintf($standard_response, $offset, implode(", ", $results));
     
-    $response = new Apache_Solr_Response($standard_response);
+    $response = new sfLuceneResponse($standard_response);
     
     $response->sf_lucene_search = array(
       'query'   => $query,
@@ -52,7 +52,7 @@ class sfMockApacheService
 }
 
 $lucene = sfLucene::getInstance('index', 'en', $app_configuration);
-$lucene->setLucene(new sfMockApacheService);
+$lucene->setSearchService(new sfMockApacheService);
 
 $t->diag('testing constructor');
 

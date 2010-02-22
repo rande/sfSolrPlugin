@@ -31,7 +31,12 @@ class sfLucenePager
     $search_parameters,
     $must_reload = false;
 
-  public function __construct(sfLuceneResults $lucene_results, sfLucene $search = null)
+  /**
+   *
+   * @param sfLuceneResults $lucene_results
+   * @param sfLucene $search
+   */
+  public function __construct($lucene_results, $search = null)
   {
 
     if(!$lucene_results instanceof sfLuceneResults)
@@ -39,7 +44,7 @@ class sfLucenePager
       
       throw new sfLuceneException('first arguments must be a sfLuceneResults instance');
     }
-    
+        
     $this->lucene_results = $lucene_results;
     $this->results = $lucene_results->toArray();
     $this->search_parameters = $lucene_results->getRawResult()->sf_lucene_search;
@@ -128,8 +133,8 @@ class sfLucenePager
   /**
    * return an array of available page numbers
    *
-   * @param integer> $nb_links
-   * @return <type>
+   * @param integer $nb_links
+   * @return array
    */
   public function getLinks($nb_links = 5)
   {

@@ -48,7 +48,7 @@ $facets = '"facet_counts":{"facet_queries":{"name:[a TO z]":3},"facet_fields":{"
 
 $standard_response = sprintf($standard_response, 3, implode(", ", $results), $facets);
 
-$response = new Apache_Solr_Response($standard_response);
+$response = new sfLuceneResponse($standard_response);
 
 $search = sfLucene::getInstance('index', 'en', $app_configuration);
 

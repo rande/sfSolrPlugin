@@ -25,9 +25,9 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
     if (!$this->shouldIndex())
     {
 
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('model "%s" cancelled indexation - primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));
       return false;
     }
-
 
     $old_culture = null;
 
@@ -56,9 +56,9 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
     return $doc;
   }
 
-    /**
+  /**
   * Inserts the provided model into the index based off parameters in search.yml.
-   *
+  *
   * @param BaseObject $this->getModel() The model to insert
   */
   public function insert()
@@ -204,7 +204,7 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
         $value = null;
       }
     }
-
+    
     if((is_array($value) || $value instanceof Doctrine_Collection) && !$properties->get('multiValued'))
     {
       

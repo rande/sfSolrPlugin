@@ -203,7 +203,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
       $value = $this->getFieldValue($field, $field_properties);
 
       // do not index null value
-      if($value == null)
+      if($value == null || (is_array($value) && empty($value)))
       {
 
         continue;

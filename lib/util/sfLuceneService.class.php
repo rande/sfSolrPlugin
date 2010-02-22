@@ -95,7 +95,7 @@ class sfLuceneService extends Apache_Solr_Service
 
     if ($response->getHttpStatus() != 200)
     {
-      throw new Exception('"' . $response->getHttpStatus() . '" Status: ' . $response->getHttpStatusMessage(), $response->getHttpStatus());
+      throw new Apache_Solr_HttpTransportException('"' . $response->getHttpStatus() . '" Status: ' . $response->getHttpStatusMessage(), $response->getHttpStatus());
     }
 
     return $response;
@@ -143,11 +143,12 @@ class sfLuceneService extends Apache_Solr_Service
 
     //$http_response_header is set by file_get_contents
     $class = $this->response_class;
+    
     $response = new $class(@file_get_contents($url, false, $this->_postContext), $http_response_header, $this->_createDocuments, $this->_collapseSingleValueArrays);
 
     if ($response->getHttpStatus() != 200)
     {
-      throw new Exception('"' . $response->getHttpStatus() . '" Status: ' . $response->getHttpStatusMessage(), $response->getHttpStatus());
+      throw new Apache_Solr_HttpTransportException('"' . $response->getHttpStatus() . '" Status: ' . $response->getHttpStatusMessage(), $response->getHttpStatus());
     }
 
     return $response;

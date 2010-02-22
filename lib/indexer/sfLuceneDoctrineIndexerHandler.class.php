@@ -96,8 +96,8 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
 
       if(!$doc)
       {
-        $this->getSearch()->getEventDispatcher()->notify( new sfEvent($this, 'application.log', array( sprintf('invalid document %s [id:%s]: ', get_class($record), $record->identifier()), 'priority' => sfLogger::ALERT )));
-        $this->getSearch()->getEventDispatcher()->notify( new sfEvent($this, 'indexer.log', array( sprintf('  - invalid document %s [id:%s]: ', get_class($record), $record->identifier()), 'priority' => sfLogger::ALERT )));
+        $this->getSearch()->getEventDispatcher()->notify( new sfEvent($this, 'application.log', array( sprintf('invalid document %s [id:%s]: ', get_class($record), current($record->identifier())), 'priority' => sfLogger::ALERT )));
+        $this->getSearch()->getEventDispatcher()->notify( new sfEvent($this, 'indexer.log', array( sprintf('  - invalid document %s [id:%s]: ', get_class($record), current($record->identifier())), 'priority' => sfLogger::ALERT )));
         
         continue;
       }

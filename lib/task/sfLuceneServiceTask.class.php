@@ -43,6 +43,8 @@ class sfLuceneServiceTask extends sfLuceneBaseTask
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'prod'),
       new sfCommandOption('java', null, sfCommandOption::PARAMETER_REQUIRED, 'the java binary', $java),
       new sfCommandOption('nohup', null, sfCommandOption::PARAMETER_REQUIRED, 'the nohup binary', $nohup),
+      new sfCommandOption('Xmx', null, sfCommandOption::PARAMETER_REQUIRED, 'maximum java heap size', '512m'),
+      new sfCommandOption('Xms', null, sfCommandOption::PARAMETER_REQUIRED, 'initial java heap size', '256m'),
     ));
 
     $this->aliases = array('lucene-service');
@@ -104,32 +106,32 @@ EOF;
     switch($action)
     {
       case 'start':
-       $this->start($app, $env);
+       $this->start($app, $env, $options);
        break;
 
      case 'stop':
-       $this->stop($app, $env);
+       $this->stop($app, $env, $options);
 
        break;
 
      case 'restart':
-       $this->stop($app, $env);
-       $this->start($app, $env);
+       $this->stop($app, $env, $options);
+       $this->start($app, $env, $options);
        break;
 
      case 'status':
-       $this->status($app, $env);
+       $this->status($app, $env, $options);
        break;
     }
   }
 
-  public function isRunning($app, $env)
+  public function isRunning($app, $env, $options = array())
   {
     
     return @file_exists($this->getPidFile($app, $env));
   }
 
-  public function start($app, $env)
+  public function start($app, $env, $options = array())
   {
     if($this->isRunning($app, $env))
     {
@@ -150,13 +152,16 @@ EOF;
     $base_url = $instances[0]->getParameter('base_url');
     
     // start the jetty built in server
-    $command = sprintf('cd %s/plugins/sfSolrPlugin/lib/vendor/Solr/example; %s %s -Dsolr.solr.home=%s/config/solr/ -Dsolr.data.dir=%s/data/solr_index -Djetty.port=%s -jar start.jar > %s/solr_server_%s_%s.log 2>&1 & echo $!',
+    $command = sprintf('cd %s/plugins/sfSolrPlugin/lib/vendor/Solr/example; %s %s -Xmx%s -Xms%s -Dsolr.solr.home=%s/config/solr/ -Dsolr.data.dir=%s/data/solr_index -Djetty.port=%s -Djetty.logs=%s -jar start.jar > %s/solr_server_%s_%s.log 2>&1 & echo $!',
       sfConfig::get('sf_root_dir'),
       $this->nohup,
       $this->java,
+      $options['Xmx'],
+      $options['Xms'],
       sfConfig::get('sf_root_dir'),
       sfConfig::get('sf_root_dir'),
       $port,
+      sfConfig::get('sf_root_dir').'/log',
       sfConfig::get('sf_root_dir').'/log',
       $app,
       $env
@@ -176,7 +181,7 @@ EOF;
     $this->logSection("solr", "server started  : http://".$host.":".$port.$base_url);
   }
 
-  public function stop($app, $env)
+  public function stop($app, $env, $options = array())
   {
     if(!$this->isRunning($app, $env))
     {
@@ -197,7 +202,7 @@ EOF;
     unlink($this->getPidFile($app, $env));
   }
 
-  public function status($app, $env)
+  public function status($app, $env, $options = array())
   {
 
     if(!$this->isRunning($app, $env))

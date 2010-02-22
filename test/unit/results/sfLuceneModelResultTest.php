@@ -47,8 +47,13 @@ $doc->setFields(array(
 
 $t->diag('testing constructor');
 
+class sfLuceneModelMockResult extends sfLuceneModelResult
+{
+  
+}
+
 try {
-  $result = new sfLuceneModelResult($doc, $lucene);
+  $result = new sfLuceneModelMockResult($doc, $lucene);
   $t->pass('__construct() accepts a valid result and valid sfLucene instance');
 } catch (Exception $e) {
   $t->fail('__construct() accepts a valid result and valid sfLucene instance');
