@@ -1,9 +1,9 @@
 searchControls:
-  stylesheets: [/sfLucenePlugin/css/search.css]
+  stylesheets: [/sfSolrPlugin/css/search.css]
 
 searchNoResults:
-  stylesheets: [/sfLucenePlugin/css/search.css]
+  stylesheets: [/sfSolrPlugin/css/search.css]
 
 searchResults:
-  stylesheets: [/sfLucenePlugin/css/search.css]
+  stylesheets: [/sfSolrPlugin/css/search.css]
 

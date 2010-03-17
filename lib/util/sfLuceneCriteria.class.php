@@ -473,6 +473,8 @@ class sfLuceneCriteria
     $start = $start === null ? '*' : $start;
     $stop  = $stop  === null ? '*' : $stop;
     
+    // switch variable 
+    
     if($inclusive)
     {
       $query = ($field ? $field . ':' : '') . '['.$start.' TO '.$stop.']';
@@ -528,7 +530,7 @@ class sfLuceneCriteria
     $east = $longitude + $longitudeChange;
     $west = $longitude - $longitudeChange;
 
-    $latitudeLower = min($north, $south);
+    $latitudeLower = min($north, $south); 
     $latitudeUpper = max($north, $south);
 
     $longitudeLower = min($east, $west);

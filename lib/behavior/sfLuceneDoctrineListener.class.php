@@ -73,7 +73,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
   public function deleteIndex($node)
   {
     
-    if(sfConfig::get('app_sfLucene_disable_listener', false))
+    if(sfConfig::get('app_sfSolr_disable_listener', false))
     {
 
       return;
@@ -100,11 +100,13 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
    */
   public function insertIndex($node)
   {
-    if(sfConfig::get('app_sfLucene_disable_listener', false))
+
+    if(sfConfig::get('app_sfSolr_disable_listener', false))
     {
 
       return;
     }
+    
 
     if(sfContext::hasInstance())
     {
@@ -112,7 +114,7 @@ class sfLuceneDoctrineListener extends Doctrine_Record_Listener
     }
 
     foreach ($this->getSearchInstances($node) as $instance)
-    {
+    { 
       $instance->getIndexerFactory()->getModel($node)->insert();
       $instance->getSearchService()->commit();
     }

@@ -125,6 +125,7 @@ $highlighter->highlight();
 
 $t->is($highlighter->export(), $expected, '->highlight() handles entities correctly');
 
+
 $xml = '<?xml version="1.0"?>
 <root>
   <child>hellÆ bäz</child>
@@ -139,11 +140,15 @@ $expected = '<?xml version="1.0"?>
 </root>
 ';
 
+$keyword = new sfLuceneHighlighterKeywordNamed(new sfLuceneHighlighterMarkerSprint('<h>%s</h>'), 'fööbär');
+$keyword2 = new sfLuceneHighlighterKeywordNamed(new sfLuceneHighlighterMarkerSprint('<s>%s</s>'), 'bäz');
+
+
 $highlighter = new sfLuceneHighlighterXML($xml);
 $highlighter->addKeywords(array($keyword, $keyword2));
 $highlighter->highlight();
 
-//$t->is($highlighter->export(), $expected, '->highlight() handles UTF8 characters correctly');
+$t->is($highlighter->export(), $expected, '->highlight() handles UTF8 characters correctly');
 $t->todo('->highlight() handles UTF8 characters correctly (pending elegant solution)');
 
 try {

@@ -52,7 +52,7 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
 
     if ($this->deleteGuid( $this->getGuid($params)))
     {
-      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array('Deleted action "%s" of module "%s" from index', $action, $module)));
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Deleted action "%s" of module "%s" from index', $action, $module)));
     }
 
     return $this;
@@ -101,7 +101,7 @@ class sfLuceneActionIndexer extends sfLuceneIndexer
 
     $this->addDocument($doc, $guid, 'action');
 
-    $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array('Inserted action "%s" of module "%s" to index', $this->getAction(), $this->getModule())));
+    $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('Inserted action "%s" of module "%s" to index', $this->getAction(), $this->getModule())));
 
     return $this;
   }
