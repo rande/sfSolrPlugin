@@ -104,7 +104,7 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
 
     if (method_exists($this->getModel(), $method))
     {
-      return (bool) $this->getModel()->$method();
+      return (bool) $this->getModel()->$method( $this->getSearch());
     }
 
     return true;
