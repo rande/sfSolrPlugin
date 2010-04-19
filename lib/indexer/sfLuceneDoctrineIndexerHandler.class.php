@@ -35,7 +35,7 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
     
     $totalPages = ceil($count / $limit);
     
-    for ($page = $start_page; $page < $totalPages; $page++)
+    for ($page = $start_page; $page <= $totalPages; $page++)
     {
       
       $this->getSearch()->getEventDispatcher()->notifyUntil(new sfEvent($this, 'lucene.indexing_loop', array(
