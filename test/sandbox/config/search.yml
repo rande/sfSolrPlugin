@@ -29,8 +29,8 @@ index:
     mb_string: true
 
   interface:
-    categories: on
-    advanced: on
+    categories: true
+    advanced: true
 
 fooLucene:
   index:

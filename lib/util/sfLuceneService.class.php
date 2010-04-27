@@ -89,13 +89,18 @@ class sfLuceneService extends Apache_Solr_Service
       stream_context_set_option($this->_getContext, 'http', 'timeout', $this->_defaultTimeout);
     }
 
-    //$http_response_header is set by file_get_contents
+    // $http_response_header will be updated by the call to file_get_contents later
+    // see http://us.php.net/manual/en/wrappers.http.php for documentation
+    // Unfortunately, it will still create a notice in analyzers if we don't set it here
+    $http_response_header = null;
+
     $class = $this->response_class;
+    
     $response = new $class(@file_get_contents($url, false, $this->_getContext), $http_response_header, $this->_createDocuments, $this->_collapseSingleValueArrays);
 
     if ($response->getHttpStatus() != 200)
     {
-      throw new Apache_Solr_HttpTransportException('"' . $response->getHttpStatus() . '" Status: ' . $response->getHttpStatusMessage(), $response->getHttpStatus());
+      throw new Apache_Solr_HttpTransportException($response);
     }
 
     return $response;
@@ -141,14 +146,18 @@ class sfLuceneService extends Apache_Solr_Service
       stream_context_set_option($this->_postContext, 'http', 'timeout', $timeout);
     }
 
-    //$http_response_header is set by file_get_contents
+    // $http_response_header will be updated by the call to file_get_contents later
+    // see http://us.php.net/manual/en/wrappers.http.php for documentation
+    // Unfortunately, it will still create a notice in analyzers if we don't set it here
+    $http_response_header = null;
+
     $class = $this->response_class;
     
     $response = new $class(@file_get_contents($url, false, $this->_postContext), $http_response_header, $this->_createDocuments, $this->_collapseSingleValueArrays);
 
     if ($response->getHttpStatus() != 200)
     {
-      throw new Apache_Solr_HttpTransportException('"' . $response->getHttpStatus() . '" Status: ' . $response->getHttpStatusMessage(), $response->getHttpStatus());
+      throw new Apache_Solr_HttpTransportException($response);
     }
 
     return $response;
