@@ -32,4 +32,7 @@ barLucene:
   models:
     FakeModel: ~
 
-fooLucene: ~
+# we cannot have an empty value for fooLucene (ie: fooLucene: ~)
+fooLucene: 
+  models: ~
+  index: ~
