@@ -138,7 +138,15 @@ EOF;
 
       try
       {
-        $return_code = $this->getFilesystem()->sh($command);
+        if(method_exists($this->getFilesystem(), 'execute')) // sf1.3 or greater
+        {
+          $this->getFilesystem()->execute($command);
+        }
+        else
+        {
+          $this->getFilesystem()->sh($command);
+        }
+
         $this->logSection('lucene', 'end indexing model : '.$model);
 
         return 0;

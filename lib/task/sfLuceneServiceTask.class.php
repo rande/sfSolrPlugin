@@ -170,9 +170,19 @@ EOF;
     $this->logSection('exec ', $command);
     exec($command ,$op);
 
-    $this->getFilesystem()->sh(sprintf('cd %s',
-      sfConfig::get('sf_root_dir')
-    ));
+    if(method_exists($this->getFilesystem(), 'execute')) // sf1.3 or greater
+    {
+      $this->getFilesystem()->execute(sprintf('cd %s',
+        sfConfig::get('sf_root_dir')
+      ));      
+    }
+    else
+    {
+      $this->getFilesystem()->sh(sprintf('cd %s',
+        sfConfig::get('sf_root_dir')
+      ));
+    }
+
 
     $pid = (int)$op[0];
     file_put_contents($this->getPidFile($app, $env), $pid);
@@ -197,7 +207,14 @@ EOF;
       throw new sfException('Invalid pid provided : '.$pid);
     }
 
-    $this->getFilesystem()->sh("kill -15 ".$pid);
+    if(method_exists($this->getFilesystem(), 'execute')) // sf1.3 or greater
+    {
+      $this->getFilesystem()->execute("kill -15 ".$pid);
+    }
+    else
+    {
+      $this->getFilesystem()->sh("kill -15 ".$pid);
+    }
 
     unlink($this->getPidFile($app, $env));
   }
