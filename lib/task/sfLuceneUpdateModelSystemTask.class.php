@@ -182,7 +182,7 @@ EOF;
   {
     if(preg_match("/Allowed memory size of ([0-9]*) bytes/", $line))
     {
-      $this->logSection('lucene', '  memory limit reach, starting new subprocess');
+      $this->logSection('lucene', '  catch memory limit exception');
 
       return true;
     }
@@ -192,7 +192,11 @@ EOF;
   
   public function analyseLine($line)
   {
-    // the fatal error momory exception is always the last line ...
-    $this->memory_error = $this->isMemoryException($line);
+    if(!$this->memory_error)
+    {
+      $this->memory_error = $this->isMemoryException($line);
+    }
+    
+    $this->logSection('subprocess', trim($line));
   }
 }
