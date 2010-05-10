@@ -321,14 +321,14 @@ Model Behavior
 Doctrine
 --------
 
-You can attach a listener into your doctrine model in order to update the lucene index. In the `actAs` section just add `sfLuceneDoctrine`
+You can attach a listener into your doctrine model in order to update the lucene index. In the `actAs` section just add `sfLuceneDoctrineTemplate`
 
     [yaml]
     Address:
       tableName: addresses
       options: { charset: utf8, collate: utf8_unicode_ci }
       actAs:
-        sfLuceneDoctrine:
+        sfLuceneDoctrineTemplate:
       columns:
         id: { type: integer(4), primary: true, autoincrement: true }
         name: { type: string(40), }
