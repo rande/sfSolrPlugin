@@ -26,9 +26,10 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
     {
 
       $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('model "%s" cancelled indexation - primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));
+
       return false;
     }
-
+      
     $old_culture = null;
 
     // automatic symfony i18n detection
@@ -43,7 +44,6 @@ class sfLuceneDoctrineIndexer extends sfLuceneModelIndexer
     $doc = $this->configureDocumentFields($doc);
     //$doc = $this->configureDocumentCategories($doc);
     $doc = $this->configureDocumentMetas($doc);
-
     // add document
     $doc->setField('sfl_guid', $this->getModelGuid());
 

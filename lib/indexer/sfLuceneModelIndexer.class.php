@@ -21,7 +21,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   static
     $model_properties = array();
     
-  private 
+  protected 
     $instance,
     $model_name; // model name used in the search.yml file
 
@@ -35,6 +35,11 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
     $models = $search->getParameter('models')->getAll();
     $this->model_name = false;
 
+    if(!is_object($instance))
+    {
+      throw new sfLuceneIndexerException('The instance is not an object');
+    }
+    
     // fix class inheritance
     foreach(array_keys($models) as $model)
     {
@@ -69,7 +74,7 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   /**
    * Returns the instance of the model
    */
-  protected function getModel()
+  public function getModel()
   {
     return $this->instance;
   }
@@ -123,9 +128,30 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
    */
   protected function configureDocumentMetas(sfLuceneDocument $doc)
   {
-    $doc->setField('sfl_model', $this->getModelName());
-    $doc->setField('sfl_type', 'model');
-
+    
+    $properties = $this->getModelProperties();
+    
+    $doc->setField('sfl_model',       $this->getModelName());
+    $doc->setField('sfl_type',        'model');
+    
+    try
+    {
+      $doc->setField('sfl_title', $this->getModel()->get($properties->get('title')));
+    }
+    catch(Doctrine_Record_Exception $e)
+    {
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('model "%s" does not have a valid `sfl_title` field - primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));
+    }
+    
+    try
+    {
+      $doc->setField('sfl_description', $this->getModel()->get($properties->get('description')));
+    }
+    catch(Doctrine_Record_Exception $e)
+    {
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('model "%s" does not have a valid `sfl_description` field - primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));    
+    }
+    
     return $doc;
   }
 

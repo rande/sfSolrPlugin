@@ -91,7 +91,9 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
     {  
       $start1 = microtime(true);
       
-      $doc = $this->getFactory()->getModel($record)->getDocument();
+      $indexer = $this->getFactory()->getModel($record);
+
+      $doc = $indexer->getDocument();
       // $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this,'indexer.log', array('  - creating one object in %s seconds.', number_format(microtime(true) - $start1, 5))));
 
       if(!$doc)
