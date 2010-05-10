@@ -24,7 +24,7 @@ class sfLuceneCleanupTask extends sfLuceneBaseTask
   {
     $this->addArguments(array(
       new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-      new sfCommandArgument('confirmation', sfCommandArgument::OPTIONAL, 'Confirmation to delete')
+      new sfCommandArgument('confirmation', sfCommandArgument::OPTIONAL, 'Confirmation to delete, enter `delete`')
     ));
 
     $this->addOptions(array(
@@ -63,8 +63,8 @@ EOF;
 
       foreach ($instances as $instance)
       {
-        $query = '*:*';
-        $instance->getLucene()->deleteByQuery($query);
+        $instance->getLucene()->deleteByQuery('*:*');
+        $instance->getLucene()->commit();
         $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->format('Delete '.$instance->getPublicName() , array('fg' => 'red', 'bold' => true)))));
       }
     }
