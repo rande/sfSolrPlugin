@@ -28,19 +28,15 @@ abstract class sfLuceneModelResult extends sfLuceneResult
     {
       return $this->getResult()->__get($model->get('title'));
     }
-    else
-    {
       
-      foreach (array('title', 'subject') as $check)
+    foreach (array('title', 'subject') as $check)
+    {
+      if ($model->get('fields')->has($check))
       {
-
-        if ($model->get('fields')->has($check))
-        {
-
-          return strip_tags($this->getResult()->__get($check));
-        }
+        return strip_tags($this->getResult()->__get($check));
       }
     }
+    
 
     return 'No title available.';
   }
@@ -81,7 +77,7 @@ abstract class sfLuceneModelResult extends sfLuceneResult
   */
   public function getInternalPartial($module = 'sfLucene')
   {
-    $model = $this->retrieveModel();
+    $model = $this->retrieveModel();  
 
     if ($model->get('partial'))
     {
@@ -102,7 +98,7 @@ abstract class sfLuceneModelResult extends sfLuceneResult
 
     foreach (array('description','summary','about') as $check)
     {
-      if ($model->get('fields')->has($check) && !is_null($model->get($check)))
+      if ($model->get('fields')->has($check))
       {
         return strip_tags($this->result->__get($check));
       }
