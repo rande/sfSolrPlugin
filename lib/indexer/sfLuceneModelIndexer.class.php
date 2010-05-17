@@ -130,26 +130,41 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
   {
     
     $properties = $this->getModelProperties();
+    $fields = $properties->get('fields');
     
     $doc->setField('sfl_model',       $this->getModelName());
     $doc->setField('sfl_type',        'model');
     
     try
     {
-      $doc->setField('sfl_title', $this->getModel()->get($properties->get('title')));
+      if ($properties->get('title')) {
+        $title = $fields->get($properties->get('title'));
+        $title = (isset($title) && $title->get('alias'))
+          ? $this->getModel()->{$title->get('alias')}()
+          : $this->getModel()->get($properties->get('title'));
+
+        $doc->setField('sfl_title', $title);
+    }
     }
     catch(Doctrine_Record_Exception $e)
     {
-      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('model "%s" does not have a valid `sfl_title` field - primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));
+      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('model "%s" does not have a valid `sfl_title` field - primary key = %s: %s', $this->getModelName(), $properties->get('title'), current($this->getModel()->identifier()), $e->getMessage())));
     }
     
     try
     {
-      $doc->setField('sfl_description', $this->getModel()->get($properties->get('description')));
+      if ($properties->get('description')) {
+        $description = $fields->get($properties->get('description'));
+        $description = (isset($description) && $description->get('alias'))
+          ? $this->getModel()->{$description->get('alias')}()
+          : $this->getModel()->get($properties->get('description'));
+
+        $doc->setField('sfl_description', $description);
+    }
     }
     catch(Doctrine_Record_Exception $e)
     {
-      $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('model "%s" does not have a valid `sfl_description` field - primary key = %s', $this->getModelName(), current($this->getModel()->identifier()))));    
+        $this->getSearch()->getEventDispatcher()->notify(new sfEvent($this, 'indexer.log', array('model "%s" does not have a valid `sfl_description` field using "%s" - primary key = %s: %s', $this->getModelName(), $properties->get('description'), current($this->getModel()->identifier()), $e->getMessage())));
     }
     
     return $doc;

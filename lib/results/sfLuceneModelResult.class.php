@@ -22,6 +22,10 @@ abstract class sfLuceneModelResult extends sfLuceneResult
   */
   public function getInternalTitle()
   {
+    if ($this->result->__isset('sfl_title')) {
+        return $this->result->__get('sfl_title');
+    }
+
     $model = $this->retrieveModel();
 
     if ($model->has('title') && !is_null($model->get('title')))
@@ -89,6 +93,10 @@ abstract class sfLuceneModelResult extends sfLuceneResult
 
   public function getInternalDescription()
   {
+    if ($this->result->__isset('sfl_description')) {
+        return $this->result->__get('sfl_description');
+    }
+
     $model = $this->retrieveModel();
 
     if ($model->has('description') && !is_null($model->get('description')))
@@ -112,7 +120,6 @@ abstract class sfLuceneModelResult extends sfLuceneResult
   */
   protected function retrieveModel()
   {
-
     return $this->search->getParameter('models')->get($this->getSflModel());
   }
   
