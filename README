@@ -95,7 +95,7 @@ Types :
 
 More information can be found be reading the default schema.xml file provided by solr.
 
-There is only one schema.xml file per index. The plugin uses the multi code option so you can declare different schema.xml depends on your need.
+There is only one schema.xml file per index. The plugin uses the multi core option so you can declare different schema.xml depends on your need.
 
 Create the schema.xml file
 ==========================
@@ -179,15 +179,38 @@ Before indexing your models you need to declare which fields to index. These fie
         port: 8983
         base_url: "/solr"
 
-Further, you can specify a transformation function to put the value through before it is indexed.  This is useful if you have HTML code being returned and you need strip it out.  Define this like so:
+Further, you can specify a transformation function to put the value through before it is indexed.  This is useful if you have HTML code being returned and you need strip it out. Note that if no transform is defined for a boolean field, then true/false is automatically converted to 'true'/'false'. A transform is define this like so:
+
+    [yaml]
+    myIndex:
+      models:
+        mymodel:
+          fields:
+            id: { type: int, stored: true }
+            name:
+              stored: true
+              transform: [myconverterclass, convertMethod]
 
 Everytime you update the search.yml file, the `create-solr-conf` command must be run. The server must be restarted too. Depending on how deep is your update, you *might* need to reindex or to delete the index.
 
+Furthermore you can customize the schema.xml, by modifying the generated base_schema.xml. Note that Solr provides countless additional options and that the default base_schema.xml focuses on cleanness rather than illustrating all possibilities. Check the Solr documentation or the Solr example core in the vendor dir of this plugin for more details.
 
+There is automatic support for title and description fields that is used by the bundled module, which will be indexed in solr as sfl_title/sfl_description. In case the plugin cannot guess the names for these fields, you can specify the explicitly.
 
+    [yaml]
+    myIndex:
+      models:
+        mymodel:
+          title: some_col
+          description: some_col2
 
 Indexing options
 ================
+
+Query handling
+--------------
+
+Solr uses the solrconfig.xml to define what query handlers are defined as well as various caching settings. The base template can be configured via the base_solrconfig.xml in order to for example add a dismax query handler.
 
 Base query
 ----------
@@ -227,7 +250,6 @@ sfLucene currently supports two ways to add information to the index:
   2. Through symfony actions
 
 Through the ORM layer is the recommended method to add information to the index.  The plugin can keep the index synchronized if you use the ORM layer.  Through symfony actions is intended only for static content, such as the privacy policy.
-
 
 Indexing models
 ---------------
@@ -463,7 +485,6 @@ The search results will be composed of :
   - a list of result for the provided $keywords
   - a list of count depending on the facet provided and the $keywords
 
-
     [php]
     $results = $lucene->friendlyFind($criteria);
 
@@ -478,7 +499,6 @@ The search results will be composed of :
 
     print_r($queries_counts);
     // array('first_letter:[A TO M]' => 12, 'first_letter:[N TO Z]' => 34);
-
 
 
 
