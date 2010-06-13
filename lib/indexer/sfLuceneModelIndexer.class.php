@@ -132,8 +132,8 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
     $properties = $this->getModelProperties();
     $fields = $properties->get('fields');
     
-    $doc->setField('sfl_model',       $this->getModelName());
-    $doc->setField('sfl_type',        'model');
+    $doc->setField('sfl_model', $this->getModelName());
+    $doc->setField('sfl_type',  'model');
     
     try
     {
@@ -240,13 +240,11 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
     {
       $field_properties = $properties->get('fields')->get($field);
 
-
       $value = $this->getFieldValue($field, $field_properties);
 
       // do not index null value
-      if($value == null || (is_array($value) && empty($value)))
+      if($value === null || (is_array($value) && empty($value)))
       {
-
         continue;
       }
 
@@ -279,7 +277,12 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
           throw new sfLuceneIndexerException('Transformation function ' . $transform . ' does not exist');
         }
       }
+      elseif($type === 'boolean')
+      {
+        $transform = array($this, 'forceBooleanString');
+      }
       
+
       if(!is_array($value))
       {
         $value = array($value);
@@ -299,5 +302,9 @@ abstract class sfLuceneModelIndexer extends sfLuceneIndexer
     return $doc;
   }
   
+  public function forceBooleanString($value) {
+      return $value ? 'true' : 'false';
+  }
+
   abstract public function getFieldValue($field, $properties);
 }
