@@ -14,7 +14,7 @@
           add enablePositionIncrements=true in both the index and query
           analyzers to leave a 'gap' for more accurate phrase queries.
         -->
-        <filter class="solr.ISOLatin1AccentFilterFactory"
+        <filter class="solr.ASCIIFoldingFilterFactory"
                 />
               
         <filter class="solr.StopFilterFactory"
@@ -44,7 +44,7 @@
       <analyzer type="query">
         <tokenizer class="solr.WhitespaceTokenizerFactory"
                 />
-        <filter class="solr.ISOLatin1AccentFilterFactory"
+        <filter class="solr.ASCIIFoldingFilterFactory"
                 />
         <filter class="solr.SynonymFilterFactory" 
                 synonyms="synonyms.txt" 
