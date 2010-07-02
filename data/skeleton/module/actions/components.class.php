@@ -20,7 +20,7 @@ class ##MODULE_NAME##Components extends BasesfLuceneComponents
   /**
    * Returns an instance of sfLucene configured for this environment.
    */
-  protected function getLuceneInstance()
+  protected function getLuceneInstance($name = 'index', $culture = null)
   {
     return ##CALLABLE##;
   }

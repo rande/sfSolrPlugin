@@ -87,7 +87,7 @@ EOF;
     }
     else
     {
-      $constants['CALLABLE'] = 'sfLuceneToolkit::getApplicationInstance()';
+      $constants['CALLABLE'] = 'sfLucene::getInstance($name, $culture, $this->context->getConfiguration());';
     }
 
     $finder = sfFinder::type('file')->ignore_version_control()->discard('.sf');
