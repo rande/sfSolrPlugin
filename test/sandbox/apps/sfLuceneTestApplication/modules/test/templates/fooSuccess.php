@@ -1,1 +1,0 @@
-<h1>My Foo action</h1>
