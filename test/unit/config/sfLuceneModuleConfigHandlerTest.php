@@ -19,7 +19,7 @@ require dirname(__FILE__) . '/../../bootstrap/unit.php';
 $t = new limeade_test(2, limeade_output::get());
 
 $config = new sfLuceneModuleConfigHandler();
-$response = $config->execute(array( dirname(__FILE__) . '/../../data/configTest/module.yml'));
+$response = $config->execute(array( dirname(__FILE__) . '/../../fixtures/config/module.yml'));
 
 file_put_contents(sys_get_temp_dir()  . '/search.yml.php', $response);
 require sys_get_temp_dir()  . '/search.yml.php';

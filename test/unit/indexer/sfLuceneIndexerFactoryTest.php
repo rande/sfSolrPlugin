@@ -14,15 +14,15 @@
   * @version SVN: $Id$
   */
 
-//require dirname(__FILE__) . '/../../bootstrap/unit.php';
-// require dirname(__FILE__) . '/../../bin/AllFakeModels.php';
+require dirname(__FILE__) . '/../../bootstrap/unit.php';
 // 
 // class Foo { }
 // class Bar { }
 // 
 // class sfLuceneActionIndexer { }
 // 
-// $t = new limeade_test(14, limeade_output::get());
+$t = new limeade_test(1, limeade_output::get());
+$t->todo('Fix these tests');
 // 
 // $search = sfLucene::getInstance('index', 'fr', $app_configuration);
 // $h = $search->getParameterHolder();

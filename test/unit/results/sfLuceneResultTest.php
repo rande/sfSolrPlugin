@@ -16,6 +16,8 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
+sfConfig::set('sf_orm', 'doctrine');
+
 $t = new limeade_test(23, limeade_output::get());
 
 $lucene = sfLucene::getInstance('index', 'en', $app_configuration);
@@ -43,7 +45,7 @@ $mockresult->sfl_type = 'action';
 $t->isa_ok(sfLuceneResult::getInstance($mockresult, $lucene), 'sfLuceneActionResult', '::getInstance() returns an instance of sfLuceneActionResult for "type" = action');
 
 $mockresult->sfl_type = 'model';
-$t->isa_ok(sfLuceneResult::getInstance($mockresult, $lucene), 'sfLucenePropelResult', '::getInstance() returns an instance of sfLuceneModelResult for "type" = model');
+$t->isa_ok(sfLuceneResult::getInstance($mockresult, $lucene), 'sfLuceneDoctrineResult', '::getInstance() returns an instance of sfLuceneModelResult for "type" = model');
 
 $mockresult->sfl_type = 'regular';
 $result = sfLuceneResult::getInstance($mockresult, $lucene);

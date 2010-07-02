@@ -20,7 +20,7 @@ $t = new limeade_test(2, limeade_output::get());
 
 $config = new sfLuceneProjectConfigHandler();
 
-$response = $config->execute(array( dirname(__FILE__) . '/../../data/configTest/project.yml'));
+$response = $config->execute(array( dirname(__FILE__) . '/../../fixtures/config/project.yml'));
 
 file_put_contents(sys_get_temp_dir()  . '/search.yml.php', $response);
 require sys_get_temp_dir()  . '/search.yml.php';

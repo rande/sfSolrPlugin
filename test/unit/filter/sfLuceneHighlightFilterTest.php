@@ -20,7 +20,9 @@ $t = new limeade_test(19, limeade_output::get());
 
 $chain = new sfFilterChain();
 
+
 $context = sf_lucene_get_fake_context($app_configuration);
+
 $context->getRouting()->setCurrentRouteName('current_route');
 
 sfConfig::set('sf_i18n', false);

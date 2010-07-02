@@ -16,7 +16,7 @@
 
 require dirname(__FILE__) . '/../bootstrap/unit.php';
 
-$t = new limeade_test(53, limeade_output::get());
+$t = new limeade_test(50, limeade_output::get());
 
 $lucene = sfLucene::getInstance('index', 'en', $app_configuration);
 
@@ -228,35 +228,51 @@ $lucene->forceIndexerFactory($originalFactory);
 
 $t->diag('testing wrappers');
 
-try {
-  $lucene->optimize();
-  $t->pass('->optimize() optimizes the index without exception');
-} catch (Exception $e) {
-  $t->fail('->optimize() optimizes the index without exception : '.$e->getMessage());
+if($lucene->getSearchService()->ping())
+{
+  $t->diag('Solr available');
+  
+  try {
+    $lucene->optimize();
+    $t->pass('->optimize() optimizes the index without exception');
+  } catch (Exception $e) {
+    $t->fail('->optimize() optimizes the index without exception : '.$e->getMessage());
+  }
+  
+  try {
+    $t->is($lucene->count(), 3, '->count() returns the document count');
+    $t->pass('->count() counts the index without exception');
+  } catch (Exception $e) {
+    $t->skip('->count() returns the document count');
+    $t->fail('->count() counts the index without exception');
+  }
+  
+  try {
+    $t->is($lucene->numDocs(), 3, '->numDocs() returns the document count');
+    $t->pass('->numDocs() counts the index without exception');
+  } catch (Exception $e) {
+    $t->skip('->numDocs() returns the document count');
+    $t->fail('->numDocs() counts the index without exception');
+  }
+  
+  try {
+    $lucene->commit();
+    $t->pass('->commit() commits the index without exception');
+  } catch (Exception $e) {
+    $t->fail('->commit() commits the index without exception');
+  }
+}
+else
+{
+  $t->diag('Solr not available');
+  $t->skip('->optimize() optimizes the index without exception');
+  $t->skip('->count() counts the index without exception');
+  $t->skip('->numDocs() counts the index without exception');
+  $t->skip('->commit() commits the index without exception');
 }
 
-try {
-  $t->is($lucene->count(), 3, '->count() returns the document count');
-  $t->pass('->count() counts the index without exception');
-} catch (Exception $e) {
-  $t->skip('->count() returns the document count');
-  $t->fail('->count() counts the index without exception');
-}
 
-try {
-  $t->is($lucene->numDocs(), 3, '->numDocs() returns the document count');
-  $t->pass('->numDocs() counts the index without exception');
-} catch (Exception $e) {
-  $t->skip('->numDocs() returns the document count');
-  $t->fail('->numDocs() counts the index without exception');
-}
 
-try {
-  $lucene->commit();
-  $t->pass('->commit() commits the index without exception');
-} catch (Exception $e) {
-  $t->fail('->commit() commits the index without exception');
-}
 
 
 $t->diag('testing mixins');

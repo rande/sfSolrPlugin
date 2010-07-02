@@ -107,7 +107,7 @@ $t->diag('testing ->getInternalDescription()');
 $t->is($result->getInternalDescription(), 'Registered description', '->getInternalDescription() returns the description registered in the document and strips HTML');
 
 $h->remove('description');
-$t->is($result->getInternalDescription(), 'No description available.', '->getInternalDescription() can guess the description');
+$t->is($result->getInternalDescription(), 'Registered description', '->getInternalDescription() can guess the description');
 
 $fields = clone $h->get('fields');
 $h->get('fields')->clear();

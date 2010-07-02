@@ -14,9 +14,10 @@
 //   * @version SVN: $Id$
 //   */
 // 
-// require dirname(__FILE__) . '/../../bootstrap/unit.php';
+require dirname(__FILE__) . '/../../bootstrap/unit.php';
 // 
-// $t = new limeade_test(3, limeade_output::get());
+$t = new limeade_test(1, limeade_output::get());
+$t->todo('Create test for propel indexer handler');
 // $limeade = new limeade_sf($t);
 // $app = $limeade->bootstrap();
 // 

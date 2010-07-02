@@ -1,0 +1,212 @@
+Jul 01 18:20:27 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:20:27 symfony [warning] {sfWebDebugLogger}  Warning at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/storage/sfSessionStorage.class.php on line 93 (session_start(): Cannot send session cookie - headers already sent by (output started at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/vendor/lime/lime.php:579))
+Jul 01 18:20:27 symfony [warning] {sfWebDebugLogger}  Warning at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/storage/sfSessionStorage.class.php on line 93 (session_start(): Cannot send session cache limiter - headers already sent (output started at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/vendor/lime/lime.php:579))
+Jul 01 18:20:28 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:20:28 symfony [warning] {sfWebDebugLogger}  Warning at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/storage/sfSessionStorage.class.php on line 93 (session_start(): Cannot send session cookie - headers already sent by (output started at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/vendor/lime/lime.php:579))
+Jul 01 18:20:28 symfony [warning] {sfWebDebugLogger}  Warning at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/storage/sfSessionStorage.class.php on line 93 (session_start(): Cannot send session cache limiter - headers already sent (output started at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/vendor/lime/lime.php:579))
+Jul 01 18:20:28 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:20:28 symfony [warning] {sfWebDebugLogger}  Warning at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/storage/sfSessionStorage.class.php on line 93 (session_start(): Cannot send session cookie - headers already sent by (output started at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/vendor/lime/lime.php:579))
+Jul 01 18:20:28 symfony [warning] {sfWebDebugLogger}  Warning at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/storage/sfSessionStorage.class.php on line 93 (session_start(): Cannot send session cache limiter - headers already sent (output started at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/vendor/lime/lime.php:579))
+Jul 01 18:20:28 symfony [info] {sfWebDebugLogger} Configuration 0.88 ms (4)
+Jul 01 18:20:28 symfony [info] {sfWebDebugLogger} Factories 189.86 ms (1)
+Jul 01 18:20:28 symfony [info] {sfWebResponse} Send content (17162 o)
+Jul 01 18:20:28 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:20:28 symfony [warning] {sfWebDebugLogger}  Warning at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/storage/sfSessionStorage.class.php on line 93 (session_start(): Cannot send session cookie - headers already sent by (output started at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/vendor/lime/lime.php:579))
+Jul 01 18:20:28 symfony [warning] {sfWebDebugLogger}  Warning at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/storage/sfSessionStorage.class.php on line 93 (session_start(): Cannot send session cache limiter - headers already sent (output started at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/vendor/lime/lime.php:579))
+Jul 01 18:26:43 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:26:43 symfony [warning] {sfWebDebugLogger}  Warning at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/storage/sfSessionStorage.class.php on line 93 (session_start(): Cannot send session cookie - headers already sent by (output started at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/vendor/lime/lime.php:579))
+Jul 01 18:26:43 symfony [warning] {sfWebDebugLogger}  Warning at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/storage/sfSessionStorage.class.php on line 93 (session_start(): Cannot send session cache limiter - headers already sent (output started at /Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib/vendor/lime/lime.php:579))
+Jul 01 18:39:34 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:45:08 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:46:52 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:48:15 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:48:16 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 01 18:48:16 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 01 18:48:31 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:48:32 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:48:32 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 01 18:48:32 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 01 18:48:32 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:48:32 symfony [info] {sfWebDebugLogger} Configuration 0.82 ms (4)
+Jul 01 18:48:32 symfony [info] {sfWebDebugLogger} Factories 183.44 ms (1)
+Jul 01 18:48:32 symfony [info] {sfWebResponse} Send content (17177 o)
+Jul 01 18:48:32 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:50:09 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:50:09 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:50:09 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 01 18:50:09 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 01 18:50:10 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 01 18:50:10 symfony [info] {sfWebDebugLogger} Configuration 0.83 ms (4)
+Jul 01 18:50:10 symfony [info] {sfWebDebugLogger} Factories 792.69 ms (1)
+Jul 01 18:50:10 symfony [info] {sfWebResponse} Send content (17177 o)
+Jul 01 18:50:11 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 10:38:19 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 10:38:20 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 10:38:20 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 02 10:38:20 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 02 10:38:20 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 10:38:21 symfony [info] {sfWebDebugLogger} Configuration 0.80 ms (4)
+Jul 02 10:38:21 symfony [info] {sfWebDebugLogger} Factories 184.75 ms (1)
+Jul 02 10:38:21 symfony [info] {sfWebResponse} Send content (17177 o)
+Jul 02 10:38:21 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:03:38 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:03:38 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:03:39 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 02 12:03:39 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 02 12:03:39 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:03:39 symfony [info] {sfWebDebugLogger} Configuration 0.79 ms (4)
+Jul 02 12:03:39 symfony [info] {sfWebDebugLogger} Factories 175.69 ms (1)
+Jul 02 12:03:39 symfony [info] {sfWebResponse} Send content (17158 o)
+Jul 02 12:03:39 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:03:48 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:04:21 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:08:41 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:09:00 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:09:20 symfony [info] {sfPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:15:39 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:15:40 symfony [warning] {sfLuceneHighlightFilter} XML document failed to parse correctly, aborting highlighting
+Jul 02 12:15:40 symfony [err] {sfLuceneHighlightFilter} Entity 'foobar' not defined, line 1, col 21
+Jul 02 12:15:40 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: body line 1 and foo, line 1, col 28
+Jul 02 12:15:40 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: html line 1 and body, line 1, col 35
+Jul 02 12:15:40 symfony [err] {sfLuceneHighlightFilter} Extra content at the end of the document, line 1, col 35
+Jul 02 12:16:40 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:16:40 symfony [warning] {sfLuceneHighlightFilter} XML document failed to parse correctly, aborting highlighting
+Jul 02 12:16:40 symfony [err] {sfLuceneHighlightFilter} Entity 'foobar' not defined, line 1, col 21
+Jul 02 12:16:40 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: body line 1 and foo, line 1, col 28
+Jul 02 12:16:40 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: html line 1 and body, line 1, col 35
+Jul 02 12:16:40 symfony [err] {sfLuceneHighlightFilter} Extra content at the end of the document, line 1, col 35
+Jul 02 12:16:47 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:16:47 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:16:47 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 02 12:16:47 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 02 12:16:47 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:16:48 symfony [info] {sfWebDebugLogger} Configuration 0.89 ms (4)
+Jul 02 12:16:48 symfony [info] {sfWebDebugLogger} Factories 197.43 ms (1)
+Jul 02 12:16:48 symfony [info] {sfWebResponse} Send content (17197 o)
+Jul 02 12:16:48 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:16:49 symfony [warning] {sfLuceneHighlightFilter} XML document failed to parse correctly, aborting highlighting
+Jul 02 12:16:49 symfony [err] {sfLuceneHighlightFilter} Entity 'foobar' not defined, line 1, col 21
+Jul 02 12:16:49 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: body line 1 and foo, line 1, col 28
+Jul 02 12:16:49 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: html line 1 and body, line 1, col 35
+Jul 02 12:16:49 symfony [err] {sfLuceneHighlightFilter} Extra content at the end of the document, line 1, col 35
+Jul 02 12:19:32 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:19:32 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:19:32 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 02 12:19:32 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 02 12:19:32 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:19:33 symfony [info] {sfWebDebugLogger} Configuration 0.82 ms (4)
+Jul 02 12:19:33 symfony [info] {sfWebDebugLogger} Factories 184.18 ms (1)
+Jul 02 12:19:33 symfony [info] {sfWebResponse} Send content (17197 o)
+Jul 02 12:19:33 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:19:33 symfony [warning] {sfLuceneHighlightFilter} XML document failed to parse correctly, aborting highlighting
+Jul 02 12:19:33 symfony [err] {sfLuceneHighlightFilter} Entity 'foobar' not defined, line 1, col 21
+Jul 02 12:19:33 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: body line 1 and foo, line 1, col 28
+Jul 02 12:19:33 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: html line 1 and body, line 1, col 35
+Jul 02 12:19:33 symfony [err] {sfLuceneHighlightFilter} Extra content at the end of the document, line 1, col 35
+Jul 02 12:20:29 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:20:30 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:20:30 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 02 12:20:30 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 02 12:20:30 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:20:30 symfony [info] {sfWebDebugLogger} Configuration 0.81 ms (4)
+Jul 02 12:20:30 symfony [info] {sfWebDebugLogger} Factories 179.18 ms (1)
+Jul 02 12:20:30 symfony [info] {sfWebResponse} Send content (17237 o)
+Jul 02 12:20:31 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:20:31 symfony [warning] {sfLuceneHighlightFilter} XML document failed to parse correctly, aborting highlighting
+Jul 02 12:20:31 symfony [err] {sfLuceneHighlightFilter} Entity 'foobar' not defined, line 1, col 21
+Jul 02 12:20:31 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: body line 1 and foo, line 1, col 28
+Jul 02 12:20:31 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: html line 1 and body, line 1, col 35
+Jul 02 12:20:31 symfony [err] {sfLuceneHighlightFilter} Extra content at the end of the document, line 1, col 35
+Jul 02 12:24:22 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:24:22 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:24:22 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 02 12:24:22 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 02 12:24:23 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:24:23 symfony [info] {sfWebDebugLogger} Configuration 0.78 ms (4)
+Jul 02 12:24:23 symfony [info] {sfWebDebugLogger} Factories 176.37 ms (1)
+Jul 02 12:24:23 symfony [info] {sfWebResponse} Send content (17237 o)
+Jul 02 12:24:23 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:24:24 symfony [warning] {sfLuceneHighlightFilter} XML document failed to parse correctly, aborting highlighting
+Jul 02 12:24:24 symfony [err] {sfLuceneHighlightFilter} Entity 'foobar' not defined, line 1, col 21
+Jul 02 12:24:24 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: body line 1 and foo, line 1, col 28
+Jul 02 12:24:24 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: html line 1 and body, line 1, col 35
+Jul 02 12:24:24 symfony [err] {sfLuceneHighlightFilter} Extra content at the end of the document, line 1, col 35
+Jul 02 12:26:10 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:26:10 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:26:10 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 02 12:26:10 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 02 12:26:10 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:26:11 symfony [info] {sfWebDebugLogger} Configuration 0.78 ms (4)
+Jul 02 12:26:11 symfony [info] {sfWebDebugLogger} Factories 176.08 ms (1)
+Jul 02 12:26:11 symfony [info] {sfWebResponse} Send content (17197 o)
+Jul 02 12:26:11 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:26:11 symfony [warning] {sfLuceneHighlightFilter} XML document failed to parse correctly, aborting highlighting
+Jul 02 12:26:11 symfony [err] {sfLuceneHighlightFilter} Entity 'foobar' not defined, line 1, col 21
+Jul 02 12:26:11 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: body line 1 and foo, line 1, col 28
+Jul 02 12:26:11 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: html line 1 and body, line 1, col 35
+Jul 02 12:26:11 symfony [err] {sfLuceneHighlightFilter} Extra content at the end of the document, line 1, col 35
+Jul 02 12:27:42 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:27:43 symfony [warning] {sfLuceneHighlightFilter} XML document failed to parse correctly, aborting highlighting
+Jul 02 12:27:43 symfony [err] {sfLuceneHighlightFilter} Entity 'foobar' not defined, line 1, col 21
+Jul 02 12:27:43 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: body line 1 and foo, line 1, col 28
+Jul 02 12:27:43 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: html line 1 and body, line 1, col 35
+Jul 02 12:27:43 symfony [err] {sfLuceneHighlightFilter} Extra content at the end of the document, line 1, col 35
+Jul 02 12:27:55 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:27:55 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:27:56 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 02 12:27:56 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 02 12:27:56 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:27:56 symfony [info] {sfWebDebugLogger} Configuration 0.83 ms (4)
+Jul 02 12:27:56 symfony [info] {sfWebDebugLogger} Factories 184.34 ms (1)
+Jul 02 12:27:56 symfony [info] {sfWebResponse} Send content (17282 o)
+Jul 02 12:27:56 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:27:57 symfony [warning] {sfLuceneHighlightFilter} XML document failed to parse correctly, aborting highlighting
+Jul 02 12:27:57 symfony [err] {sfLuceneHighlightFilter} Entity 'foobar' not defined, line 1, col 21
+Jul 02 12:27:57 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: body line 1 and foo, line 1, col 28
+Jul 02 12:27:57 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: html line 1 and body, line 1, col 35
+Jul 02 12:27:57 symfony [err] {sfLuceneHighlightFilter} Extra content at the end of the document, line 1, col 35
+Jul 02 12:41:39 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:41:40 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:41:40 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 02 12:41:40 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 02 12:41:40 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:41:40 symfony [info] {sfWebDebugLogger} Configuration 0.80 ms (4)
+Jul 02 12:41:40 symfony [info] {sfWebDebugLogger} Factories 179.80 ms (1)
+Jul 02 12:41:40 symfony [info] {sfWebResponse} Send content (17216 o)
+Jul 02 12:41:40 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:41:41 symfony [warning] {sfLuceneHighlightFilter} XML document failed to parse correctly, aborting highlighting
+Jul 02 12:41:41 symfony [err] {sfLuceneHighlightFilter} Entity 'foobar' not defined, line 1, col 21
+Jul 02 12:41:41 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: body line 1 and foo, line 1, col 28
+Jul 02 12:41:41 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: html line 1 and body, line 1, col 35
+Jul 02 12:41:41 symfony [err] {sfLuceneHighlightFilter} Extra content at the end of the document, line 1, col 35
+Jul 02 12:54:31 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:54:31 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:54:31 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 02 12:54:31 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 02 12:54:31 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:54:32 symfony [info] {sfWebDebugLogger} Configuration 0.79 ms (4)
+Jul 02 12:54:32 symfony [info] {sfWebDebugLogger} Factories 178.23 ms (1)
+Jul 02 12:54:32 symfony [info] {sfWebResponse} Send content (17197 o)
+Jul 02 12:54:32 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:54:32 symfony [warning] {sfLuceneHighlightFilter} XML document failed to parse correctly, aborting highlighting
+Jul 02 12:54:32 symfony [err] {sfLuceneHighlightFilter} Entity 'foobar' not defined, line 1, col 21
+Jul 02 12:54:32 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: body line 1 and foo, line 1, col 28
+Jul 02 12:54:32 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: html line 1 and body, line 1, col 35
+Jul 02 12:54:32 symfony [err] {sfLuceneHighlightFilter} Extra content at the end of the document, line 1, col 35
+Jul 02 12:56:57 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:56:58 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:56:58 symfony [info] {testActions} Call "testActions->executeFoo()"
+Jul 02 12:56:58 symfony [info] {sfPHPView} Render "/Users/thomas/Projects/menugourmet-trunk/plugins/sfSolrPlugin/test/fixtures/project/apps/frontend/modules/test/templates/fooSuccess.php"
+Jul 02 12:56:58 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:56:58 symfony [info] {sfWebDebugLogger} Configuration 0.79 ms (4)
+Jul 02 12:56:58 symfony [info] {sfWebDebugLogger} Factories 175.92 ms (1)
+Jul 02 12:56:58 symfony [info] {sfWebResponse} Send content (17197 o)
+Jul 02 12:56:58 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:56:59 symfony [warning] {sfLuceneHighlightFilter} XML document failed to parse correctly, aborting highlighting
+Jul 02 12:56:59 symfony [err] {sfLuceneHighlightFilter} Entity 'foobar' not defined, line 1, col 21
+Jul 02 12:56:59 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: body line 1 and foo, line 1, col 28
+Jul 02 12:56:59 symfony [err] {sfLuceneHighlightFilter} Opening and ending tag mismatch: html line 1 and body, line 1, col 35
+Jul 02 12:56:59 symfony [err] {sfLuceneHighlightFilter} Extra content at the end of the document, line 1, col 35
+Jul 02 12:57:34 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:57:34 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)
+Jul 02 12:58:27 symfony [info] {sfLuceneTestPatternRouting} Match route "homepage" (/) for / with parameters array (  'module' => 'default',  'action' => 'index',)

@@ -68,26 +68,24 @@ class sfLuceneResult
   
   public function getInternalDescription()
   {
-    try
-    {
-      return strip_tags($this->result->sfl_description);
-    }
-    catch (Exception $e)
+    
+    if(!isset($this->result->sfl_description))
     {
       return 'No description available.';
     }
+    
+    return strip_tags($this->result->sfl_description);
   }
 
   public function getInternalTitle()
   {
-    try
-    {
-      return $this->result->sfl_title;
-    }
-    catch (Exception $e)
+    
+    if(!isset($this->result->sfl_title))
     {
       return 'No title available.';
     }
+    
+    return $this->result->sfl_title;
   }
 
   /**
