@@ -35,6 +35,7 @@ class sfLuceneUpdateModelSystemTask extends sfLuceneBaseTask
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'search'),
       new sfCommandOption('model', null, sfCommandOption::PARAMETER_OPTIONAL, 'The model to reindex', null),
       new sfCommandOption('delete', null, sfCommandOption::PARAMETER_OPTIONAL, 'set to true to delete all related record', false),    
+      new sfCommandOption('memory_limit', null, sfCommandOption::PARAMETER_OPTIONAL, 'set to true to delete all related record', '512M'),
     ));
 
     $this->aliases = array('lucene-rebuild-system');
@@ -91,7 +92,7 @@ EOF;
         $this->deleteModel($search, $model);
       }
       
-      $this->update($app, $index, $culture, $model, $limit);
+      $this->update($app, $index, $culture, $model, $options);
     }
     
     $time = microtime(true) - $start;
@@ -116,7 +117,7 @@ EOF;
     return sprintf(sfConfig::get('sf_data_dir').'/solr_index/update_%s.state', sfInflector::underscore($model));
   }
   
-  public function update($app, $index, $culture, $model)
+  public function update($app, $index, $culture, $model, $options)
   {
     
     $file = $this->getFilestatePath($model);
@@ -131,7 +132,8 @@ EOF;
       
       $this->dispatcher->notify(new sfEvent($this, 'command.log', array('', $final)));
       
-      $command = sprintf('%s/symfony lucene:update-model %s %s %s %s --state=true',
+      $command = sprintf('php -d memory_limit=%s %s/symfony lucene:update-model %s %s %s %s --state=true',
+        $options['memory_limit'],
         $this->configuration->getRootDir(),
         $app,
         $index,
