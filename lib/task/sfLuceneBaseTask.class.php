@@ -8,9 +8,6 @@
  * file that was distributed with this source code.
  */
 
-require_once(dirname(__FILE__).'/../sfLucene.class.php');
-require_once(dirname(__FILE__).'/../../../../config/ProjectConfiguration.class.php');
-
 /**
 * This class represents a base task for all sfLucene tasks.
 *
