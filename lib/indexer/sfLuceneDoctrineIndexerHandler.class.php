@@ -52,7 +52,7 @@ class sfLuceneDoctrineIndexerHandler extends sfLuceneModelIndexerHandler
 
   public function getBaseQuery($model)
   {
-    $table = Doctrine::getTable($model);
+    $table = Doctrine_Core::getTable($model);
 
     if(method_exists($table, 'getLuceneQuery'))
     {

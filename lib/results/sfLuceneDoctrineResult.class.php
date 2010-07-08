@@ -30,8 +30,9 @@ class sfLuceneDoctrineResult extends sfLuceneModelResult
   {
     $model = $this->getInternalModel();
     $id    = $this->getId();
-    
-    return Doctrine::getTable($model)->findOne($id);
+
+    return Doctrine_Core::getTable($model)
+      ->find($id);
   }
   
   /**
@@ -44,7 +45,7 @@ class sfLuceneDoctrineResult extends sfLuceneModelResult
     $model = $this->getInternalModel();
     $id    = $this->getId();
     
-    $results = Doctrine::getTable($model)
+    $results = Doctrine_Core::getTable($model)
       ->createQuery()
       ->where('id = ?', $id)
       ->limit(1)
