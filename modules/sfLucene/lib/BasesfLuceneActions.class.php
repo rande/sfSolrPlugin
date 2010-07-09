@@ -41,7 +41,7 @@ abstract class BasesfLuceneActions extends sfActions
 
     $form = new sfLuceneSimpleForm();
     $this->configureCategories($form);
-    $form->bind($request->getParameter('form', array()));
+    $form->bind($request->getParameter($form->getName(), array()));
 
     $this->form = $form;
 
@@ -121,13 +121,12 @@ abstract class BasesfLuceneActions extends sfActions
     $this->form = $form;
 
     // continue only if there was a submit
-    if (!$request->getParameter('form'))
+    if (!$request->getParameter($form->getName()))
     {
-
       return sfView::SUCCESS;
     }
 
-    $form->bind($request->getParameter('form'));
+    $form->bind($request->getParameter($form->getName()));
     
     $values = $form->getValues();
 
