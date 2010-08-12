@@ -31,6 +31,18 @@ class sfLuceneHighlighterXML extends sfLuceneHighlighter
    */
   public function __construct($data, $version = null, $encoding = null)
   {
+    if (is_null($version))
+    {
+      $version = '1.0';
+    }
+    
+    if (is_null($encoding))
+    {
+      $encoding = sfConfig::get('sf_charset', 'utf-8');
+    }
+    
+    mb_internal_encoding($encoding);
+    
     $this->version = $version;
     $this->encoding = $encoding;
     
