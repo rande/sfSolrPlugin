@@ -17,7 +17,7 @@
 
 error_reporting(E_ALL);
 
-$_SERVER['SYMFONY'] = '/Users/thomas/Projects/menugourmet-trunk/lib/vendor/symfony/lib';
+$_SERVER['SYMFONY'] = dirname(__FILE__).'/../../../../lib/vendor/symfony/lib';
 
 if (!isset($_SERVER['SYMFONY']))
 {
