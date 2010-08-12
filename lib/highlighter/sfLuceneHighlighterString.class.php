@@ -26,9 +26,9 @@ class sfLuceneHighlighterString extends sfLuceneHighlighter
       {
         $replacement = $keyword->getHighlighter()->highlight($token->getText());
 
-        $this->data = substr($this->data, 0, $token->getStart())
+        $this->data = mb_substr($this->data, 0, $token->getStart())
                     . $replacement
-                    . substr($this->data, $token->getEnd());
+                    . mb_substr($this->data, $token->getEnd());
       }
     }
   }
@@ -90,7 +90,7 @@ class sfLuceneHighlighterString extends sfLuceneHighlighter
     {
       $data = $dots . $data;
     }
-    if ($bestLeft + $size < strlen($this->data))
+    if ($bestLeft + $size < mb_strlen($this->data))
     {
       $data = $data . $dots;
     }
