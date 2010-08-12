@@ -29,13 +29,8 @@ class sfLuceneHighlighterXML extends sfLuceneHighlighter
    * @param string $version The XML version of the string
    * @param string $encoding The encoding of the string
    */
-  public function __construct($data, $version = null, $encoding = null)
+  public function __construct($data, $version = '1.0', $encoding = null)
   {
-    if (is_null($version))
-    {
-      $version = '1.0';
-    }
-    
     if (is_null($encoding))
     {
       $encoding = sfConfig::get('sf_charset', 'utf-8');
