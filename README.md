@@ -29,6 +29,7 @@ Requirements
  - Doctrine
  - symfony 1.[2,3,4]
  - Java
+ - mbstring extension
 
 Main Features
 =============
