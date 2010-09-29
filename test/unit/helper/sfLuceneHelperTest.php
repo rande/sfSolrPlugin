@@ -15,10 +15,10 @@
   */
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
+require dirname(__FILE__) . '/../../../lib/helper/sfLuceneHelper.php';
 
 $t = new limeade_test(7, limeade_output::get());
 
-sfLoader::loadHelpers(array('sfLucene'));
 
 $t->diag('testing highlighting');
 
