@@ -4,16 +4,25 @@
  It is *not* a good example to work from. 
 -->
 <config>
+
+  <lib dir="${solr.lib.dir}"/>
+
   <updateHandler class="solr.DirectUpdateHandler2" />
+
+  %%REQUEST_PROCESSORS%%
 
   <requestDispatcher handleSelect="true" >
     <requestParsers enableRemoteStreaming="false" multipartUploadLimitInKB="2048" />
   </requestDispatcher>
-  
+
+  %%SEARCH_COMPONENTS%%
+
   <requestHandler name="standard" class="solr.StandardRequestHandler" default="true" />
   <requestHandler name="/update" class="solr.XmlUpdateRequestHandler" />
   <requestHandler name="/admin/" class="org.apache.solr.handler.admin.AdminHandlers" />
-      
+
+  %%REQUEST_HANDLERS%%
+
   <!-- config for the admin interface --> 
   <admin>
     <defaultQuery>solr</defaultQuery>
@@ -74,7 +83,6 @@
      -->
     <!--<mergeScheduler class="org.apache.lucene.index.ConcurrentMergeScheduler"/>-->
 
-	  
     <!--
       This option specifies which Lucene LockFactory implementation to use.
       
@@ -88,6 +96,7 @@
        if not specified.)
     -->
     <lockType>single</lockType>
+
     <!--
      Expert:
     Controls how often Lucene loads terms into memory -->
