@@ -42,23 +42,13 @@ $xml = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/
 ';
 
 $expected = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>foobar</title>
-</head>
-<body>
-<p>I am prety <h>foobar</h></p>
-<script>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>foobar</title></head><body><p>I am prety <h>foobar</h></p><script>
       foobar
     </script><style type="text/stylesheet">
       foobar
-    </style>
-<textarea>
+    </style><textarea>
       foobar
-    </textarea><!-- foobar --><strong class="foobar">bar</strong>
-</body>
-</html>
+    </textarea><!-- foobar --><strong class="foobar">bar</strong></body></html>
 ';
 
 $keyword = new sfLuceneHighlighterKeywordNamed(new sfLuceneHighlighterMarkerSprint('<h>%s</h>'), 'foobar');

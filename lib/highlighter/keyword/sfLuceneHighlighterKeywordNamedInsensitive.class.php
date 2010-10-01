@@ -17,7 +17,7 @@
  */
 class sfLuceneHighlighterKeywordNamedInsensitive extends sfLuceneHighlighterKeywordNamed
 {
-  protected $strpos = 'stripos';
+  protected $strpos = 'mb_stripos';
 
   static public function generate(sfLuceneHighlighterMarkerHarness $highlighters, array $keywords)
   {

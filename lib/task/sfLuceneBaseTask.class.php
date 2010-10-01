@@ -17,7 +17,6 @@
 * @subpackage Tasks
 * @version SVN: $Id$
 */
-
 abstract class sfLuceneBaseTask extends sfBaseTask
 {
   protected function bootstrapSymfony($app, $env, $debug = true)

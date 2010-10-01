@@ -33,9 +33,9 @@ class sfLuceneHighlighterHTMLPart extends sfLuceneHighlighterHTML
   {
     parent::cleanup();
 
-    $start = strpos($this->data, $this->partToken) + strlen($this->partToken);
-    $end = strrpos($this->data, $this->partToken);
+    $start = mb_strpos($this->data, $this->partToken) + mb_strlen($this->partToken);
+    $end = mb_strrpos($this->data, $this->partToken);
 
-    $this->data = substr($this->data, $start, $end - $start);
+    $this->data = mb_substr($this->data, $start, $end - $start);
   }
 }

@@ -16,10 +16,10 @@
 
 $_test_dir = realpath(dirname(__FILE__). '/../../../..');
 
-require dirname(__FILE__) . '/bootstrap/unit.php';
+require dirname(__FILE__) . '/../bootstrap/unit.php';
 
 $h = new lime_harness(new lime_output_color());
-$h->base_dir = dirname(__FILE__);
+$h->base_dir = dirname(__FILE__).'/../unit';
 
 // register unit tests
 $finder = sfFinder::type('file')->ignore_version_control()->follow_link()->name('*Test.php');

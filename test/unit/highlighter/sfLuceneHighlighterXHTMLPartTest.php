@@ -16,7 +16,8 @@
 
 require dirname(__FILE__) . '/../../bootstrap/unit.php';
 
-$t = new limeade_test(3, limeade_output::get());
+$t = new limeade_test(4, limeade_output::get());
+$dtd = $_SERVER['SYMFONY'].'/test/w3c/TR/xhtml1/DTD/xhtml1-transitional.dtd';
 
 $given = '<p>This is part of a document, dedicated to foobar.</p><p>Look, a foobar</p>';
 $expected = '<p>This is part of a document, dedicated to <h>foobar</h>.</p><p>Look, a <h>foobar</h></p>';
@@ -24,6 +25,7 @@ $expected = '<p>This is part of a document, dedicated to <h>foobar</h>.</p><p>Lo
 $keyword = new sfLuceneHighlighterKeywordNamed(new sfLuceneHighlighterMarkerSprint('<h>%s</h>'), 'foobar');
 
 $highlighter = new sfLuceneHighlighterXHTMLPart($given);
+$highlighter->setMasterDtd($dtd);
 $highlighter->addKeywords(array($keyword));
 $highlighter->highlight();
 
@@ -35,6 +37,7 @@ $expected = '<html xmlns="http://www.w3.org/1999/xhtml"><body><p>This is part of
 $keyword = new sfLuceneHighlighterKeywordNamed(new sfLuceneHighlighterMarkerSprint('<h>%s</h>'), 'foobar');
 
 $highlighter = new sfLuceneHighlighterXHTMLPart($given);
+$highlighter->setMasterDtd($dtd);
 $highlighter->addKeywords(array($keyword));
 $highlighter->highlight();
 
@@ -46,7 +49,21 @@ $expected = '<p>This is p&agrave;rt of a document, dedicated to <h>foobar</h>.</
 $keyword = new sfLuceneHighlighterKeywordNamed(new sfLuceneHighlighterMarkerSprint('<h>%s</h>'), 'foobar');
 
 $highlighter = new sfLuceneHighlighterXHTMLPart($given);
+$highlighter->setMasterDtd($dtd);
 $highlighter->addKeywords(array($keyword));
 $highlighter->highlight();
 
 $t->is($highlighter->export(), $expected, '->highlight() handles entities correctly');
+
+
+$given = '<p>Présentation du document, dédié au foobar.</p>';
+$expected = '<p>Présentation du document, dédié au <h>foobar</h>.</p>';
+
+$keyword = new sfLuceneHighlighterKeywordNamed(new sfLuceneHighlighterMarkerSprint('<h>%s</h>'), 'foobar');
+
+$highlighter = new sfLuceneHighlighterXHTMLPart($given);
+$highlighter->setMasterDtd($dtd);
+$highlighter->addKeywords(array($keyword));
+$highlighter->highlight();
+
+$t->is($highlighter->export(), $expected, '->highlight() utf-8 characters');

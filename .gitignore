@@ -1,3 +1,4 @@
 .DS_Store
 .svn
 test/fixtures/project/cache
+test/fixtures/project/log

@@ -27,7 +27,8 @@ class sfLuceneHighlighterXHTMLPart extends sfLuceneHighlighterXHTML
   protected function prepare()
   {
     // convert the data to a full document and we'll remove this part later
-    $this->data = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "' . $this->dtd . '"><html><body>' . $this->data . '</body></html>';
+    $this->data = '<?xml version="'.$this->version.'" encoding="'.$this->encoding.'"?>
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "' . $this->dtd . '"><html><body>' . $this->data . '</body></html>';
 
     parent::prepare();
   }

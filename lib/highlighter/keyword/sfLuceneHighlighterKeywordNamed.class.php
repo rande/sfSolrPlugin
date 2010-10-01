@@ -22,12 +22,12 @@ class sfLuceneHighlighterKeywordNamed extends sfLuceneHighlighterKeyword
   const SPLIT_REGEX = '/[\p{Z}\p{P}]+/u';
   const RANGE_REGEX = '/[\t\r\n\p{Z}\p{P}]/u';
 
-  protected $strpos = 'strpos';
+  protected $strpos = 'mb_strpos';
 
   public function __construct(sfLuceneHighlighterMarker $highlighter, $name)
   {
     $this->name = $name;
-    $this->length = strlen($name);
+    $this->length = mb_strlen($name);
 
     parent::__construct($highlighter);
   }
@@ -45,7 +45,7 @@ class sfLuceneHighlighterKeywordNamed extends sfLuceneHighlighterKeyword
   public function tokenize($input)
   {
     $tokens = array();
-    $length = strlen($input);
+    $length = mb_strlen($input);
 
     $strpos = $this->strpos;
 
@@ -61,16 +61,16 @@ class sfLuceneHighlighterKeywordNamed extends sfLuceneHighlighterKeyword
       if (
           (
             $position + $this->length >= $length // pass if we are the end of the string
-            || preg_match(self::RANGE_REGEX, substr($input, $position + $this->length, 1)) // or if the next character is not a word
+            || preg_match(self::RANGE_REGEX, mb_substr($input, $position + $this->length, 1)) // or if the next character is not a word
           )
           && // in addition to that that we only
           (
             $position - 1 <= 0 // pass if we are at the start of the string
-            || preg_match(self::RANGE_REGEX, substr($input, $position - 1, 1)) // or if the previous character is not a word
+            || preg_match(self::RANGE_REGEX, mb_substr($input, $position - 1, 1)) // or if the previous character is not a word
           )
       )
       {
-        $tokens[] = new sfLuceneHighlighterToken($this, substr($input, $position, $this->length), $position, $position + $this->length);
+        $tokens[] = new sfLuceneHighlighterToken($this, mb_substr($input, $position, $this->length), $position, $position + $this->length);
       }
     }
 
