@@ -3,6 +3,7 @@
  * This file is part of the sfLucenePlugin package
  * (c) 2007 - 2008 Carl Vondrick <carl@carlsoft.net>
  * (c) 2009 - Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ * (c) 2010 - Julien Lirochon <julien@lirochon.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -20,6 +21,7 @@
  * @subpackage Utilities
  * @author     Carl Vondrick <carl@carlsoft.net>
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ * @author     Julien Lirochon <julien@lirochon.net>
  * @version SVN: $Id$
  */
 class sfLuceneCriteria
@@ -488,6 +490,10 @@ class sfLuceneCriteria
   }
 
   /**
+   * ADVICE : see sfLuceneGeoCriteria, it uses localsolr plugin, and should
+   *          give better/faster results.
+   *
+   *
    * Adds a proximity query to restrict by distance from longitude and latitude.
    *
    * This method will do a pretty good calculation to restrict the results to
@@ -720,12 +726,14 @@ class sfLuceneCriteria
   /**
    * Returns a string query that can be fed directly to Lucene
    *
+   * If the query string is empty, replace it by '*:*' to avoid solr error.
+   *
    * @return string 
    */
   public function getQuery()
   {
-    
-    return $this->query;
+
+    return ($this->query != '') ? $this->query : '*:*';
   }
 
   /**
