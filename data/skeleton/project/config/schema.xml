@@ -246,6 +246,9 @@
   
   <!-- merged model information into one document -->
   %%MERGE_CONFIG%%
+
+  %%DYNAMIC_FIELDS%%
+
  </fields>
 
  <!-- field to use to determine and enforce document uniqueness. -->

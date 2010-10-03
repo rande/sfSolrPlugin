@@ -2,6 +2,7 @@
 /*
  * This file is part of the sfLucenePlugin package
  * (c) 2009 - Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ * (c) 2010 - Julien Lirochon <julien@lirochon.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -18,18 +19,11 @@
  * @package    sfLucenePlugin
  * @subpackage Utilities
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ * @author     Julien Lirochon <julien@lirochon.net>
  * @version SVN: $Id:$
  */
 class sfLuceneFacetsCriteria extends sfLuceneCriteria
 {
-  
-  public function __construct()
-  {
-    parent::__construct();
-    
-    $this->addParam('facet', 'true');
-  }
-  
   /**
    * Add a facet field
    * 
@@ -38,8 +32,9 @@ class sfLuceneFacetsCriteria extends sfLuceneCriteria
    */
   public function addFacetField($name, $reset = false)
   {
+    $this->setParam('facet', 'true');
     $this->addParam('facet.field', $name, $reset);
-    
+
     return $this;
   }
   
@@ -51,6 +46,7 @@ class sfLuceneFacetsCriteria extends sfLuceneCriteria
    */
   public function addFacetQuery($name, $reset = false)
   {
+    $this->setParam('facet', 'true');
     $this->addParam('facet.query', $name, $reset);
     
     return $this;

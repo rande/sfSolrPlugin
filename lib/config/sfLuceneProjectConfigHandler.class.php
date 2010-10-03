@@ -196,6 +196,10 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
     $port = isset($config['index']['port']) ? $config['index']['port'] : '8983';
     $base_url = isset($config['index']['base_url']) ? $config['index']['base_url'] : '/solr';
 
+    $localsolr_enabled = isset($config['index']['localsolr']['enabled']) ? $config['index']['localsolr']['enabled'] : false;
+    $localsolr_latitude_field = isset($config['index']['localsolr']['latitude_field']) ? $config['index']['localsolr']['latitude_field'] : 'lat';
+    $localsolr_longitude_field = isset($config['index']['localsolr']['longitude_field']) ? $config['index']['localsolr']['longitude_field'] : 'lng';
+
     $config['index'] = array(
       'encoding' => $encoding,
       'cultures' => $cultures,
@@ -203,7 +207,12 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
       'param' => $param,
       'host' => $host,
       'port' => $port,
-      'base_url' => $base_url
+      'base_url' => $base_url,
+      'localsolr' => array(
+        'enabled' => $localsolr_enabled,
+        'latitude_field' => $localsolr_latitude_field,
+        'longitude_field' => $localsolr_longitude_field
+      )
     );
 
     // process factories...

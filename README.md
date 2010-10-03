@@ -502,6 +502,60 @@ The search results will be composed of :
     // array('first_letter:[A TO M]' => 12, 'first_letter:[N TO Z]' => 34);
 
 
+Geolocated Search with localsolr
+--------------------------------
+
+LocalSolr is a port of the LocalLucene library to the Solr search server. LocalSolr offers geographical searching capabilities to your search engine.
+See http://www.nsshutdown.com/projects/lucene/whitepaper/locallucene_v2.html
+
+First, enable localsolr in your search.yml file (and run lucene:create-solr-config task again)
+
+    [yaml]
+      myIndex:
+        models:
+          (...)
+        index:
+          (...)
+          localsolr:
+            enabled: true
+            # latitude_field: lat
+            # longitude_field: lng
+
+Usage (kilometers):
+
+    [php]
+    $lucene = sfLucene::getInstance('index', 'fr');
+    
+    $criteria = new sfLuceneGeoCriteria();
+    $criteria->addGeoCircle(48.8951187, 2.2876496, 2); // 2 km
+    $criteria->addAscendingSortByDistance();
+    
+    $results = new sfLuceneGeoResults($lucene->find($criteria), $lucene);
+    
+    foreach($results as $result)
+    {
+      echo sprintf("distance between me and %s : %f km\n", $result->getName(), $result->getGeoDistance());
+    }
+    
+Usage (miles):
+
+    [php]
+    $lucene = sfLucene::getInstance('index', 'fr');
+
+    $criteria = new sfLuceneGeoCriteria(sfLuceneGeoCriteria::UNIT_MILES);
+    $criteria->addGeoCircle(48.8951187, 2.2876496, 2); // 2 miles
+    $criteria->addAscendingSortByDistance();
+
+    $results = new sfLuceneGeoResults($lucene->find($criteria), $lucene, sfLuceneGeoCriteria::UNIT_MILES);
+
+    foreach($results as $result)
+    {
+      echo sprintf("distance between me and %s : %f miles\n", $result->getName(), $result->getGeoDistance());
+    }
+
+This will filter any result that is located outside the circle. If you dont't want to filter the results
+(for example if you want to see ALL results sorted by ascending distance) you need to set a very big radius.
+
 
 Build in interface
 ==================

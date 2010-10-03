@@ -152,12 +152,13 @@ EOF;
     $base_url = $instances[0]->getParameter('base_url');
     
     // start the jetty built in server
-    $command = sprintf('cd %s/plugins/sfSolrPlugin/lib/vendor/Solr/example; %s %s -Xmx%s -Xms%s -Dsolr.solr.home=%s/config/solr/ -Dsolr.data.dir=%s/data/solr_index -Djetty.port=%s -Djetty.logs=%s -jar start.jar > %s/solr_server_%s_%s.log 2>&1 & echo $!',
+    $command = sprintf('cd %s/plugins/sfSolrPlugin/lib/vendor/Solr/example; %s %s -Xmx%s -Xms%s -Dsolr.solr.home=%s/config/solr/ -Dsolr.data.dir=%s/data/solr_index -Dsolr.lib.dir=%s/plugins/sfSolrPlugin/lib/vendor/Solr/example/solr/lib -Djetty.port=%s -Djetty.logs=%s -jar start.jar > %s/solr_server_%s_%s.log 2>&1 & echo $!',
       sfConfig::get('sf_root_dir'),
       $this->nohup,
       $this->java,
       $options['Xmx'],
       $options['Xms'],
+      sfConfig::get('sf_root_dir'),
       sfConfig::get('sf_root_dir'),
       sfConfig::get('sf_root_dir'),
       $port,
