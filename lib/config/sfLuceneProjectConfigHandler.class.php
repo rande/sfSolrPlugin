@@ -88,6 +88,7 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
             {
               $type         = isset($field['type']) ? $field['type'] : null;
               $stored       = isset($field['stored']) ? $field['stored'] : null;
+              $indexed      = isset($field['indexed']) ? $field['indexed'] : true;
               $multi_valued = isset($field['multiValued']) ? $field['multiValued'] : null;
               $required     = isset($field['required']) ? $field['required'] : null;
               $boost        = isset($field['boost']) ? $field['boost'] : null;
@@ -109,6 +110,7 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
             $boost        = $boost ? $boost : null;
             $transform    = $transform || count($transform) ? $transform : null;
             $multi_valued = $multi_valued ? $multi_valued : false;
+            $indexed       = $indexed ? $indexed : false;
             $stored       = $stored ? $stored : false;
             $required     = $required ? $required : false;
             $omitNorms    = $omitNorms === null ? null : $omitNorms;
@@ -119,6 +121,7 @@ class sfLuceneProjectConfigHandler extends sfYamlConfigHandler
               'transform' => $transform,
               'multiValued' => $multi_valued,
               'required'  => $required,
+              'indexed'    => $indexed,
               'stored'    => $stored,
               'default'   => $default,
               'alias'     => $alias,

@@ -63,10 +63,11 @@ EOF;
       $extraOptions[] = sprintf('default="%s"', $options['default']);
     }
 
-    return sprintf('<%s name="%s" type="%s" stored="%s" multiValued="%s" required="%s"%s/>',
+    return sprintf('<%s name="%s" type="%s" indexed="%s" stored="%s" multiValued="%s" required="%s"%s/>',
       $is_dynamic ? 'dynamicField' : 'field',
       $name,
       $options['type'],
+      $options['indexed'] ? 'true' : 'false',
       $options['stored'] ? 'true' : 'false',
       $options['multiValued'] ? 'true' : 'false',
       $options['required'] ? 'true' : 'false',
@@ -120,7 +121,10 @@ EOF;
           foreach($model['fields'] as $field_name => $field_option)
           {
             $schema_options[$field_name] = $this->generateFieldXml($field_name, $field_option);
-            $copy_fields[$field_name] = $this->generateCopyFieldXml($field_name, 'sfl_all');
+
+            if($field_option['indexed']) {
+                $copy_fields[$field_name] = $this->generateCopyFieldXml($field_name, 'sfl_all');
+            }
           }
 
           /**
