@@ -209,7 +209,7 @@ EOF;
     
     $solr_data_path = sfConfig::get('sf_plugins_dir').'/sfSolrPlugin/data/skeleton/project/config';
 
-    $this->getFilesystem()->copy($solr_data_path.'/schema.xml', $config_dir.'/base_schema.xml'.$file, array(
+    $this->getFilesystem()->copy($solr_data_path.'/schema.xml', $config_dir.'/base_schema.xml', array(
       'override' => false
     ));
 
@@ -347,7 +347,7 @@ EOF;
 
     $solr_data_path = sfConfig::get('sf_plugins_dir').'/sfSolrPlugin/data/skeleton/project/config';
 
-    $this->getFilesystem()->copy($solr_data_path.'/solrconfig.xml', $data_dir.'/base_solrconfig.xml'.$file, array(
+    $this->getFilesystem()->copy($solr_data_path.'/solrconfig.xml', $data_dir.'/base_solrconfig.xml', array(
       'override' => false
     ));
 
