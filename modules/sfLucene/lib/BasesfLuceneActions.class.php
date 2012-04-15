@@ -77,10 +77,12 @@ abstract class BasesfLuceneActions extends sfActions
 
     $pager = new sfLucenePager($this->getLuceneInstance()->friendlyFind($query));
 
+    $this->query = $values['query'];
+
     // were any results returned?
     if ($pager->getNbResults() == 0)
     {
-            // display error
+      // display error
       $this->setTitleI18n('No Results Found');
 
       $this->setTemplate('searchNoResults');
@@ -92,7 +94,6 @@ abstract class BasesfLuceneActions extends sfActions
     $pager = $this->configurePager($pager, $form);
 
     $this->pager = $pager;
-    $this->query = $values['query'];
 
     $this->setTitleNumResults($pager);
 
