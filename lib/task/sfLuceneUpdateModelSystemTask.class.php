@@ -21,7 +21,9 @@ require_once(dirname(__FILE__).'/sfLuceneBaseTask.class.php');
 class sfLuceneUpdateModelSystemTask extends sfLuceneBaseTask
 {
   protected 
-    $memory_error = false;
+    $memory_error = false,
+    $buffer = ''
+  ;
   
   protected function configure()
   {
@@ -168,7 +170,7 @@ EOF;
         // this value can be set by the analyseLine method
         if($this->memory_error)
         {
-          $this->logSection('lucene', '  memory limit reach, starting new subprocess');
+          $this->logSection('lucene', '  memory limit reached, starting new subprocess');
           
           $this->memory_error = false;
           
@@ -183,23 +185,34 @@ EOF;
   
   public function isMemoryException($line)
   {
-    if(preg_match("/Allowed memory size of ([0-9]*) bytes/", $line))
+    if(preg_match("/(Out of memory|Allowed memory size of ((-|)[0-9]*) bytes)/", $line))
     {
-      $this->logSection('lucene', '  catch memory limit exception');
-
       return true;
     }
 
     return false;
   }
   
-  public function analyseLine($line)
+  public function analyseLine($bytes)
   {
-    if(!$this->memory_error)
+    $this->buffer .= str_replace("\r", "", $bytes);
+
+    // analyse each line
+    while(false !== $pos = strpos($this->buffer, "\n"))
     {
-      $this->memory_error = $this->isMemoryException($line);
+      $line = substr($this->buffer, 0, $pos);
+      $this->buffer = substr($this->buffer, $pos+1);
+
+      if (!$this->memory_error)
+      {
+        $this->memory_error = $this->isMemoryException($line);
+        if ($this->memory_error)
+        {
+          throw new sfException($line);
+        }
+
+        $this->logSection('subprocess', trim($line));
+      }
     }
-    
-    $this->logSection('subprocess', trim($line));
   }
 }
